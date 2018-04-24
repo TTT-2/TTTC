@@ -49,7 +49,7 @@ if SERVER then
         for _, v in pairs(player.GetAll()) do
             v:UpdateCustomClass(table.Random(classesTbl).index)
             
-            hook.Add("TTT2_ReceiveCustomClass", v)
+            hook.Run("TTT2_ReceiveCustomClass", v)
         end
     end)
 end
