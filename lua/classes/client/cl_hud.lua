@@ -33,7 +33,7 @@ local margin = 10
 local function ClassesInfo(client)
 	local round_state = GAMEMODE.round_state
     
-	if round_state == ROUND_ACTIVE then
+	if round_state == ROUND_ACTIVE and client:IsActive() then
         if GetConVar("ttt_customclasses_enabled"):GetBool() and client:HasCustomClass() then
             GetLang = GetLang or LANG.GetUnsafeLanguageTable
             
