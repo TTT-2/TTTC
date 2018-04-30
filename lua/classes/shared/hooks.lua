@@ -86,6 +86,8 @@ else
     local GetLang
 
     hook.Add("TTTSettingsTabs", "TTTCClassDescription", function(dtabs)
+        local client = LocalPlayer()
+    
         GetLang = GetLang or LANG.GetUnsafeLanguageTable
             
         local L = GetLang()

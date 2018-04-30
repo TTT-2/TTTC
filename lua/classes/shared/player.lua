@@ -19,8 +19,12 @@ if SERVER then
     
     function plymeta:GiveClassWeapon(wep)
         self.classWeapons = self.classWeapons or {}
+        
+        local ret = self:Give(wep)
     
-        table.insert(self.classWeapons, self:Give(wep))
+        table.insert(self.classWeapons, wep)
+        
+        return ret
     end
     
     function plymeta:AddClassEquipmentItem(id)
@@ -36,7 +40,9 @@ if SERVER then
         
         if self.classWeapons then
             for _, wep in pairs(self.classWeapons) do
-                self:StripWeapon(wep:GetClass())
+                if self:HasWeapon(wep) then
+                    self:StripWeapon(wep)
+                end
             end
             
             self.classWeapons = {}
