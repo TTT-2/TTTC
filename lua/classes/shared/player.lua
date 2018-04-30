@@ -9,18 +9,50 @@ function plymeta:GetClassData()
 end
 
 if SERVER then
-    function plymeta:ResetCustomClass()
-        hook.Run("TTT2_ResetCustomClass", self)
-
-        self:UpdateCustomClass(1)
-    end
-    
     function plymeta:UpdateCustomClass(index)
         self:SetCustomClass(index)
     
         net.Start("TTT2_SendCustomClass")
         net.WriteUInt(index - 1, CLASS_BITS)
         net.Send(self)
+    end
+    
+    function plymeta:GiveClassWeapon(wep)
+        self.classWeapons = self.classWeapons or {}
+    
+        table.insert(self.classWeapons, self:Give(wep))
+    end
+    
+    function plymeta:AddClassEquipmentItem(id)
+        self.classEquipment = self.classEquipment or {}
+    
+        table.insert(self.classEquipment, id)
+        
+        self:AddEquipmentItem(id)
+    end
+    
+    function plymeta:ResetCustomClass()
+        hook.Run("TTT2_ResetCustomClass", self)
+        
+        if self.classWeapons then
+            for _, wep in pairs(self.classWeapons) do
+                self:StripWeapon(wep:GetClass())
+            end
+            
+            self.classWeapons = {}
+        end
+        
+        if self.classEquipment then
+            for _, equip in pairs(self.classEquipment) do
+                self.equipment_items = bit.band(self.equipment_items, equip)
+            end
+        
+            self.classEquipment = {}
+            
+            self:SendEquipment()
+        end
+        
+        self:UpdateCustomClass(1)
     end
 else
     net.Receive("TTT2_SendCustomClass", function(len)

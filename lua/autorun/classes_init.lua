@@ -8,9 +8,11 @@ if SERVER then
     AddCSLuaFile("classes/shared/functions.lua")
     AddCSLuaFile("classes/shared/player.lua")
     AddCSLuaFile("classes/shared/hooks.lua")
+    AddCSLuaFile("classes/shared/commands.lua")
 
     -- client files
     AddCSLuaFile("classes/client/cl_hud.lua")
+    AddCSLuaFile("classes/client/cl_lang.lua")
     
     -- include main file
 	include("classes/init.lua")
