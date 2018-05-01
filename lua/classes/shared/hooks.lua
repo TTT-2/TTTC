@@ -69,6 +69,8 @@ if SERVER then
             
             v:UpdateCustomClass(cls)
             
+            hook.Run("TTT2_PreReceiveCustomClass", v)
+            
             hook.Run("TTT2_ReceiveCustomClass", v)
             
             hook.Run("TTT2_PostReceiveCustomClass", v)

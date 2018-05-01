@@ -50,7 +50,7 @@ if SERVER then
         
         if self.classEquipment then
             for _, equip in pairs(self.classEquipment) do
-                self.equipment_items = bit.band(self.equipment_items, equip)
+                self.equipment_items = bit.bor(self.equipment_items, equip)
             end
         
             self.classEquipment = {}
