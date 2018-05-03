@@ -6,7 +6,7 @@ function AddCustomClass(name, classData)
         
             -- necessary to init classes in this way, because we need to wait until the CLASSES array is initialized 
             -- and every important function works properly
-            hook.Add("TTT2_ClassesInit", "Add_" .. classData.name .. "_Class", function() -- unique hook identifier please
+            hook.Add("TTTCClassesInit", "Add_" .. classData.name .. "_Class", function() -- unique hook identifier please
                 if not CLASSES[name] then -- count CLASSES
                     local i = 1 -- start at 1 to directly get free slot
                     
@@ -16,6 +16,10 @@ function AddCustomClass(name, classData)
                     
                     classData.index = i
                     CLASSES[name] = classData
+                    
+                    -- init class arrays
+                    WEAPONS_FOR_CLASSES[i] = classData.weapons or {}
+                    ITEMS_FOR_CLASSES[i] = classData.items or {}
                     
                     -- spend an answer
                     print("[TTT2][CLASS] Added '" .. name .. "' Class (index: " .. i .. ")")

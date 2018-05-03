@@ -11,11 +11,11 @@ if SERVER then
         print("[TTT2][CLASS] Server is ready to receive new classes...")
         print()
 
-        hook.Run("TTT2_PreClassesInit")
+        hook.Run("TTTCPreClassesInit")
         
-        hook.Run("TTT2_ClassesInit")
+        hook.Run("TTTCClassesInit")
         
-        hook.Run("TTT2_PostClassesInit")
+        hook.Run("TTTCPostClassesInit")
     end)
     
     --hook.Add("TTT2_FinishedSync", "TTT2CustomClassesSync", function(ply, first)
@@ -68,13 +68,13 @@ if SERVER then
             end
             
             v:UpdateCustomClass(cls)
-            
-            hook.Run("TTT2_PreReceiveCustomClass", v)
-            
-            hook.Run("TTT2_ReceiveCustomClass", v)
-            
-            hook.Run("TTT2_PostReceiveCustomClass", v)
         end
+            
+        hook.Run("TTTCPreReceiveCustomClasses")
+        
+        hook.Run("TTTCReceiveCustomClasses")
+        
+        hook.Run("TTTCPostReceiveCustomClasses")
     end)
     
     hook.Add("PlayerSay", "TTTCClassCommands", function(ply, text, public)
@@ -82,6 +82,42 @@ if SERVER then
             ply:ConCommand("dropclass")
             
             return ""
+        end
+    end)
+    
+    hook.Add("PlayerCanPickupWeapon", "TTTCPickupClassWeapon", function(ply, wep)
+        if ply:HasCustomClass() then
+            local wepClass = wep:GetClass()
+        
+            if table.HasValue(WEAPONS_FOR_CLASSES[ply:GetCustomClass()], wepClass) then
+                if not table.HasValue(ply.classWeapons, wepClass) then
+                    table.insert(ply.classWeapons, wepClass)
+                end
+                
+                return true
+            end
+        end
+    end)
+    
+    hook.Add("TTTCReceiveCustomClasses", "TTTCReceiveCustomClasses", function()
+        for _, ply in pairs(player.GetAll()) do
+            if ply:Alive() and ply:HasCustomClass() then
+                local cd = ply:GetClassData()
+                local weaps = cd.weapons
+                local items = cd.items
+            
+                if weaps and #weaps > 0 then
+                    for _, v in pairs(weaps) do
+                        ply:GiveServerClassWeapon(v)
+                    end
+                end
+            
+                if items and #items > 0 then
+                    for _, v in pairs(items) do
+                        ply:GiveServerClassItem(v)
+                    end
+                end
+            end
         end
     end)
 else
