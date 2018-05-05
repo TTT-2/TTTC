@@ -12,6 +12,24 @@ function plymeta:GetClassData()
 end
 
 if SERVER then
+    function plymeta:RegisterNewWeapon(wep)
+        local newWep = wep .. "_tttc"
+
+        if weapons.Get(newWep) then return end
+        
+        net.Start("TTTC_RegisterNewWeapon")
+        net.WriteString(wep)
+        net.Broadcast()
+        
+        local wepTbl = weapons.Get(wep)
+                
+        wepTbl.Kind = -1
+        
+        wep = newWep
+        
+        weapons.Register(wepTbl, wep)
+    end
+    
     function plymeta:UpdateCustomClass(index)
         self:SetCustomClass(index)
     
@@ -21,6 +39,10 @@ if SERVER then
     end
     
     function plymeta:GiveClassWeapon(wep)
+        if GetConVar("tttc_traitorbuy"):GetBool() then
+            self:RegisterNewWeapon(wep)
+        end
+        
         local rt = self:Give(wep)
     
         if rt then
@@ -214,6 +236,20 @@ if SERVER then
         self:UpdateCustomClass(CLASSES.UNSET.index)
     end
 else
+    function plymeta:RegisterNewWeapon(wep)
+        local newWep = wep .. "_tttc"
+
+        if weapons.Get(newWep) then return end
+        
+        local wepTbl = weapons.Get(wep)
+                
+        wepTbl.Kind = -1
+        
+        wep = newWep
+        
+        weapons.Register(wepTbl, wep)
+    end
+
     net.Receive("TTT2_SendCustomClass", function(len)
         local client = LocalPlayer()
         local cls = net.ReadUInt(CLASS_BITS) + 1
@@ -221,6 +257,13 @@ else
         if not client.SetCustomClass then return end
         
         client:SetCustomClass(cls)
+    end)
+    
+    net.Receive("TTTC_RegisterNewWeapon", function(len)
+        local client = LocalPlayer()
+        local wep = net.ReadString()
+        
+        client:RegisterNewWeapon(wep)
     end)
 end
 

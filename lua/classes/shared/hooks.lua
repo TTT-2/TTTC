@@ -86,10 +86,30 @@ if SERVER then
     end)
     
     hook.Add("PlayerCanPickupWeapon", "TTTCPickupClassWeapon", function(ply, wep)
+        if GetConVar("tttc_traitorbuy"):GetBool() then
+            hasValue = false
+        
+            for cls, tbl in pairs(WEAPONS_FOR_CLASSES) do
+                if table.HasValue(tbl, wepClass) then
+                    hasValue = true
+                    
+                    break
+                end
+            end
+            
+            if hasValue then
+                if not ply:HasCustomClass() then
+                    return false
+                elseif not table.HasValue(ply:GetCustomClass(), wepClass) then
+                    return false
+                end
+            end
+        end
+        
         if ply:HasCustomClass() then
             local wepClass = wep:GetClass()
         
-            if table.HasValue(WEAPONS_FOR_CLASSES[ply:GetCustomClass()], wepClass) then
+            if not ply:HasWeapon(wepClass) and table.HasValue(WEAPONS_FOR_CLASSES[ply:GetCustomClass()], wepClass) then
                 if not table.HasValue(ply.classWeapons, wepClass) then
                     table.insert(ply.classWeapons, wepClass)
                 end
