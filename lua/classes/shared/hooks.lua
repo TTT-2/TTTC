@@ -16,6 +16,12 @@ if SERVER then
         hook.Run("TTTCClassesInit")
         
         hook.Run("TTTCPostClassesInit")
+        
+        if GetConVar("tttc_traitorbuy"):GetBool() then
+            for _, wep in pairs(weapons.GetList()) do
+                RegisterNewClassWeapon(wep.ClassName)
+            end
+        end
     end)
     
     hook.Add("PlayerAuthed", "TTTCCustomClassesSync", function(ply, steamid, uniqueid)
@@ -170,6 +176,44 @@ else
         end
     end
 
+    hook.Add("TTTCFinishedClassesSync", "TTTCFinishedClassesSyncInitCli", function(ply, first)
+        if first then
+            if GetConVar("tttc_traitorbuy"):GetBool() then
+                for _, wep in pairs(weapons.GetList()) do
+                    RegisterNewClassWeapon(wep.ClassName)
+                end
+            end
+        end
+        
+        for _, v in pairs(CLASSES) do
+            -- init class arrays
+            if first then
+                WEAPONS_FOR_CLASSES[v.index] = {}
+                ITEMS_FOR_CLASSES[v.index] = {}
+            end
+            
+            if v ~= CLASSES.UNSET then
+                if not GetConVar("tttc_traitorbuy"):GetBool() then
+                    if v.weapons then
+                        for _, wep in pairs(v.weapons) do
+                            if not table.HasValue(WEAPONS_FOR_CLASSES[v.index], wep) then
+                                table.insert(WEAPONS_FOR_CLASSES[v.index], wep)
+                            end
+                        end
+                    end
+                    
+                    if v.items then
+                        for _, id in pairs(v.items) do
+                            if not table.HasValue(ITEMS_FOR_CLASSES[v.index], id) then
+                                table.insert(ITEMS_FOR_CLASSES[v.index], id)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+    
     hook.Add("TTTSettingsTabs", "TTTCClassDescription", function(dtabs)
         local client = LocalPlayer()
     
@@ -211,10 +255,16 @@ else
                 local weaps = ""
                 
                 for _, cls in pairs(WEAPONS_FOR_CLASSES[cd.index]) do
-                    weaps = weaps .. cls .. ", "
-                end
+                    local tmp = weapons.Get(cls)
+                    
+                    cls = tmp and tmp.PrintName or cls
                 
-                weaps = string.sub(weaps, 1, -2)
+                    if weaps ~= "" then
+                        weaps = weaps .. ", "
+                    end
+                    
+                    weaps = weaps .. cls
+                end
             
                 settings_tab:Help(L["classes_desc_weapons"] .. weaps)
             end
@@ -227,10 +277,12 @@ else
                     local name = GetStaticEquipmentItem(id)
                     name = name and name.name or "UNNAMED"
                 
-                    items = items .. name .. ", "
+                    if items ~= "" then
+                        items = items .. ", "
+                    end
+                    
+                    items = items .. name
                 end
-                
-                items = string.sub(items, 1, -2)
                 
                 settings_tab:Help(L["classes_desc_items"] .. items)
             end

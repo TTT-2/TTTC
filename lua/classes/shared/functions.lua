@@ -45,6 +45,46 @@ function GetClassByIndex(index)
     return CLASSES.UNSET
 end
 
+local unregistered = {
+    "weapon_zm_improvised",
+    "weapon_zm_carry",
+    "weapon_ttt_unarmed"
+}
+    
+function RegisterNewClassWeapon(wep)
+    if table.HasValue(unregistered, wep) then
+        return wep
+    end
+
+    local newWep = wep .. "_tttc"
+    
+    local tmp = weapons.Get(wep)
+    
+    if tmp and table.HasValue(REGISTERED_WEAPONS, wep) then 
+        return wep
+    end
+    
+    if weapons.Get(newWep) then
+        return newWep
+    end
+    
+    if not tmp then return end
+    
+    local wepTbl = tmp
+    wepTbl.__index = wepTbl
+    wepTbl.ClassName = newWep
+    wepTbl.CanBuy = {}
+    wepTbl.Kind = -1
+    wepTbl.Slot = 10
+    wepTbl.AllowDrop = false
+    
+    weapons.Register(wepTbl, newWep)
+    
+    table.insert(REGISTERED_WEAPONS, newWep)
+    
+    return newWep
+end
+
 if SERVER then
     -- sync CLASSES list
     -- toggle first if you want to reinitialize EVERYTHING ! Should be avoided, there is a reason why this var exists...

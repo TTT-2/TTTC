@@ -2,49 +2,20 @@ local plymeta = FindMetaTable("Player")
 
 if not plymeta then return end
 
+plymeta.classWeapons = {}
+plymeta.classItems = {}
+
 AccessorFunc(plymeta, "customClass", "CustomClass", FORCE_NUMBER)
 
 function plymeta:GetClassData()
     return GetClassByIndex(self:GetCustomClass())
 end
 
+function plymeta:HasCustomClass()
+    return self:GetCustomClass() and self:GetCustomClass() ~= CLASSES.UNSET.index
+end
+
 if SERVER then
-    function plymeta:RegisterNewWeapon(wep)
-        local newWep = wep .. "_tttc"
-        
-        local tmp = weapons.Get(wep)
-        
-        if table.HasValue(REGISTERED_WEAPONS, wep) and tmp then 
-            return wep
-        end
-        
-        if weapons.Get(newWep) then
-            return newWep
-        end
-        
-        net.Start("TTTCRegisterNewWeapon")
-        net.WriteString(wep)
-        net.Broadcast()
-        
-        if not tmp then return end
-        
-        local wepTbl = tmp
-        wepTbl.__index = wepTbl
-        
-        if not wepTbl then return end
-        
-        wepTbl.CanBuy = {}
-        wepTbl.Kind = -1
-        wepTbl.Slot = 10
-        wepTbl.ClassName = newWep
-        
-        weapons.Register(wepTbl, newWep)
-        
-        table.insert(REGISTERED_WEAPONS, newWep)
-        
-        return newWep
-    end
-    
     function plymeta:UpdateCustomClass(index)
         self:SetCustomClass(index)
     
@@ -57,15 +28,17 @@ if SERVER then
         local newWep = wep
         
         if GetConVar("tttc_traitorbuy"):GetBool() then
-            newWep = self:RegisterNewWeapon(wep)
+            newWep = RegisterNewClassWeapon(wep)
         end
-        
+    
         if not newWep then return end
         
         local rt = self:Give(newWep)
     
         if rt then
-            table.insert(self.classWeapons, newWep)
+            if not table.HasValue(self.classWeapons, newWep) then
+                table.insert(self.classWeapons, newWep)
+            end
         end
         
         return rt
@@ -75,114 +48,12 @@ if SERVER then
         local rt = self:GiveEquipmentItem(id)
         
         if rt then
-            table.insert(self.classItems, id)
+            if not table.HasValue(self.classItems, id) then
+                table.insert(self.classItems, id)
+            end
         end
         
         return rt
-    end
-    
-    function plymeta:AddClassEquipmentItem(id)
-        table.insert(self.classItems, id)
-        
-        self:AddEquipmentItem(id)
-    end
-    
-    function plymeta:AddClassEquipmentItemFix(id)
-        id = tonumber(id)
-        
-        if not id then return end
-        
-        if not self:HasCustomClass() then return end
-        
-        local cc = self:GetCustomClass()
-        
-        if not table.HasValue(ITEMS_FOR_CLASSES[cc], id) then
-            table.insert(ITEMS_FOR_CLASSES[cc], id)
-        end
-        
-        self:GiveClassEquipmentItem(id)
-        self:AddBought(id)
-
-        timer.Simple(0.5, function()
-            if not IsValid(self) then return end
-            
-            net.Start("TTT_BoughtItem")
-            net.WriteBit(true)
-            net.WriteUInt(id, 16)
-            net.Send(self)
-        end)
-
-        hook.Run("TTTOrderedEquipment", self, id, true)
-    end
-    
-    function plymeta:GiveClassEquipmentWeapon(cls, clip1, clip2)
-        -- Referring to players by SteamID because a player may disconnect while his
-        -- unique timer still runs, in which case we want to be able to stop it. For
-        -- that we need its name, and hence his SteamID.
-        if not IsValid(self) then return end
-        
-        local sid = self:SteamID()
-
-        -- giving attempt, will fail if we're in a crazy spot in the map or perhaps
-        -- other glitchy cases
-        
-        local w = self:GiveClassWeapon(cls)
-        
-        if not IsValid(w) then return end
-        
-        local tmr = "g_cwep_" .. sid .. "_" .. cls
-
-        if not self:HasWeapon(w:GetClass()) then
-            if not timer.Exists(tmr) then
-                timer.Create(tmr, 1, 0, function() 
-                    self:GiveClassEquipmentWeapon(cls, clip1, clip2) 
-                end)
-            end
-
-            -- we will be retrying
-        else
-            -- can stop retrying, if we were
-            timer.Remove(tmr)
-
-            if w.WasBought then
-                -- some weapons give extra ammo after being bought, etc
-                w:WasBought(self)
-            end
-            
-            if clip1 then
-                w:SetClip1(clip1)
-            end
-            
-            if clip2 then
-                w:SetClip2(clip2)
-            end
-        end
-    end
-    
-    function plymeta:AddClassEquipmentWeaponFix(cls, clip1, clip2)
-        if not cls then return end
-        
-        if not self:HasCustomClass() then return end
-        
-        local cc = self:GetCustomClass()
-        
-        if not table.HasValue(WEAPONS_FOR_CLASSES[cc], cls) then
-            table.insert(WEAPONS_FOR_CLASSES[cc], cls)
-        end
-        
-        self:GiveClassEquipmentWeapon(cls, clip1, clip2)
-        self:AddBought(cls)
-
-        timer.Simple(0.5, function()
-            if not IsValid(self) then return end
-            
-            net.Start("TTT_BoughtItem")
-            net.WriteBit(false)
-            net.WriteString(cls)
-            net.Send(self)
-        end)
-
-        hook.Run("TTTOrderedEquipment", self, cls, false)
     end
     
     function plymeta:GiveServerClassWeapon(cls, clip1, clip2)
@@ -196,6 +67,10 @@ if SERVER then
         
         if not table.HasValue(WEAPONS_FOR_CLASSES[self:GetCustomClass()], newCls) then
             table.insert(WEAPONS_FOR_CLASSES[self:GetCustomClass()], newCls)
+            
+            net.Start("TTTCSyncClassWeapon")
+            net.WriteString(newCls)
+            net.Send(self)
         end
 
         if self:HasWeapon(newCls) then
@@ -235,6 +110,10 @@ if SERVER then
         
         if not table.HasValue(ITEMS_FOR_CLASSES[self:GetCustomClass()], id) then
             table.insert(ITEMS_FOR_CLASSES[self:GetCustomClass()], id)
+            
+            net.Start("TTTCSyncClassItem")
+            net.WriteUInt(id, 16)
+            net.Send(self)
         end
 
         timer.Simple(0.5, function()
@@ -274,36 +153,6 @@ if SERVER then
         self:UpdateCustomClass(CLASSES.UNSET.index)
     end
 else
-    function plymeta:RegisterNewWeapon(wep)
-        local newWep = wep .. "_tttc"
-        
-        if table.HasValue(REGISTERED_WEAPONS, wep) and weapons.Get(wep) then 
-            return wep
-        end
-        
-        if weapons.Get(newWep) then
-            return newWep
-        end
-        
-        local tmp = weapons.Get(wep)
-        
-        if not tmp then return end
-        
-        local wepTbl = tmp
-        wepTbl.__index = wepTbl
-        
-        wepTbl.CanBuy = {}
-        wepTbl.Kind = -1
-        wepTbl.Slot = 10
-        wepTbl.ClassName = newWep
-        
-        weapons.Register(wepTbl, newWep)
-        
-        table.insert(REGISTERED_WEAPONS, newWep)
-        
-        return newWep
-    end
-
     net.Receive("TTTCSendCustomClass", function(len)
         local client = LocalPlayer()
         local cls = net.ReadUInt(CLASS_BITS) + 1
@@ -313,14 +162,25 @@ else
         client:SetCustomClass(cls)
     end)
     
-    net.Receive("TTTCRegisterNewWeapon", function(len)
+    net.Receive("TTTCSyncClassWeapon", function(len)
         local client = LocalPlayer()
         local wep = net.ReadString()
         
-        client:RegisterNewWeapon(wep)
+        if not client:HasCustomClass() then return end
+        
+        if not table.HasValue(WEAPONS_FOR_CLASSES[client:GetCustomClass()], wep) then
+            table.insert(WEAPONS_FOR_CLASSES[client:GetCustomClass()], wep)
+        end
     end)
-end
-
-function plymeta:HasCustomClass()
-    return self:GetCustomClass() and self:GetCustomClass() ~= CLASSES.UNSET.index
+    
+    net.Receive("TTTCSyncClassItem", function(len)
+        local client = LocalPlayer()
+        local id = net.ReadUInt(16)
+        
+        if not client:HasCustomClass() then return end
+        
+        if not table.HasValue(ITEMS_FOR_CLASSES[client:GetCustomClass()], id) then
+            table.insert(ITEMS_FOR_CLASSES[client:GetCustomClass()], id)
+        end
+    end)
 end
