@@ -54,10 +54,10 @@ local function ClassesInfo(client)
     end
 end
 
-hook.Add("HUDPaint", "TTT2ClassesHudPaint", function()
+hook.Add("HUDPaint", "TTTCClassesHudPaint", function()
 	local client = LocalPlayer()
     
-    if hook.Run("HUDShouldDraw", "TTT2ClassesInfo") then
+    if hook.Run("HUDShouldDraw", "TTTCClassesInfo") then
 		ClassesInfo(client)
 	end
 end)

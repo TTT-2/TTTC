@@ -1,14 +1,14 @@
-net.Receive("TTT2_CustomClassesSynced", function(len, ply)
+net.Receive("TTTCCustomClassesSynced", function(len, ply)
    local first = net.ReadBool()
    
    -- run serverside
-   hook.Run("TTT2_FinishedClassesSync", ply, first)
+   hook.Run("TTTCFinishedClassesSync", ply, first)
 end)
 
 if SERVER then
-    hook.Add("Initialize", "TTT2CustomClassesInit", function()
+    hook.Add("Initialize", "TTTCCustomClassesInit", function()
         print()
-        print("[TTT2][CLASS] Server is ready to receive new classes...")
+        print("[TTTC][CLASS] Server is ready to receive new classes...")
         print()
 
         hook.Run("TTTCPreClassesInit")
@@ -18,25 +18,24 @@ if SERVER then
         hook.Run("TTTCPostClassesInit")
     end)
     
-    --hook.Add("TTT2_FinishedSync", "TTT2CustomClassesSync", function(ply, first)
-    hook.Add("PlayerAuthed", "TTT2CustomClassesSync", function(ply, steamid, uniqueid)
+    hook.Add("PlayerAuthed", "TTTCCustomClassesSync", function(ply, steamid, uniqueid)
         UpdateClassData(ply, true)
         
         ply:UpdateCustomClass(1)
     end)
     
-    hook.Add("TTTPrepareRound", "TTT2ResetClasses", function()
+    hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
         for _, v in pairs(player.GetAll()) do
             v:ResetCustomClass()
         end
     end)
     
-    hook.Add("TTTBeginRound", "TTT2SelectClasses", function()
+    hook.Add("TTTBeginRound", "TTTCSelectClasses", function()
         local classesTbl = {}
         
         for _, v in pairs(CLASSES) do
             if v ~= CLASSES.UNSET then
-                if GetConVar("ttt2_classes_" .. v.name .. "_enabled"):GetBool() then
+                if GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then
                     table.insert(classesTbl, v)
                 end
             end
@@ -142,6 +141,34 @@ if SERVER then
     end)
 else
     local GetLang
+    
+    function GetStaticEquipmentItem(id)
+        if not ROLES then
+            for i = 1, 3 do
+                local tbl = EquipmentItems[i]
+
+                if tbl then
+                    for _, v2 in pairs(tbl) do
+                        if v2 and v2.id == id then
+                            return v2
+                        end
+                    end
+                end
+            end
+        else
+            for _, v in pairs(ROLES) do
+                local tbl = EquipmentItems[v.index]
+
+                if tbl then
+                    for _, v2 in pairs(tbl) do
+                        if v2 and v2.id == id then
+                            return v2
+                        end
+                    end
+                end
+            end
+        end
+    end
 
     hook.Add("TTTSettingsTabs", "TTTCClassDescription", function(dtabs)
         local client = LocalPlayer()
@@ -177,7 +204,38 @@ else
         settings_panel:AddItem(settings_tab)
         
         if client:HasCustomClass() then
-            settings_tab:Help(L["class_desc_" .. client:GetClassData().name])
+            local cd = client:GetClassData()
+        
+            -- weapons
+            if WEAPONS_FOR_CLASSES[cd.index] and #WEAPONS_FOR_CLASSES[cd.index] > 0 then
+                local weaps = ""
+                
+                for _, cls in pairs(WEAPONS_FOR_CLASSES[cd.index]) do
+                    weaps = weaps .. cls .. ", "
+                end
+                
+                weaps = string.sub(weaps, 1, -2)
+            
+                settings_tab:Help(L["classes_desc_weapons"] .. weaps)
+            end
+            
+            -- items
+            if ITEMS_FOR_CLASSES[cd.index] and #ITEMS_FOR_CLASSES[cd.index] > 0 then
+                local items = ""
+                
+                for _, id in pairs(ITEMS_FOR_CLASSES[cd.index]) do
+                    local name = GetStaticEquipmentItem(id)
+                    name = name and name.name or "UNNAMED"
+                
+                    items = items .. name .. ", "
+                end
+                
+                items = string.sub(items, 1, -2)
+                
+                settings_tab:Help(L["classes_desc_items"] .. items)
+            end
+            
+            settings_tab:Help(L["class_desc_" .. cd.name])
         else
             settings_tab:Help(L["tttc_no_cls_desc"])
         end

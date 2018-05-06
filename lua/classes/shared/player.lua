@@ -2,9 +2,6 @@ local plymeta = FindMetaTable("Player")
 
 if not plymeta then return end
 
-WEAPONS_FOR_CLASSES = {}
-ITEMS_FOR_CLASSES = {}
-
 AccessorFunc(plymeta, "customClass", "CustomClass", FORCE_NUMBER)
 
 function plymeta:GetClassData()
@@ -14,39 +11,61 @@ end
 if SERVER then
     function plymeta:RegisterNewWeapon(wep)
         local newWep = wep .. "_tttc"
-
-        if weapons.Get(newWep) then return end
         
-        net.Start("TTTC_RegisterNewWeapon")
+        local tmp = weapons.Get(wep)
+        
+        if table.HasValue(REGISTERED_WEAPONS, wep) and tmp then 
+            return wep
+        end
+        
+        if weapons.Get(newWep) then
+            return newWep
+        end
+        
+        net.Start("TTTCRegisterNewWeapon")
         net.WriteString(wep)
         net.Broadcast()
         
-        local wepTbl = weapons.Get(wep)
-                
+        if not tmp then return end
+        
+        local wepTbl = tmp
+        wepTbl.__index = wepTbl
+        
+        if not wepTbl then return end
+        
+        wepTbl.CanBuy = {}
         wepTbl.Kind = -1
+        wepTbl.Slot = 10
+        wepTbl.ClassName = newWep
         
-        wep = newWep
+        weapons.Register(wepTbl, newWep)
         
-        weapons.Register(wepTbl, wep)
+        table.insert(REGISTERED_WEAPONS, newWep)
+        
+        return newWep
     end
     
     function plymeta:UpdateCustomClass(index)
         self:SetCustomClass(index)
     
-        net.Start("TTT2_SendCustomClass")
+        net.Start("TTTCSendCustomClass")
         net.WriteUInt(index - 1, CLASS_BITS)
         net.Send(self)
     end
     
     function plymeta:GiveClassWeapon(wep)
+        local newWep = wep
+        
         if GetConVar("tttc_traitorbuy"):GetBool() then
-            self:RegisterNewWeapon(wep)
+            newWep = self:RegisterNewWeapon(wep)
         end
         
-        local rt = self:Give(wep)
+        if not newWep then return end
+        
+        local rt = self:Give(newWep)
     
         if rt then
-            table.insert(self.classWeapons, wep)
+            table.insert(self.classWeapons, newWep)
         end
         
         return rt
@@ -103,14 +122,17 @@ if SERVER then
         if not IsValid(self) then return end
         
         local sid = self:SteamID()
-        
-        local tmr = "g_cwep_" .. sid .. "_" .. cls
 
         -- giving attempt, will fail if we're in a crazy spot in the map or perhaps
         -- other glitchy cases
+        
         local w = self:GiveClassWeapon(cls)
+        
+        if not IsValid(w) then return end
+        
+        local tmr = "g_cwep_" .. sid .. "_" .. cls
 
-        if not IsValid(w) or not self:HasWeapon(cls) then
+        if not self:HasWeapon(w:GetClass()) then
             if not timer.Exists(tmr) then
                 timer.Create(tmr, 1, 0, function() 
                     self:GiveClassEquipmentWeapon(cls, clip1, clip2) 
@@ -164,9 +186,19 @@ if SERVER then
     end
     
     function plymeta:GiveServerClassWeapon(cls, clip1, clip2)
+        if not self:HasCustomClass() then return end
+    
         local w = self:GiveClassWeapon(cls)
+        
+        if not IsValid(w) then return end
+        
+        local newCls = w:GetClass()
+        
+        if not table.HasValue(WEAPONS_FOR_CLASSES[self:GetCustomClass()], newCls) then
+            table.insert(WEAPONS_FOR_CLASSES[self:GetCustomClass()], newCls)
+        end
 
-        if IsValid(w) and self:HasWeapon(cls) then
+        if self:HasWeapon(newCls) then
             self:AddBought(cls)
               
             if w.WasBought then
@@ -196,8 +228,14 @@ if SERVER then
     end
     
     function plymeta:GiveServerClassItem(id)
+        if not self:HasCustomClass() then return end
+    
         self:GiveClassEquipmentItem(id)
         self:AddBought(id)
+        
+        if not table.HasValue(ITEMS_FOR_CLASSES[self:GetCustomClass()], id) then
+            table.insert(ITEMS_FOR_CLASSES[self:GetCustomClass()], id)
+        end
 
         timer.Simple(0.5, function()
             if not IsValid(self) then return end
@@ -238,19 +276,35 @@ if SERVER then
 else
     function plymeta:RegisterNewWeapon(wep)
         local newWep = wep .. "_tttc"
-
-        if weapons.Get(newWep) then return end
         
-        local wepTbl = weapons.Get(wep)
-                
+        if table.HasValue(REGISTERED_WEAPONS, wep) and weapons.Get(wep) then 
+            return wep
+        end
+        
+        if weapons.Get(newWep) then
+            return newWep
+        end
+        
+        local tmp = weapons.Get(wep)
+        
+        if not tmp then return end
+        
+        local wepTbl = tmp
+        wepTbl.__index = wepTbl
+        
+        wepTbl.CanBuy = {}
         wepTbl.Kind = -1
+        wepTbl.Slot = 10
+        wepTbl.ClassName = newWep
         
-        wep = newWep
+        weapons.Register(wepTbl, newWep)
         
-        weapons.Register(wepTbl, wep)
+        table.insert(REGISTERED_WEAPONS, newWep)
+        
+        return newWep
     end
 
-    net.Receive("TTT2_SendCustomClass", function(len)
+    net.Receive("TTTCSendCustomClass", function(len)
         local client = LocalPlayer()
         local cls = net.ReadUInt(CLASS_BITS) + 1
        
@@ -259,7 +313,7 @@ else
         client:SetCustomClass(cls)
     end)
     
-    net.Receive("TTTC_RegisterNewWeapon", function(len)
+    net.Receive("TTTCRegisterNewWeapon", function(len)
         local client = LocalPlayer()
         local wep = net.ReadString()
         

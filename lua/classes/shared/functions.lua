@@ -1,6 +1,6 @@
 function AddCustomClass(name, classData)
     if not CLASSES[name] then
-        CreateConVar("ttt2_classes_" .. classData.name .. "_enabled", "1", FCVAR_NOTIFY + FCVAR_ARCHIVE + FCVAR_REPLICATED)
+        CreateConVar("tttc_class_" .. classData.name .. "_enabled", "1", FCVAR_NOTIFY + FCVAR_ARCHIVE + FCVAR_REPLICATED)
             
         if SERVER then
         
@@ -22,7 +22,7 @@ function AddCustomClass(name, classData)
                     ITEMS_FOR_CLASSES[i] = classData.items or {}
                     
                     -- spend an answer
-                    print("[TTT2][CLASS] Added '" .. name .. "' Class (index: " .. i .. ")")
+                    print("[TTTC][CLASS] Added '" .. name .. "' Class (index: " .. i .. ")")
                 end
             end)
         end
@@ -64,7 +64,7 @@ if SERVER then
     end
     
     function UpdateClassData(ply, first)
-        print("[TTT2][CLASS] Sending new CLASSES list to " .. ply:Nick() .. "...")
+        print("[TTTC][CLASS] Sending new CLASSES list to " .. ply:Nick() .. "...")
 
         local s = EncodeForStream(CLASSES)
 
@@ -89,7 +89,7 @@ if SERVER then
         local parts = #cut
 
         for k, bit in pairs(cut) do
-            net.Start("TTT2_SyncCustomClasses")
+            net.Start("TTTCSyncCustomClasses")
             net.WriteBool(first)
             net.WriteBit((k ~= parts)) -- continuation bit, 1 if there's more coming
             net.WriteString(bit)
@@ -106,7 +106,7 @@ else
     local buff = ""
     
     local function ReceiveClassesTable(len)
-       print("[TTT2][CLASS] Received new CLASSES list from server! Updating...")
+       print("[TTTC][CLASS] Received new CLASSES list from server! Updating...")
 
        local first = net.ReadBool()
        local cont = net.ReadBit() == 1
@@ -121,7 +121,7 @@ else
           local json_roles = buff -- util.Decompress(buff)
           
           if not json_roles then
-             ErrorNoHalt("CLASSES decompression failed!\n")
+             ErrorNoHalt("[TTTC][CLASS] CLASSES decompression failed!\n")
           else
              -- convert the json string back to a table
              local tmp = util.JSONToTable(json_roles)
@@ -129,16 +129,16 @@ else
              if istable(tmp) then
                 CLASSES = tmp
              else
-                ErrorNoHalt("CLASSES decoding failed!\n")
+                ErrorNoHalt("[TTTC][CLASS] CLASSES decoding failed!\n")
              end
              
              -- confirm update and process next updates
-             net.Start("TTT2_CustomClassesSynced")
+             net.Start("TTTCCustomClassesSynced")
              net.WriteBool(first)
              net.SendToServer()
              
              -- run client side
-             hook.Run("TTT2_FinishedClassesSync", LocalPlayer(), first)
+             hook.Run("TTTCFinishedClassesSync", LocalPlayer(), first)
           end
 
           -- flush
@@ -146,5 +146,5 @@ else
        end
     end
     
-    net.Receive("TTT2_SyncCustomClasses", ReceiveClassesTable)
+    net.Receive("TTTCSyncCustomClasses", ReceiveClassesTable)
 end
