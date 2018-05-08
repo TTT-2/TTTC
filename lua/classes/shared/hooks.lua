@@ -42,7 +42,16 @@ if SERVER then
         for _, v in pairs(CLASSES) do
             if v ~= CLASSES.UNSET then
                 if GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then
-                    table.insert(classesTbl, v)
+                    local b = true
+                    local r = GetConVar("tttc_class_" .. v.name .. "_random"):GetInt()
+                    
+                    if r > 0 and r < 100 then
+                       b = math.random(1, 100) <= r
+                    end
+                
+                    if b then
+                        table.insert(classesTbl, v)
+                    end
                 end
             end
         end
@@ -91,34 +100,10 @@ if SERVER then
     end)
     
     hook.Add("PlayerCanPickupWeapon", "TTTCPickupClassWeapon", function(ply, wep)
-        if GetConVar("tttc_traitorbuy"):GetBool() then
-            hasValue = false
-        
-            for cls, tbl in pairs(WEAPONS_FOR_CLASSES) do
-                if table.HasValue(tbl, wepClass) then
-                    hasValue = true
-                    
-                    break
-                end
-            end
-            
-            if hasValue then
-                if not ply:HasCustomClass() then
-                    return false
-                elseif not table.HasValue(ply:GetCustomClass(), wepClass) then
-                    return false
-                end
-            end
-        end
-        
         if ply:HasCustomClass() then
             local wepClass = wep:GetClass()
         
-            if not ply:HasWeapon(wepClass) and table.HasValue(WEAPONS_FOR_CLASSES[ply:GetCustomClass()], wepClass) then
-                if not table.HasValue(ply.classWeapons, wepClass) then
-                    table.insert(ply.classWeapons, wepClass)
-                end
-                
+            if not ply:HasWeapon(wepClass) and table.HasValue(ply:GetClassData().weapons, wepClass) then
                 return true
             end
         end
@@ -184,34 +169,6 @@ else
                 end
             end
         end
-        
-        for _, v in pairs(CLASSES) do
-            -- init class arrays
-            if first then
-                WEAPONS_FOR_CLASSES[v.index] = {}
-                ITEMS_FOR_CLASSES[v.index] = {}
-            end
-            
-            if v ~= CLASSES.UNSET then
-                if not GetConVar("tttc_traitorbuy"):GetBool() then
-                    if v.weapons then
-                        for _, wep in pairs(v.weapons) do
-                            if not table.HasValue(WEAPONS_FOR_CLASSES[v.index], wep) then
-                                table.insert(WEAPONS_FOR_CLASSES[v.index], wep)
-                            end
-                        end
-                    end
-                    
-                    if v.items then
-                        for _, id in pairs(v.items) do
-                            if not table.HasValue(ITEMS_FOR_CLASSES[v.index], id) then
-                                table.insert(ITEMS_FOR_CLASSES[v.index], id)
-                            end
-                        end
-                    end
-                end
-            end
-        end
     end)
     
     hook.Add("TTTSettingsTabs", "TTTCClassDescription", function(dtabs)
@@ -251,10 +208,10 @@ else
             local cd = client:GetClassData()
         
             -- weapons
-            if WEAPONS_FOR_CLASSES[cd.index] and #WEAPONS_FOR_CLASSES[cd.index] > 0 then
+            if cd.weapons and #cd.weapons > 0 then
                 local weaps = ""
                 
-                for _, cls in pairs(WEAPONS_FOR_CLASSES[cd.index]) do
+                for _, cls in pairs(cd.weapons) do
                     local tmp = weapons.Get(cls)
                     
                     cls = tmp and tmp.PrintName or cls
@@ -270,10 +227,10 @@ else
             end
             
             -- items
-            if ITEMS_FOR_CLASSES[cd.index] and #ITEMS_FOR_CLASSES[cd.index] > 0 then
+            if cd.items and #cd.items > 0 then
                 local items = ""
                 
-                for _, id in pairs(ITEMS_FOR_CLASSES[cd.index]) do
+                for _, id in pairs(cd.items) do
                     local name = GetStaticEquipmentItem(id)
                     name = name and name.name or "UNNAMED"
                 

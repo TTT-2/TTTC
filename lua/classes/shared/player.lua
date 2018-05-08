@@ -65,8 +65,10 @@ if SERVER then
         
         local newCls = w:GetClass()
         
-        if not table.HasValue(WEAPONS_FOR_CLASSES[self:GetCustomClass()], newCls) then
-            table.insert(WEAPONS_FOR_CLASSES[self:GetCustomClass()], newCls)
+        local cd = self:GetClassData()
+        
+        if not table.HasValue(cd.weapons, newCls) then
+            table.insert(cd.weapons, newCls)
             
             net.Start("TTTCSyncClassWeapon")
             net.WriteString(newCls)
@@ -104,12 +106,18 @@ if SERVER then
     
     function plymeta:GiveServerClassItem(id)
         if not self:HasCustomClass() then return end
-    
+        
+        id = tonumber(id)
+        
+        if not id then return end
+        
         self:GiveClassEquipmentItem(id)
         self:AddBought(id)
         
-        if not table.HasValue(ITEMS_FOR_CLASSES[self:GetCustomClass()], id) then
-            table.insert(ITEMS_FOR_CLASSES[self:GetCustomClass()], id)
+        local cd = self:GetClassData()
+        
+        if not table.HasValue(cd.items, id) then
+            table.insert(cd.items, id)
             
             net.Start("TTTCSyncClassItem")
             net.WriteUInt(id, 16)
@@ -139,6 +147,7 @@ if SERVER then
             end
         end
         
+        --[[
         if self.classItems then
             for _, equip in pairs(self.classItems) do
                 self.equipment_items = bit.bxor(self.equipment_items, equip)
@@ -146,6 +155,7 @@ if SERVER then
             
             self:SendEquipment()
         end
+        ]]--
             
         self.classWeapons = {}
         self.classItems = {}
@@ -168,8 +178,10 @@ else
         
         if not client:HasCustomClass() then return end
         
-        if not table.HasValue(WEAPONS_FOR_CLASSES[client:GetCustomClass()], wep) then
-            table.insert(WEAPONS_FOR_CLASSES[client:GetCustomClass()], wep)
+        local cd = client:GetClassData()
+        
+        if not table.HasValue(cd.weapons, wep) then
+            table.insert(cd.weapons, wep)
         end
     end)
     
@@ -179,8 +191,10 @@ else
         
         if not client:HasCustomClass() then return end
         
-        if not table.HasValue(ITEMS_FOR_CLASSES[client:GetCustomClass()], id) then
-            table.insert(ITEMS_FOR_CLASSES[client:GetCustomClass()], id)
+        local cd = client:GetClassData()
+        
+        if not table.HasValue(cd.items, id) then
+            table.insert(cd.items, id)
         end
     end)
 end

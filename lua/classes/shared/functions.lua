@@ -1,7 +1,15 @@
-function AddCustomClass(name, classData)
+function AddCustomClass(name, classData, conVarData)
+    conVarData = conVarData or {}
+    
     if not CLASSES[name] then
         CreateConVar("tttc_class_" .. classData.name .. "_enabled", "1", FCVAR_NOTIFY + FCVAR_ARCHIVE + FCVAR_REPLICATED)
-            
+        
+        if conVarData.random then
+            CreateConVar("tttc_class_" .. classData.name .. "_random", tostring(conVarData.random), FCVAR_ARCHIVE + FCVAR_REPLICATED)
+        else
+            CreateConVar("tttc_class_" .. classData.name .. "_random", "100", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+        end
+        
         if SERVER then
         
             -- necessary to init classes in this way, because we need to wait until the CLASSES array is initialized 
@@ -15,11 +23,12 @@ function AddCustomClass(name, classData)
                     end
                     
                     classData.index = i
-                    CLASSES[name] = classData
                     
                     -- init class arrays
-                    WEAPONS_FOR_CLASSES[i] = classData.weapons or {}
-                    ITEMS_FOR_CLASSES[i] = classData.items or {}
+                    classData.weapons = classData.weapons or {}
+                    classData.items = classData.items or {}
+                    
+                    CLASSES[name] = classData
                     
                     -- spend an answer
                     print("[TTTC][CLASS] Added '" .. name .. "' Class (index: " .. i .. ")")
