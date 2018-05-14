@@ -67,21 +67,23 @@ if SERVER then
         end
         
         for _, v in pairs(player.GetAll()) do
-            local cls
-        
-            if #tmp == 0 then
-                local rand = math.random(1, #classesTbl)
-                
-                cls = classesTbl[rand].index
-            else
-                local rand = math.random(1, #tmp)
+            if v:IsActive() then
+                local cls
             
-                cls = tmp[rand].index
+                if #tmp == 0 then
+                    local rand = math.random(1, #classesTbl)
+                    
+                    cls = classesTbl[rand].index
+                else
+                    local rand = math.random(1, #tmp)
                 
-                table.remove(tmp, rand)
+                    cls = tmp[rand].index
+                    
+                    table.remove(tmp, rand)
+                end
+                
+                v:UpdateCustomClass(cls)
             end
-            
-            v:UpdateCustomClass(cls)
         end
             
         hook.Run("TTTCPreReceiveCustomClasses")
@@ -111,7 +113,7 @@ if SERVER then
     
     hook.Add("TTTCReceiveCustomClasses", "TTTCReceiveCustomClasses", function()
         for _, ply in pairs(player.GetAll()) do
-            if ply:Alive() and ply:HasCustomClass() then
+            if ply:IsActive() and ply:HasCustomClass() then
                 local cd = ply:GetClassData()
                 local weaps = cd.weapons
                 local items = cd.items
