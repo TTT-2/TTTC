@@ -168,7 +168,26 @@ if SERVER then
        
         if not ply.SetCustomClass then return end
         
+        ply:ResetCustomClass()
         ply:SetCustomClass(cls)
+        
+        if ply:IsActive() then
+            local cd = ply:GetClassData()
+            local weaps = cd.weapons
+            local items = cd.items
+        
+            if weaps and #weaps > 0 then
+                for _, v in pairs(weaps) do
+                    ply:GiveServerClassWeapon(v)
+                end
+            end
+        
+            if items and #items > 0 then
+                for _, v in pairs(items) do
+                    ply:GiveServerClassItem(v)
+                end
+            end
+        end
     end)
 else
     net.Receive("TTTCSendCustomClass", function(len)
