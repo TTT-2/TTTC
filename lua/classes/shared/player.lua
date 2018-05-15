@@ -162,6 +162,14 @@ if SERVER then
         
         self:UpdateCustomClass(CLASSES.UNSET.index)
     end
+    
+    net.Receive("TTTCClientSendCustomClass", function(len, ply)
+        local cls = net.ReadUInt(CLASS_BITS) + 1
+       
+        if not ply.SetCustomClass then return end
+        
+        ply:SetCustomClass(cls)
+    end)
 else
     net.Receive("TTTCSendCustomClass", function(len)
         local client = LocalPlayer()
@@ -197,4 +205,12 @@ else
             table.insert(cd.items, id)
         end
     end)
+    
+    function plymeta:ServerUpdateCustomClass(index)
+        net.Start("TTTCClientSendCustomClass")
+        net.WriteUInt(index - 1, CLASS_BITS)
+        net.SendToServer()
+        
+        self:SetCustomClass(index)
+    end
 end

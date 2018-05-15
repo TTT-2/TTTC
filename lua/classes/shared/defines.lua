@@ -12,7 +12,9 @@ CreateConVar("tttc_traitorbuy", "0", sharedFlag)
 
 if SERVER then
     util.AddNetworkString("TTTCSendCustomClass")
+    util.AddNetworkString("TTTCClientSendCustomClass")
     util.AddNetworkString("TTTCSyncCustomClasses")
+    util.AddNetworkString("TTTCSyncClass")
     util.AddNetworkString("TTTCCustomClassesSynced")
     util.AddNetworkString("TTTCDropClass")
     util.AddNetworkString("TTTCSyncClassWeapon")

@@ -54,6 +54,18 @@ function GetClassByIndex(index)
     return CLASSES.UNSET
 end
 
+function GetSortedClasses()
+    local classes = {}
+    
+    for _, v in pairs(CLASSES) do
+        classes[v.index] = v
+    end
+    
+    SortClassesTable(classes)
+    
+    return classes
+end
+
 local unregistered = {
     "weapon_zm_improvised",
     "weapon_zm_carry",

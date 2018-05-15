@@ -40,6 +40,12 @@ local function ClassesInfo(client)
             local L = GetLang()
             local x = margin
             local y = ScrH() - margin - 120
+            
+            local xStr = tostring(x)
+            local yStr = tostring(y)
+            
+            x = CreateClientConVar("tttc_hud_x", xStr, true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: " .. xStr):GetFloat()
+            y = CreateClientConVar("tttc_hud_y", yStr, true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. yStr):GetFloat()
 
             DrawBg(x, y, client)
 

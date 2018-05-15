@@ -33,6 +33,8 @@ if SERVER then
     hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
         for _, v in pairs(player.GetAll()) do
             v:ResetCustomClass()
+            
+            v.oldClass = nil
         end
     end)
     
@@ -94,7 +96,9 @@ if SERVER then
     end)
     
     hook.Add("PlayerSay", "TTTCClassCommands", function(ply, text, public)
-        if string.lower(text) == "!dropclass" then
+        text = string.Trim(string.lower(text))
+        
+        if text == "!dropclass" then
             ply:ConCommand("dropclass")
             
             return ""
@@ -132,7 +136,32 @@ if SERVER then
             end
         end
     end)
+    
+    hook.Add("PostPlayerDeath", "TTTCPostPlayerDeathSave", function(ply)
+        ply.oldClass = ply.oldClass or ply:GetCustomClass()
+    end)
+    
+    -- sync dead players with other players
+    hook.Add("TTTBodyFound", "TTTCBodyFound", function(_, deadply, _)
+        if GetRoundState() == ROUND_ACTIVE and IsValid(deadply) then
+            if deadply.oldClass then
+                net.Start("TTTCSyncClass")
+                net.WriteEntity(deadply)
+                net.WriteUInt(deadply.oldClass - 1, CLASS_BITS)
+                net.Broadcast()
+            end
+        end
+    end)
 else
+    net.Receive("TTTCSyncClass", function(len)
+        local ply = net.ReadEntity()
+        local cls = net.ReadUInt(CLASS_BITS) + 1
+       
+        if not ply.SetCustomClass then return end
+        
+        ply:SetCustomClass(cls)
+    end)
+    
     local GetLang
     
     function GetStaticEquipmentItem(id)
@@ -198,7 +227,7 @@ else
         settings_tab:SetSpacing(10)
         
         if client:HasCustomClass() then
-            settings_tab:SetName("Current Class Description of " .. L[client:GetClassData().name])
+            settings_tab:SetName("Current Class Description for " .. L[client:GetClassData().name])
         else
             settings_tab:SetName("Current Class Description")
         end
@@ -206,6 +235,7 @@ else
         settings_tab:SetWide(settings_panel:GetWide() - 30)
         settings_panel:AddItem(settings_tab)
         
+        -- description
         if client:HasCustomClass() then
             local cd = client:GetClassData()
         
@@ -252,5 +282,31 @@ else
         end
         
         settings_tab:SizeToContents()
+        
+        -- tttc hud settings
+        local hud_settings_tab = vgui.Create("DForm")
+        hud_settings_tab:SetSpacing(10)
+        hud_settings_tab:SetName("HUD Position")
+        hud_settings_tab:SetWide(settings_panel:GetWide() - 30)
+        settings_panel:AddItem(hud_settings_tab)
+        
+        hud_settings_tab:NumSlider("x-coordinate (position)", "tttc_hud_x", 0, ScrW(), 2)
+        hud_settings_tab:NumSlider("y-coordinate (position)", "tttc_hud_y", 0, ScrH(), 2)
+        
+        hud_settings_tab:SizeToContents()
+    end)
+    
+    hook.Add("TTTScoreboardColumns", "TTTCScoreboardClass", function(pnl)
+        pnl:AddColumn("Class", function(ply, label)
+            if ply:HasCustomClass() then
+                local cd = ply:GetClassData()
+                
+                label:SetColor(cd.color or Color(255, 155, 0, 255))
+            
+                return cd.name
+            end
+            
+            return "?"
+        end, 100)
     end)
 end
