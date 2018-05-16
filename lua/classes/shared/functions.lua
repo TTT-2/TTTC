@@ -26,6 +26,13 @@ function AddCustomClass(name, classData, conVarData)
                     
                     -- init class arrays
                     classData.weapons = classData.weapons or {}
+                    
+                    if GetConVar("tttc_traitorbuy"):GetBool() then
+                        for k, v in pairs(classData.weapons) do
+                            classData.weapons[k] = RegisterNewClassWeapon(v)
+                        end
+                    end
+                    
                     classData.items = classData.items or {}
                     
                     CLASSES[name] = classData
@@ -199,7 +206,11 @@ else
              net.SendToServer()
              
              -- run client side
+             hook.Run("TTTCPreFinishedClassesSync", LocalPlayer(), first)
+             
              hook.Run("TTTCFinishedClassesSync", LocalPlayer(), first)
+             
+             hook.Run("TTTCPostFinishedClassesSync", LocalPlayer(), first)
           end
 
           -- flush

@@ -1,11 +1,15 @@
-net.Receive("TTTCCustomClassesSynced", function(len, ply)
-   local first = net.ReadBool()
-   
-   -- run serverside
-   hook.Run("TTTCFinishedClassesSync", ply, first)
-end)
-
 if SERVER then
+    net.Receive("TTTCCustomClassesSynced", function(len, ply)
+       local first = net.ReadBool()
+       
+       -- run serverside
+       hook.Run("TTTCPreFinishedClassesSync", ply, first)
+       
+       hook.Run("TTTCFinishedClassesSync", ply, first)
+       
+       hook.Run("TTTCPostFinishedClassesSync", ply, first)
+    end)
+
     hook.Add("Initialize", "TTTCCustomClassesInit", function()
         print()
         print("[TTTC][CLASS] Server is ready to receive new classes...")
@@ -137,8 +141,8 @@ if SERVER then
         end
     end)
     
-    hook.Add("PostPlayerDeath", "TTTCPostPlayerDeathSave", function(ply)
-        ply.oldClass = ply.oldClass or ply:GetCustomClass()
+    hook.Add("DoPlayerDeath", "TTTCPostPlayerDeathSave", function(ply)
+        ply.oldClass = ply:GetCustomClass()
     end)
     
     -- sync dead players with other players
@@ -160,6 +164,7 @@ else
         if not ply.SetCustomClass then return end
         
         ply:SetCustomClass(cls)
+        ply.oldClass = cls
     end)
     
     local GetLang
@@ -246,13 +251,13 @@ else
                 for _, cls in pairs(cd.weapons) do
                     local tmp = weapons.Get(cls)
                     
-                    cls = tmp and tmp.PrintName or cls
+                    local cls2 = tmp and tmp.PrintName or cls
                 
                     if weaps ~= "" then
                         weaps = weaps .. ", "
                     end
                     
-                    weaps = weaps .. cls
+                    weaps = weaps .. cls2
                 end
             
                 settings_tab:Help(L["classes_desc_weapons"] .. weaps)
@@ -304,6 +309,14 @@ else
                 label:SetColor(cd.color or Color(255, 155, 0, 255))
             
                 return cd.name
+            elseif ply.oldClass and ply.oldClass ~= CLASSES.UNSET.index then
+                local cd = GetClassByIndex(ply.oldClass)
+                
+                label:SetColor(cd.color or Color(255, 155, 0, 255))
+            
+                return cd.name
+            elseif not ply:IsActive() and ply:GetNWBool("body_found") then
+                return "-" -- died without any class
             end
             
             return "?"

@@ -39,7 +39,7 @@ local function ClassesInfo(client)
             
             local L = GetLang()
             local x = margin
-            local y = ScrH() - margin - 120
+            local y = ScrH() - margin - 120 * 2 -- add a padding between role and class for other addons, so multiply 120 with 2 (otherwise without 2)
             
             local xStr = tostring(x)
             local yStr = tostring(y)

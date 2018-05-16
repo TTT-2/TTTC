@@ -169,7 +169,7 @@ if SERVER then
         if not ply.SetCustomClass then return end
         
         ply:ResetCustomClass()
-        ply:SetCustomClass(cls)
+        ply:UpdateCustomClass(cls)
         
         if ply:IsActive() then
             local cd = ply:GetClassData()
@@ -229,7 +229,5 @@ else
         net.Start("TTTCClientSendCustomClass")
         net.WriteUInt(index - 1, CLASS_BITS)
         net.SendToServer()
-        
-        self:SetCustomClass(index)
     end
 end
