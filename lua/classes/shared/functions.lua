@@ -104,6 +104,9 @@ function RegisterNewClassWeapon(wep)
     wepTbl.CanBuy = {}
     wepTbl.Kind = -1
     wepTbl.Slot = 10
+    wepTbl.Spawnable = false
+    wepTbl.AutoSpawnable = false
+    wepTbl.AdminSpawnable = false
     wepTbl.AllowDrop = false
     
     weapons.Register(wepTbl, newWep)

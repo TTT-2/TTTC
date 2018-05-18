@@ -157,6 +157,14 @@ if SERVER then
         end
     end)
 else
+    hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
+        for _, v in pairs(player.GetAll()) do
+            v:SetCustomClass(CLASSES.UNSET.index)
+            
+            v.oldClass = nil
+        end
+    end)
+    
     net.Receive("TTTCSyncClass", function(len)
         local ply = net.ReadEntity()
         local cls = net.ReadUInt(CLASS_BITS) + 1
@@ -210,9 +218,7 @@ else
     hook.Add("TTTSettingsTabs", "TTTCClassDescription", function(dtabs)
         local client = LocalPlayer()
     
-        GetLang = GetLang or LANG.GetUnsafeLanguageTable
-            
-        local L = GetLang()
+        GetLang = GetLang or LANG.GetRawTranslation
             
         local settings_panel = vgui.Create("DPanelList", dtabs)
         settings_panel:StretchToParent(0, 0, dtabs:GetPadding() * 2, 0)
@@ -232,7 +238,9 @@ else
         settings_tab:SetSpacing(10)
         
         if client:HasCustomClass() then
-            settings_tab:SetName("Current Class Description for " .. L[client:GetClassData().name])
+            local cd = client:GetClassData()
+        
+            settings_tab:SetName("Current Class Description for " .. (GetLang(cd.name) or cd.name))
         else
             settings_tab:SetName("Current Class Description")
         end
@@ -260,7 +268,7 @@ else
                     weaps = weaps .. cls2
                 end
             
-                settings_tab:Help(L["classes_desc_weapons"] .. weaps)
+                settings_tab:Help((GetLang("classes_desc_weapons") or "Weapons: ") .. weaps)
             end
             
             -- items
@@ -269,7 +277,7 @@ else
                 
                 for _, id in pairs(cd.items) do
                     local name = GetStaticEquipmentItem(id)
-                    name = name and name.name or "UNNAMED"
+                    name = name and (name.name or "UNNAMED") or "UNNAMED"
                 
                     if items ~= "" then
                         items = items .. ", "
@@ -278,12 +286,18 @@ else
                     items = items .. name
                 end
                 
-                settings_tab:Help(L["classes_desc_items"] .. items)
+                settings_tab:Help((GetLang("classes_desc_items") or "Items: ") .. items)
             end
             
-            settings_tab:Help(L["class_desc_" .. cd.name])
+            local txt = GetLang("class_desc_" .. cd.name)
+            if txt then
+                settings_tab:Help(txt)
+            end
         else
-            settings_tab:Help(L["tttc_no_cls_desc"])
+            local txt = GetLang("tttc_no_cls_desc")
+            if txt then
+                settings_tab:Help(txt)
+            end
         end
         
         settings_tab:SizeToContents()
@@ -299,6 +313,18 @@ else
         hud_settings_tab:NumSlider("y-coordinate (position)", "tttc_hud_y", 0, ScrH(), 2)
         
         hud_settings_tab:SizeToContents()
+        
+        -- tttc other settings
+        local other_settings_tab = vgui.Create("DForm")
+        other_settings_tab:SetSpacing(10)
+        other_settings_tab:SetName("TTTC Settings")
+        other_settings_tab:SetWide(settings_panel:GetWide() - 30)
+        settings_panel:AddItem(other_settings_tab)
+        
+        local cb = other_settings_tab:CheckBox((GetLang("tttc_toggle_notification") or "Class notification"), "tttc_class_notification")
+        cb:SetTooltip((GetLang("tttc_toggle_notification_tip") or "Toggles the class notification"))
+        
+        other_settings_tab:SizeToContents()
     end)
     
     hook.Add("TTTScoreboardColumns", "TTTCScoreboardClass", function(pnl)
@@ -306,13 +332,13 @@ else
             if ply:HasCustomClass() then
                 local cd = ply:GetClassData()
                 
-                label:SetColor(cd.color or Color(255, 155, 0, 255))
+                label:SetColor(cd.color or COLOR_CLASS)
             
                 return cd.name
             elseif ply.oldClass and ply.oldClass ~= CLASSES.UNSET.index then
                 local cd = GetClassByIndex(ply.oldClass)
                 
-                label:SetColor(cd.color or Color(255, 155, 0, 255))
+                label:SetColor(cd.color or COLOR_CLASS)
             
                 return cd.name
             elseif not ply:IsActive() and ply:GetNWBool("body_found") then

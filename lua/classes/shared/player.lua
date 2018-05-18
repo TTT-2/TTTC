@@ -22,6 +22,8 @@ if SERVER then
         net.Start("TTTCSendCustomClass")
         net.WriteUInt(index - 1, CLASS_BITS)
         net.Send(self)
+        
+        hook.Run("TTTCUpdatedCustomClass", self)
     end
     
     function plymeta:GiveClassWeapon(wep)
@@ -197,6 +199,8 @@ else
         if not client.SetCustomClass then return end
         
         client:SetCustomClass(cls)
+        
+        hook.Run("TTTCUpdatedCustomClass", client)
     end)
     
     net.Receive("TTTCSyncClassWeapon", function(len)
