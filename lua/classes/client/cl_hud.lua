@@ -12,8 +12,8 @@ local dr = draw
 
 local notification_state = 0
 local notification_phase = 0
-local notification_time = 7
-local notification_fade = 1
+local notification_time = 4
+local notification_fade = 0.4
 local notification_start = 0
 
 -- Fonts
