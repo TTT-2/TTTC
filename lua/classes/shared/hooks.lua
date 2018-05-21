@@ -240,7 +240,7 @@ else
         if client:HasCustomClass() then
             local cd = client:GetClassData()
         
-            settings_tab:SetName("Current Class Description for " .. (GetLang(cd.name) or cd.name))
+            settings_tab:SetName("Current Class Description for " .. (GetLang(cd.name) or cd.printName or cd.name))
         else
             settings_tab:SetName("Current Class Description")
         end
@@ -329,18 +329,20 @@ else
     
     hook.Add("TTTScoreboardColumns", "TTTCScoreboardClass", function(pnl)
         pnl:AddColumn("Class", function(ply, label)
+            GetLang = GetLang or LANG.GetRawTranslation
+            
             if ply:HasCustomClass() then
                 local cd = ply:GetClassData()
                 
                 label:SetColor(cd.color or COLOR_CLASS)
             
-                return cd.name
+                return GetLang(cd.name) or cd.printName or cd.name
             elseif ply.oldClass and ply.oldClass ~= CLASSES.UNSET.index then
                 local cd = GetClassByIndex(ply.oldClass)
                 
                 label:SetColor(cd.color or COLOR_CLASS)
             
-                return cd.name
+                return GetLang(cd.name) or cd.printName or cd.name
             elseif not ply:IsActive() and ply:GetNWBool("body_found") then
                 return "-" -- died without any class
             end

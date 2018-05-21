@@ -145,7 +145,7 @@ local function ClassNotification(client)
             dr.RoundedBox(8, x, y, tw, th, col)
             
             -- draw class text
-            local text = GetRawLang(cd.name) or cd.name
+            local text = GetRawLang(cd.name) or cd.printName or cd.name
 
             ShadowedText(text, "CurrentClassDesc", mid, y + 10, COLOR_WHITE, TEXT_ALIGN_CENTER)
             
