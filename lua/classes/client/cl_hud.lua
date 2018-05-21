@@ -4,7 +4,6 @@ local draw = draw
 local math = math
 local string = string
 
-local GetLang
 local GetRawLang
 
 local sf = surface
@@ -44,10 +43,7 @@ local function ClassesInfo(client)
     
 	if round_state == ROUND_ACTIVE and client:IsActive() then
         if GetConVar("ttt_customclasses_enabled"):GetBool() and client:HasCustomClass() then
-            GetLang = GetLang or LANG.GetUnsafeLanguageTable
-            
             local cd = client:GetClassData()
-            local L = GetLang()
             
             local x = margin
             local y = ScrH() - margin - 120 * 2 -- add a padding between role and class for other addons, so multiply 120 with 2 (otherwise without 2)
@@ -63,7 +59,7 @@ local function ClassesInfo(client)
             x = x + margin + 73
             y = y - 30
             
-            local text = L[cd.name]
+            local text = GetClassTranslation(cd)
 
             -- Draw current class state
             ShadowedText(text, "CurrentClass", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
@@ -145,7 +141,7 @@ local function ClassNotification(client)
             dr.RoundedBox(8, x, y, tw, th, col)
             
             -- draw class text
-            local text = GetRawLang(cd.name) or cd.printName or cd.name
+            local text = GetClassTranslation(cd)
 
             ShadowedText(text, "CurrentClassDesc", mid, y + 10, COLOR_WHITE, TEXT_ALIGN_CENTER)
             

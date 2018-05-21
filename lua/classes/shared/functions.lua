@@ -173,6 +173,8 @@ if SERVER then
         end
     end
 else
+    local GetLang
+
     -- sync CLASSES
     local buff = ""
     
@@ -209,11 +211,13 @@ else
              net.SendToServer()
              
              -- run client side
-             hook.Run("TTTCPreFinishedClassesSync", LocalPlayer(), first)
+             local client = LocalPlayer()
              
-             hook.Run("TTTCFinishedClassesSync", LocalPlayer(), first)
+             hook.Run("TTTCPreFinishedClassesSync", client, first)
              
-             hook.Run("TTTCPostFinishedClassesSync", LocalPlayer(), first)
+             hook.Run("TTTCFinishedClassesSync", client, first)
+             
+             hook.Run("TTTCPostFinishedClassesSync", client, first)
           end
 
           -- flush
@@ -222,4 +226,10 @@ else
     end
     
     net.Receive("TTTCSyncCustomClasses", ReceiveClassesTable)
+    
+    function GetClassTranslation(cd)
+        GetLang = GetLang or LANG.GetRawTranslation
+    
+        return GetLang(cd.name) or cd.name or "-UNKNOWN-"
+    end
 end
