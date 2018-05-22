@@ -98,8 +98,7 @@ function RegisterNewClassWeapon(wep)
     
     if not tmp then return end
     
-    local wepTbl = tmp
-    wepTbl.__index = wepTbl
+    local wepTbl = setmetatable({}, {__index = tmp})
     wepTbl.ClassName = newWep
     wepTbl.CanBuy = {}
     wepTbl.Kind = -1
@@ -108,6 +107,7 @@ function RegisterNewClassWeapon(wep)
     wepTbl.AutoSpawnable = false
     wepTbl.AdminSpawnable = false
     wepTbl.AllowDrop = false
+    wepTbl.Doublicated = true
     
     weapons.Register(wepTbl, newWep)
     
