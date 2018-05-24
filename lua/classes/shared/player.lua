@@ -135,7 +135,7 @@ if SERVER then
             net.Send(self)
         end)
 
-        hook.Run("TTTOrderedEquipment", self, id, true)
+        hook.Run("TTTOrderedEquipment", self, id, id) -- hook.Run("TTTOrderedEquipment", self, id, true) -- i know, looks stupid but thats the way TTT does
     end
     
     function plymeta:ResetCustomClass()
