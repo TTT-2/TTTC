@@ -152,7 +152,7 @@ local function ClassNotification(client)
             if bWeapons then
                 local weaps = ""
                 
-                for _, cls in pairs(cd.weapons) do
+                for _, cls in ipairs(cd.weapons) do
                     local tmp = weapons.Get(cls)
                     
                     local cls2 = tmp and tmp.PrintName or cls
@@ -175,7 +175,7 @@ local function ClassNotification(client)
             if bItems then
                 local items = ""
                 
-                for _, id in pairs(cd.items) do
+                for _, id in ipairs(cd.items) do
                     local name = GetStaticEquipmentItem(id)
                     name = name and (name.name or "UNNAMED") or "UNNAMED"
                 

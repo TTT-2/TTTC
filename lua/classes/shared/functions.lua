@@ -28,7 +28,7 @@ function AddCustomClass(name, classData, conVarData)
                     classData.weapons = classData.weapons or {}
                     
                     if GetConVar("tttc_traitorbuy"):GetBool() then
-                        for k, v in pairs(classData.weapons) do
+                        for k, v in ipairs(classData.weapons) do
                             classData.weapons[k] = RegisterNewClassWeapon(v)
                         end
                     end
@@ -159,13 +159,13 @@ if SERVER then
 
         local parts = #cut
 
-        for k, bit in pairs(cut) do
+        for k, bit in ipairs(cut) do
             net.Start("TTTCSyncCustomClasses")
             net.WriteBool(first)
             net.WriteBit((k ~= parts)) -- continuation bit, 1 if there's more coming
             net.WriteString(bit)
 
-            if ply ~= nil then
+            if ply then
                 net.Send(ply)
             else
                 net.Broadcast()

@@ -67,7 +67,7 @@ if SERVER then
         local tmp = {}
         
         if GetConVar("ttt_customclasses_limited"):GetBool() then
-            for _, v in pairs(classesTbl) do
+            for _, v in ipairs(classesTbl) do
                 table.insert(tmp, v)
             end
         end
@@ -91,7 +91,7 @@ if SERVER then
                 v:UpdateCustomClass(cls)
             end
         end
-            
+		
         hook.Run("TTTCPreReceiveCustomClasses")
         
         hook.Run("TTTCReceiveCustomClasses")
@@ -127,13 +127,13 @@ if SERVER then
                 local items = cd.items
             
                 if weaps and #weaps > 0 then
-                    for _, v in pairs(weaps) do
+                    for _, v in ipairs(weaps) do
                         ply:GiveServerClassWeapon(v)
                     end
                 end
             
                 if items and #items > 0 then
-                    for _, v in pairs(items) do
+                    for _, v in ipairs(items) do
                         ply:GiveServerClassItem(v)
                     end
                 end
@@ -146,7 +146,7 @@ if SERVER then
     end)
     
     -- sync dead players with other players
-    hook.Add("TTTBodyFound", "TTTCBodyFound", function(_, deadply, _)
+    hook.Add("TTTBodyFound", "TTTCBodyFound", function(_, deadply)
         if GetRoundState() == ROUND_ACTIVE and IsValid(deadply) then
             if deadply.oldClass then
                 net.Start("TTTCSyncClass")
@@ -256,7 +256,7 @@ else
             if cd.weapons and #cd.weapons > 0 then
                 local weaps = ""
                 
-                for _, cls in pairs(cd.weapons) do
+                for _, cls in ipairs(cd.weapons) do
                     local tmp = weapons.Get(cls)
                     
                     local cls2 = tmp and tmp.PrintName or cls
@@ -275,7 +275,7 @@ else
             if cd.items and #cd.items > 0 then
                 local items = ""
                 
-                for _, id in pairs(cd.items) do
+                for _, id in ipairs(cd.items) do
                     local name = GetStaticEquipmentItem(id)
                     name = name and (name.name or "UNNAMED") or "UNNAMED"
                 

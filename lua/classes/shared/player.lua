@@ -142,7 +142,7 @@ if SERVER then
         hook.Run("TTTCResetCustomClass", self)
         
         if self.classWeapons then
-            for _, wep in pairs(self.classWeapons) do
+            for _, wep in ipairs(self.classWeapons) do
                 if self:HasWeapon(wep) then
                     self:StripWeapon(wep)
                 end
@@ -179,13 +179,13 @@ if SERVER then
             local items = cd.items
         
             if weaps and #weaps > 0 then
-                for _, v in pairs(weaps) do
+                for _, v in ipairs(weaps) do
                     ply:GiveServerClassWeapon(v)
                 end
             end
         
             if items and #items > 0 then
-                for _, v in pairs(items) do
+                for _, v in ipairs(items) do
                     ply:GiveServerClassItem(v)
                 end
             end
