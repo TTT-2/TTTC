@@ -102,7 +102,7 @@ if SERVER then
                 net.Send(self)
             end)
 
-            hook.Run("TTTOrderedEquipment", self, cls, false)
+            hook.Run("TTTOrderedEquipment", self, cls, nil)
         end
     end
     
