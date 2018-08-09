@@ -335,28 +335,28 @@ else
 end
 
 hook.Add("PlayerPostThink", "TTTCSetWeaponKind", function(ply)   
-   if  GetConVar("tttc_traitorbuy"):GetBool() && !ply.TTTCKindSet then
-	   for _, w in pairs(ply:GetWeapons()) do
-		  if w:GetNWBool("TTTC_class_weapon") then
-			 w.Kind = -1
-			 w.Slot = 10
-			 w.Doublicated = true
-			 ply.TTTCKindSet = true
-		  end
-	   end
-	end
+    if GetConVar("tttc_traitorbuy"):GetBool() and not ply.TTTCKindSet then
+        for _, w in pairs(ply:GetWeapons()) do
+            if w:GetNWBool("TTTC_class_weapon") then
+                w.Kind = -1
+                w.Slot = 10
+                w.Doublicated = true
+                ply.TTTCKindSet = true
+            end
+        end
+    end
 end)
 
 hook.Add("TTTBeginRound", "TTTCPrepareRoundResetWeaponKind", function()
-	for _, v in pairs(player.GetAll()) do
-		timer.Simple(0.1, function()
-			v.TTTCKindSet = false
-		end)
-	end
+    for _, v in ipairs(player.GetAll()) do
+        timer.Simple(0.1, function()
+            v.TTTCKindSet = false
+        end)
+    end
 end)
 
-hook.Add("PlayerDroppedWeapon", "TTTCDontDropOnDeath", function( owner, wep )
-	if IsValid(wep) && wep:GetNWBool("TTTC_class_weapon") then
-		wep:Remove()
-	end
+hook.Add("PlayerDroppedWeapon", "TTTCDontDropOnDeath", function(owner, wep)
+    if IsValid(wep) and wep:GetNWBool("TTTC_class_weapon") then
+        wep:Remove()
+    end
 end)
