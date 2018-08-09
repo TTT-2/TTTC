@@ -29,10 +29,6 @@ if SERVER then
     function plymeta:GiveClassWeapon(wep)
         local newWep = wep
         
-        if GetConVar("tttc_traitorbuy"):GetBool() then
-            newWep = RegisterNewClassWeapon(wep)
-        end
-    
         if not newWep then return end
         
         local rt = self:Give(newWep)
@@ -42,6 +38,12 @@ if SERVER then
                 table.insert(self.classWeapons, newWep)
             end
         end
+		
+		local wep_entity = self:GetWeapon(newWep)
+		if IsValid(wep_entity) then
+			wep_entity:SetNWBool("TTTC_class_weapon", true)
+			wep_entity.AllowDrop = false
+		end
         
         return rt
     end

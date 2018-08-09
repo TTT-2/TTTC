@@ -27,12 +27,6 @@ function AddCustomClass(name, classData, conVarData)
                     -- init class arrays
                     classData.weapons = classData.weapons or {}
                     
-                    if GetConVar("tttc_traitorbuy"):GetBool() then
-                        for k, v in ipairs(classData.weapons) do
-                            classData.weapons[k] = RegisterNewClassWeapon(v)
-                        end
-                    end
-                    
                     classData.items = classData.items or {}
                     
                     CLASSES[name] = classData
@@ -78,43 +72,6 @@ local unregistered = {
     "weapon_zm_carry",
     "weapon_ttt_unarmed"
 }
-    
-function RegisterNewClassWeapon(wep)
-    if table.HasValue(unregistered, wep) then
-        return wep
-    end
-
-    local newWep = wep .. "_tttc"
-    
-    local tmp = weapons.Get(wep)
-    
-    if tmp and table.HasValue(REGISTERED_WEAPONS, wep) then 
-        return wep
-    end
-    
-    if weapons.Get(newWep) then
-        return newWep
-    end
-    
-    if not tmp then return end
-    
-    local wepTbl = setmetatable({}, {__index = tmp})
-    wepTbl.ClassName = newWep
-    wepTbl.CanBuy = {}
-    wepTbl.Kind = -1
-    wepTbl.Slot = 10
-    wepTbl.Spawnable = false
-    wepTbl.AutoSpawnable = false
-    wepTbl.AdminSpawnable = false
-    wepTbl.AllowDrop = false
-    wepTbl.Doublicated = true
-    
-    weapons.Register(wepTbl, newWep)
-    
-    table.insert(REGISTERED_WEAPONS, newWep)
-    
-    return newWep
-end
 
 if SERVER then
     -- sync CLASSES list
