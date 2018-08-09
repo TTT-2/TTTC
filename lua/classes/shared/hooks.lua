@@ -20,12 +20,6 @@ if SERVER then
         hook.Run("TTTCClassesInit")
         
         hook.Run("TTTCPostClassesInit")
-        
-        if GetConVar("tttc_traitorbuy"):GetBool() then
-            for _, wep in pairs(weapons.GetList()) do
-                RegisterNewClassWeapon(wep.ClassName)
-            end
-        end
     end)
     
     hook.Add("PlayerAuthed", "TTTCCustomClassesSync", function(ply, steamid, uniqueid)
@@ -204,16 +198,6 @@ else
             end
         end
     end
-
-    hook.Add("TTTCFinishedClassesSync", "TTTCFinishedClassesSyncInitCli", function(ply, first)
-        if first then
-            if GetConVar("tttc_traitorbuy"):GetBool() then
-                for _, wep in pairs(weapons.GetList()) do
-                    RegisterNewClassWeapon(wep.ClassName)
-                end
-            end
-        end
-    end)
     
     hook.Add("TTTSettingsTabs", "TTTCClassDescription", function(dtabs)
         local client = LocalPlayer()
@@ -349,3 +333,31 @@ else
         end, 100)
     end)
 end
+
+hook.Add("PlayerPostThink", "TTTCSetWeaponKind", function(ply)   
+    if GetConVar("tttc_traitorbuy"):GetBool() and not ply.TTTCKindSet then
+        for _, w in pairs(ply:GetWeapons()) do
+            if w:GetNWBool("TTTC_class_weapon") then
+                w.Kind = -1
+                w.Slot = 10
+                w.Doublicated = true
+					
+                ply.TTTCKindSet = true
+            end
+        end
+    end
+end)
+
+hook.Add("TTTBeginRound", "TTTCPrepareRoundResetWeaponKind", function()
+    for _, v in ipairs(player.GetAll()) do
+        timer.Simple(0.1, function()
+            v.TTTCKindSet = false
+        end)
+    end
+end)
+
+hook.Add("PlayerDroppedWeapon", "TTTCDontDropOnDeath", function(owner, wep)
+    if IsValid(wep) and wep:GetNWBool("TTTC_class_weapon") then
+        wep:Remove()
+    end
+end)
