@@ -341,6 +341,7 @@ hook.Add("PlayerPostThink", "TTTCSetWeaponKind", function(ply)
                 w.Kind = -1
                 w.Slot = 10
                 w.Doublicated = true
+					
                 ply.TTTCKindSet = true
             end
         end
