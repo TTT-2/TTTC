@@ -155,7 +155,7 @@ local function ClassNotification(client)
                 for _, cls in ipairs(cd.weapons) do
                     local tmp = weapons.Get(cls)
                     
-                    local cls2 = tmp and tmp.PrintName or cls
+					cls2 = (tmp and LANG.TryTranslation(tmp.PrintName)) or tmp and tmp.PrintName or cls
                 
                     if weaps ~= "" then
                         weaps = weaps .. ", "
@@ -177,7 +177,7 @@ local function ClassNotification(client)
                 
                 for _, id in ipairs(cd.items) do
                     local name = GetStaticEquipmentItem(id)
-                    name = name and (name.name or "UNNAMED") or "UNNAMED"
+                    name = (name and LANG.TryTranslation(name.name)) or name and (name.name or "UNNAMED") or "UNNAMED"
                 
                     if items ~= "" then
                         items = items .. ", "
