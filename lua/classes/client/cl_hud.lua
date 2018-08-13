@@ -154,14 +154,13 @@ local function ClassNotification(client)
                 
                 for _, cls in ipairs(cd.weapons) do
                     local tmp = weapons.Get(cls)
-                    
-                    cls2 = (tmp and (LANG.TryTranslation(tmp.PrintName) or tmp.PrintName)) or cls
+                    tmp = (tmp and (LANG.TryTranslation(tmp.PrintName) or tmp.PrintName)) or cls
                 
                     if weaps ~= "" then
                         weaps = weaps .. ", "
                     end
                     
-                    weaps = weaps .. cls2
+                    weaps = weaps .. tmp
                 end
             
                 text = (GetRawLang("classes_desc_weapons_short") or "Weapons: ") .. weaps
