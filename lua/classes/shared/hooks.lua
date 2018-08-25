@@ -34,52 +34,93 @@ if SERVER then
             
             v.oldClass = nil
         end
+        
+		table.Empty(POSSIBLECLASSES)
+	
+		for _, v in pairs(CLASSES) do
+			if v ~= CLASSES.UNSET then
+				if GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then
+					local b = true
+					local r = GetConVar("tttc_class_" .. v.name .. "_random"):GetInt()
+					
+					if r > 0 and r < 100 then
+					   b = math.random(1, 100) <= r
+					end
+				
+					if b then
+						table.insert(POSSIBLECLASSES, v)
+					end
+				end
+			end
+		end
+		
+		if #POSSIBLECLASSES == 0 then return end
+		
+		table.Empty(FREECLASSES)
+		
+		if GetConVar("ttt_customclasses_limited"):GetBool() then
+			for _, v in ipairs(POSSIBLECLASSES) do
+				table.insert(FREECLASSES, v)
+			end
+		end
+		
+		if GetConVar("tttc_choose_class"):GetBool() then
+			
+			local tmp = {}
+			
+			if GetConVar("ttt_customclasses_limited"):GetBool() then
+				for _, v in ipairs(POSSIBLECLASSES) do
+					table.insert(tmp, v)
+				end
+			end
+			
+			for _, v in pairs(player.GetAll()) do
+				local cls, cls2
+			
+				if #tmp <= 1 then
+					local rand = math.random(1, #POSSIBLECLASSES)
+					
+					cls = POSSIBLECLASSES[rand].index
+					
+					local rand2 = math.random(1, #POSSIBLECLASSES - 1)
+					cls2 = POSSIBLECLASSES[(rand + rand2) % #POSSIBLECLASSES]
+				else
+					local rand = math.random(1, #tmp)
+				
+					cls = tmp[rand].index
+					
+					table.remove(tmp, rand)
+					
+					rand = math.random(1, #tmp)
+					
+					cls2 = tmp[rand].index
+					
+					table.remove(tmp, rand)
+				end
+				
+				v:SetCustomClassOptions(cls, cls2)
+			end
+		end
     end)
     
     hook.Add("TTTBeginRound", "TTTCSelectClasses", function()
-        local classesTbl = {}
         
-        for _, v in pairs(CLASSES) do
-            if v ~= CLASSES.UNSET then
-                if GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then
-                    local b = true
-                    local r = GetConVar("tttc_class_" .. v.name .. "_random"):GetInt()
-                    
-                    if r > 0 and r < 100 then
-                       b = math.random(1, 100) <= r
-                    end
-                
-                    if b then
-                        table.insert(classesTbl, v)
-                    end
-                end
-            end
-        end
-        
-        if #classesTbl == 0 then return end
-        
-        local tmp = {}
-        
-        if GetConVar("ttt_customclasses_limited"):GetBool() then
-            for _, v in ipairs(classesTbl) do
-                table.insert(tmp, v)
-            end
-        end
+        if #POSSIBLECLASSES == 0 then return end
         
         for _, v in pairs(player.GetAll()) do
-            if v:IsActive() then
+            if v:IsActive() && !v:HasCustomClass() then
                 local cls
             
-                if #tmp == 0 then
-                    local rand = math.random(1, #classesTbl)
+                if #FREECLASSES == 0 then
+                    local rand = math.random(1, #POSSIBLECLASSES)
                     
-                    cls = classesTbl[rand].index
+                    cls = POSSIBLECLASSES[rand].index
                 else
-                    local rand = math.random(1, #tmp)
+                    local rand = math.random(1, #FREECLASSES)
                 
-                    cls = tmp[rand].index
+                    cls = FREECLASSES[rand].index
                     
-                    table.remove(tmp, rand)
+                    table.remove(FREECLASSES, rand)
                 end
                 
                 v:UpdateCustomClass(cls)

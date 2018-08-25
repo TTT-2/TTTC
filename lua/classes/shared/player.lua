@@ -25,6 +25,15 @@ if SERVER then
         
         hook.Run("TTTCUpdatedCustomClass", self)
     end
+	
+	function plymeta:SetCustomClassOptions(index1, index2)
+        net.Start("TTTCSendCustomClassOptions")
+        net.WriteUInt(index1 - 1, CLASS_BITS)
+		net.WriteUInt(index2 - 1, CLASS_BITS)
+        net.Send(self)
+        
+        hook.Run("TTTCUpdatedCustomClassOptions", self)
+    end
     
     function plymeta:GiveClassWeapon(wep)
         local newWep = wep
@@ -192,6 +201,53 @@ if SERVER then
             end
         end
     end)
+	
+	net.Receive("TTTCClientSendCustomClassChoice", function(len, ply)
+        
+		local isRandom = net.ReadBool()
+		local cls = nil
+		
+		if(isRandom) then
+			if #FREECLASSES == 0 then
+				local rand = math.random(1, #POSSIBLECLASSES)
+				
+				cls = POSSIBLECLASSES[rand].index
+			else
+				local rand = math.random(1, #FREECLASSES)
+			
+				cls = FREECLASSES[rand].index
+				
+				table.remove(FREECLASSES, rand)
+			end
+		else
+			cls = net.ReadUInt(CLASS_BITS) + 1
+		end
+		
+		if not ply.SetCustomClass then return end
+        
+        ply:ResetCustomClass()
+        ply:UpdateCustomClass(cls)
+        
+		table.RemoveByValue(FREECLASSES, cls)
+		
+        if ply:IsActive() then
+            local cd = ply:GetClassData()
+            local weaps = cd.weapons
+            local items = cd.items
+        
+            if weaps and #weaps > 0 then
+                for _, v in ipairs(weaps) do
+                    ply:GiveServerClassWeapon(v)
+                end
+            end
+        
+            if items and #items > 0 then
+                for _, v in ipairs(items) do
+                    ply:GiveServerClassItem(v)
+                end
+            end
+        end
+    end)
 else
     net.Receive("TTTCSendCustomClass", function(len)
         local client = LocalPlayer()
@@ -202,6 +258,14 @@ else
         client:SetCustomClass(cls)
         
         hook.Run("TTTCUpdatedCustomClass", client)
+    end)
+	
+	net.Receive("TTTCSendCustomClassOptions", function(len)
+        local client = LocalPlayer()
+        local cls1 = net.ReadUInt(CLASS_BITS) + 1
+		local cls2 = net.ReadUInt(CLASS_BITS) + 1
+        
+        hook.Run("TTTCUpdatedCustomClassOptions", cls1, cls2)
     end)
     
     net.Receive("TTTCSyncClassWeapon", function(len)

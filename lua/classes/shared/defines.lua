@@ -11,10 +11,13 @@ CreateConVar("ttt_customclasses_enabled", "1", flag)
 CreateConVar("ttt_customclasses_limited", "1", flag)
 
 CreateConVar("tttc_traitorbuy", "0", sharedFlag)
+CreateConVar("tttc_choose_class", "0", sharedFlag)
 
 if SERVER then
     util.AddNetworkString("TTTCSendCustomClass")
+	util.AddNetworkString("TTTCSendCustomClassOptions")
     util.AddNetworkString("TTTCClientSendCustomClass")
+	util.AddNetworkString("TTTCClientSendCustomClassChoice")
     util.AddNetworkString("TTTCSyncCustomClasses")
     util.AddNetworkString("TTTCSyncClass")
     util.AddNetworkString("TTTCCustomClassesSynced")
