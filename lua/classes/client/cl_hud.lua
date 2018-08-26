@@ -144,9 +144,9 @@ local function HUDDrawOption(classIndex, x, y, tw, th)
 	if bWeapons then
 		for _, cls in ipairs(cd.weapons) do
 			local tmp = weapons.Get(cls)
-			if tmp and tmp.Icon and not foundWeapon then -- TODO "icon" not "Icon"? ll 137
-				
-				--special handling for the weird perk weapons
+			
+			if tmp and tmp.Icon and not foundWeapon then
+				-- special handling for the weird perk weapons
 				if string.StartWith(cls, "ttt_perk_") then
 					local perkName = string.sub(cls, 10)
 					local item = GetStaticEquipmentItem(_G["EQUIP_" .. string.upper(perkName)])
@@ -165,6 +165,7 @@ local function HUDDrawOption(classIndex, x, y, tw, th)
 	if bItems then
 		for _, id in ipairs(cd.items) do
 			local tmp = GetStaticEquipmentItem(id)
+			
 			if tmp and tmp.material and not foundWeapon then
 				DrawIconFramed(tmp.material, x + tw / 2 - 64, y + 110, 128, 128, x, x + tw)
 				
