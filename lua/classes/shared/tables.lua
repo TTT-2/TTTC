@@ -3,8 +3,8 @@ FREECLASSES = FREECLASSES or {}
 POSSIBLECLASSES = POSSIBLECLASSES or {}
 
 if not CLASSES.UNSET then
-    CLASSES.UNSET = {
+	CLASSES.UNSET = {
 		index = 1,
-        name = "unset"
-    }
+		name = "unset"
+	}
 end
