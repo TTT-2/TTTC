@@ -29,7 +29,7 @@ if SERVER then
 	end)
 
 	hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
-		for _, v in pairs(player.GetAll()) do
+		for _, v in ipairs(player.GetAll()) do
 			v:ResetCustomClass()
 
 			v.oldClass = nil
@@ -71,7 +71,7 @@ if SERVER then
 				end
 			end
 
-			for _, v in pairs(player.GetAll()) do
+			for _, v in ipairs(player.GetAll()) do
 				local cls, cls2
 
 				if #tmp <= 1 then
@@ -103,7 +103,7 @@ if SERVER then
 	hook.Add("TTTBeginRound", "TTTCSelectClasses", function()
 		if #POSSIBLECLASSES == 0 then return end
 
-		for _, v in pairs(player.GetAll()) do
+		for _, v in ipairs(player.GetAll()) do
 			if v:IsActive() and not v:HasCustomClass() then
 				local cls
 
@@ -151,7 +151,7 @@ if SERVER then
 	end)
 
 	hook.Add("TTTCReceiveCustomClasses", "TTTCReceiveCustomClasses", function()
-		for _, ply in pairs(player.GetAll()) do
+		for _, ply in ipairs(player.GetAll()) do
 			if ply:IsActive() and ply:HasCustomClass() then
 				local cd = ply:GetClassData()
 				local weaps = cd.weapons
@@ -187,7 +187,7 @@ if SERVER then
 	end)
 else
 	hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
-		for _, v in pairs(player.GetAll()) do
+		for _, v in ipairs(player.GetAll()) do
 			v:SetCustomClass(CLASSES.UNSET.index)
 
 			v.oldClass = nil
@@ -207,7 +207,7 @@ else
 	local GetLang
 
 	function GetStaticEquipmentItem(id)
-		if not ROLES then
+		if not TTT2 then
 			for i = 1, 3 do
 				local tbl = EquipmentItems[i]
 
@@ -220,7 +220,7 @@ else
 				end
 			end
 		else
-			for _, v in pairs(ROLES) do
+			for _, v in pairs(GetRoles()) do
 				local tbl = EquipmentItems[v.index]
 
 				if tbl then
