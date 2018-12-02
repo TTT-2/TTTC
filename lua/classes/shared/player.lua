@@ -41,10 +41,8 @@ if SERVER then
 		if not newWep then return end
 
 		local rt = self:Give(newWep)
-		if rt then
-			if not table.HasValue(self.classWeapons, newWep) then
-				table.insert(self.classWeapons, newWep)
-			end
+		if rt and not table.HasValue(self.classWeapons, newWep) then
+			table.insert(self.classWeapons, newWep)
 		end
 
 		local wepEntity = self:GetWeapon(newWep)
@@ -59,10 +57,8 @@ if SERVER then
 	function plymeta:GiveClassEquipmentItem(id)
 		local rt = self:GiveEquipmentItem(id)
 
-		if rt then
-			if not table.HasValue(self.classItems, id) then
-				table.insert(self.classItems, id)
-			end
+		if rt and not table.HasValue(self.classItems, id) then
+			table.insert(self.classItems, id)
 		end
 
 		return rt
@@ -259,7 +255,6 @@ else
 	end)
 
 	net.Receive("TTTCSendCustomClassOptions", function(len)
-		local client = LocalPlayer()
 		local cls1 = net.ReadUInt(CLASS_BITS) + 1
 		local cls2 = net.ReadUInt(CLASS_BITS) + 1
 
