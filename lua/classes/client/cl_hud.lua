@@ -148,7 +148,9 @@ local function HUDDrawOption(classIndex, x, y, tw, th)
 					local perkName = string.sub(cls, 10)
 					local item = GetStaticEquipmentItem(_G["EQUIP_" .. string.upper(perkName)])
 
-					DrawIconFramed(item.material, x + tw / 2 - 64, y + 110, 128, 128, x, x + tw)
+					if item then
+						DrawIconFramed(item.material, x + tw / 2 - 64, y + 110, 128, 128, x, x + tw)
+					end
 				else
 					DrawIconFramed(tmp.Icon, x + tw / 2 - 64, y + 110, 128, 128, x, x + tw)
 				end
