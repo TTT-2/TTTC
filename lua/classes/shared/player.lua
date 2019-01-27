@@ -102,7 +102,6 @@ if SERVER then
 				if not IsValid(self) then return end
 
 				net.Start("TTT_BoughtItem")
-				net.WriteBit(false)
 				net.WriteString(cls)
 				net.Send(self)
 			end)
@@ -112,11 +111,7 @@ if SERVER then
 	end
 
 	function plymeta:GiveServerClassItem(id)
-		if not self:HasCustomClass() then return end
-
-		id = tonumber(id)
-
-		if not id then return end
+		if not id or not self:HasCustomClass() then return end
 
 		self:GiveClassEquipmentItem(id)
 		self:AddBought(id)
@@ -127,7 +122,7 @@ if SERVER then
 			table.insert(cd.items, id)
 
 			net.Start("TTTCSyncClassItem")
-			net.WriteUInt(id, 16)
+			net.WriteString(id)
 			net.Send(self)
 		end
 
@@ -135,8 +130,7 @@ if SERVER then
 			if not IsValid(self) then return end
 
 			net.Start("TTT_BoughtItem")
-			net.WriteBit(true)
-			net.WriteUInt(id, 16)
+			net.WriteString(id)
 			net.Send(self)
 		end)
 
@@ -181,7 +175,7 @@ if SERVER then
 		if ply:IsActive() then
 			local cd = ply:GetClassData()
 			local weaps = cd.weapons
-			local items = cd.items
+			local itms = cd.items
 
 			if weaps and #weaps > 0 then
 				for _, v in ipairs(weaps) do
@@ -189,8 +183,8 @@ if SERVER then
 				end
 			end
 
-			if items and #items > 0 then
-				for _, v in ipairs(items) do
+			if itms and #itms > 0 then
+				for _, v in ipairs(itms) do
 					ply:GiveServerClassItem(v)
 				end
 			end
@@ -227,7 +221,7 @@ if SERVER then
 		if ply:IsActive() then
 			local cd = ply:GetClassData()
 			local weaps = cd.weapons
-			local items = cd.items
+			local itms = cd.items
 
 			if weaps and #weaps > 0 then
 				for _, v in ipairs(weaps) do
@@ -235,8 +229,8 @@ if SERVER then
 				end
 			end
 
-			if items and #items > 0 then
-				for _, v in ipairs(items) do
+			if itms and #itms > 0 then
+				for _, v in ipairs(itms) do
 					ply:GiveServerClassItem(v)
 				end
 			end

@@ -348,20 +348,20 @@ local function ClassNotification(client)
 
 		-- items
 		if bItems then
-			local items = ""
+			local itms = ""
 
 			for _, id in ipairs(cd.items) do
 				local name = GetStaticEquipmentItem(id)
 				name = (name and (LANG.TryTranslation(name.name) or name.name)) or "UNNAMED"
 
-				if items ~= "" then
-					items = items .. ", "
+				if itms ~= "" then
+					itms = itms .. ", "
 				end
 
-				items = items .. name
+				itms = itms .. name
 			end
 
-			text = (GetRawLang("classes_desc_items_short") or "Items: ") .. items
+			text = (GetRawLang("classes_desc_items_short") or "Items: ") .. itms
 
 			dr.SimpleText(text, "ClassDesc", mid, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
 

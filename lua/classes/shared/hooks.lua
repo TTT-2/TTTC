@@ -155,7 +155,7 @@ if SERVER then
 			if ply:IsActive() and ply:HasCustomClass() then
 				local cd = ply:GetClassData()
 				local weaps = cd.weapons
-				local items = cd.items
+				local itms = cd.items
 
 				if weaps and #weaps > 0 then
 					for _, v in ipairs(weaps) do
@@ -163,8 +163,8 @@ if SERVER then
 					end
 				end
 
-				if items and #items > 0 then
-					for _, v in ipairs(items) do
+				if itms and #itms > 0 then
+					for _, v in ipairs(itms) do
 						ply:GiveServerClassItem(v)
 					end
 				end
@@ -201,6 +201,7 @@ else
 		if not ply.SetCustomClass then return end
 
 		ply:SetCustomClass(cls)
+
 		ply.oldClass = cls
 	end)
 
@@ -220,17 +221,7 @@ else
 				end
 			end
 		else
-			for _, v in pairs(GetRoles()) do
-				local tbl = EquipmentItems[v.index]
-
-				if tbl then
-					for _, v2 in pairs(tbl) do
-						if v2 and v2.id == id then
-							return v2
-						end
-					end
-				end
-			end
+			return items.GetStored(id)
 		end
 	end
 
@@ -292,20 +283,20 @@ else
 
 			-- items
 			if cd.items and #cd.items > 0 then
-				local items = ""
+				local itms = ""
 
 				for _, id in ipairs(cd.items) do
 					local name = GetStaticEquipmentItem(id)
 					name = name and (name.name or "UNNAMED") or "UNNAMED"
 
-					if items ~= "" then
-						items = items .. ", "
+					if itms ~= "" then
+						itms = itms .. ", "
 					end
 
-					items = items .. name
+					itms = itms .. name
 				end
 
-				settings_tab:Help((GetLang("classes_desc_items") or "Items: ") .. items)
+				settings_tab:Help((GetLang("classes_desc_items") or "Items: ") .. itms)
 			end
 
 			local txt = GetLang("class_desc_" .. cd.name)
