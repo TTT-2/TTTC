@@ -146,7 +146,7 @@ local function HUDDrawOption(classIndex, x, y, tw, th)
 				-- special handling for the weird perk weapons
 				if string.StartWith(cls, "ttt_perk_") then
 					local perkName = string.sub(cls, 10)
-					local item = GetStaticEquipmentItem(_G["EQUIP_" .. string.upper(perkName)])
+					local item = items.GetStored(_G["EQUIP_" .. string.upper(perkName)])
 
 					if item then
 						DrawIconFramed(item.material, x + tw / 2 - 64, y + 110, 128, 128, x, x + tw)
@@ -163,7 +163,7 @@ local function HUDDrawOption(classIndex, x, y, tw, th)
 	-- items
 	if bItems then
 		for _, id in ipairs(cd.items) do
-			local tmp = GetStaticEquipmentItem(id)
+			local tmp = items.GetStored(id)
 
 			if tmp and tmp.material and not foundWeapon then
 				DrawIconFramed(tmp.material, x + tw / 2 - 64, y + 110, 128, 128, x, x + tw)
@@ -201,7 +201,7 @@ local function HUDDrawOption(classIndex, x, y, tw, th)
 	textY = textY + 40
 
 	for _, id in ipairs(cd.items) do
-		local name = GetStaticEquipmentItem(id)
+		local name = items.GetStored(id)
 		name = (name and LANG.TryTranslation(name.name)) or name and (name.name or "UNNAMED") or "UNNAMED"
 
 		dr.SimpleText(" - " .. name, "ClassDesc", x + 20, textY, COLOR_WHITE, TEXT_ALIGN_LEFT)
@@ -351,7 +351,7 @@ local function ClassNotification(client)
 			local itms = ""
 
 			for _, id in ipairs(cd.items) do
-				local name = GetStaticEquipmentItem(id)
+				local name = items.GetStored(id)
 				name = (name and (LANG.TryTranslation(name.name) or name.name)) or "UNNAMED"
 
 				if itms ~= "" then

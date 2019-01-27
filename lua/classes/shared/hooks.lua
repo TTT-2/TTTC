@@ -207,24 +207,6 @@ else
 
 	local GetLang
 
-	function GetStaticEquipmentItem(id)
-		if not TTT2 then
-			for i = 1, 3 do
-				local tbl = EquipmentItems[i]
-
-				if tbl then
-					for _, v2 in pairs(tbl) do
-						if v2 and v2.id == id then
-							return v2
-						end
-					end
-				end
-			end
-		else
-			return items.GetStored(id)
-		end
-	end
-
 	hook.Add("TTTSettingsTabs", "TTTCClassDescription", function(dtabs)
 		local client = LocalPlayer()
 
@@ -286,7 +268,7 @@ else
 				local itms = ""
 
 				for _, id in ipairs(cd.items) do
-					local name = GetStaticEquipmentItem(id)
+					local name = items.GetStored(id)
 					name = name and (name.name or "UNNAMED") or "UNNAMED"
 
 					if itms ~= "" then

@@ -129,6 +129,11 @@ if SERVER then
 		timer.Simple(0.5, function()
 			if not IsValid(self) then return end
 
+			local item = items.GetStored(id)
+			if item and isfunction(item.Bought) then
+				item:Bought(self)
+			end
+
 			net.Start("TTT_BoughtItem")
 			net.WriteString(id)
 			net.Send(self)
