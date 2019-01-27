@@ -270,7 +270,7 @@ else
 
 	net.Receive("TTTCSyncClassItem", function(len)
 		local client = LocalPlayer()
-		local id = net.ReadUInt(16)
+		local id = net.ReadString()
 
 		if not client:HasCustomClass() then return end
 
