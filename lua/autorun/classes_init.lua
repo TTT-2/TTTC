@@ -21,4 +21,4 @@ else
 	include("classes/cl_init.lua")
 end
 
-TTTC = true
+TTTC = true -- identifier for TTTC. Just use "if TTTC then ... end"
