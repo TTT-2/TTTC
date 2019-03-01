@@ -100,7 +100,7 @@ local function ClassesInfo(client)
 		for _, elemName in ipairs(hud:GetHUDElements()) do
 			if string.match(elemName, "info") then
 				local el = hudelements.GetStored(elemName)
-				if type(el.SetSecondaryRoleInfoFunction) == "function" then
+				if isfunction(el.SetSecondaryRoleInfoFunction) then
 					el:SetSecondaryRoleInfoFunction(function()
 						if (round_state == ROUND_PREP or LocalPlayer():IsActive()) and GetConVar("ttt_customclasses_enabled"):GetBool() and LocalPlayer():HasCustomClass() then
 							return {color=LocalPlayer():GetClassData().color or COLOR_CLASS, text=GetClassTranslation(LocalPlayer():GetClassData())}
