@@ -24,6 +24,7 @@ sf.CreateFont("CurrentClassDesc", {font = "Trebuchet24", size = 52, weight = 100
 sf.CreateFont("ClassDesc", {font = "Trebuchet24", size = 21, weight = 1000})
 sf.CreateFont("ClassDescOptions", {font = "Trebuchet24", size = 28, weight = 1000})
 
+
 local function RoundedBoxOutlined(x, y, w, h, color)
 	local bordersize = 8
 	local bordercol = COLOR_BLACK
@@ -89,30 +90,61 @@ end
 
 local margin = 10
 
+local classInformationAdded = false
+
+cvars.AddChangeCallback( "cttt2_current_hud", function( convar_name, value_old, value_new )
+	classInformationAdded = false
+	ClassesInfo(LocalPlayer())
+end )
+
 local function ClassesInfo(client)
 	local round_state = GAMEMODE.round_state
 
-	if (round_state == ROUND_PREP or client:IsActive()) and GetConVar("ttt_customclasses_enabled"):GetBool() and client:HasCustomClass() then
-		local cd = client:GetClassData()
+	if HUDManager and not classInformationAdded then
+		local hud = huds.GetStored(HUDManager.GetHUD())
+		print(string.format("[TTTC] HudManager found! (%s)", HUDManager.GetHUD()))
+		for _, elemName in ipairs(hud:GetHUDElements()) do
+			if string.match(elemName, "info") then
+				local el = hudelements.GetStored(elemName)
+				if isfunction(el.SetSecondaryRoleInfoFunction) then
+					el:SetSecondaryRoleInfoFunction(function()
+						if (round_state == ROUND_PREP or LocalPlayer():IsActive()) and GetConVar("ttt_customclasses_enabled"):GetBool() and LocalPlayer():HasCustomClass() then
+							return {color=LocalPlayer():GetClassData().color or COLOR_CLASS, text=GetClassTranslation(LocalPlayer():GetClassData())}
+						else
+							return nil
+						end
+					end)
+					print("[TTTC] Class informations added!")
+					classInformationAdded = true
+				end
+			end
+		end
+	end
+	
+	if not classInformationAdded then
+		if (round_state == ROUND_PREP or client:IsActive()) and GetConVar("ttt_customclasses_enabled"):GetBool() and client:HasCustomClass() then
 
-		local x = margin
-		local y = ScrH() - margin - 120 * 2 -- add a padding between role and class for other addons, so multiply 120 with 2 (otherwise without 2)
+			local cd = client:GetClassData()
 
-		local xStr = tostring(x)
-		local yStr = tostring(y)
+			local x = margin
+			local y = ScrH() - margin - 120 * 2 -- add a padding between role and class for other addons, so multiply 120 with 2 (otherwise without 2)
 
-		x = CreateClientConVar("tttc_hud_x", xStr, true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: " .. xStr):GetFloat()
-		y = CreateClientConVar("tttc_hud_y", yStr, true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. yStr):GetFloat()
+			local xStr = tostring(x)
+			local yStr = tostring(y)
 
-		DrawBg(x, y, client)
+			x = CreateClientConVar("tttc_hud_x", xStr, true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: " .. xStr):GetFloat()
+			y = CreateClientConVar("tttc_hud_y", yStr, true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. yStr):GetFloat()
 
-		x = x + margin + 73
-		y = y - 30
+			DrawBg(x, y, client)
 
-		local text = GetClassTranslation(cd)
+			x = x + margin + 73
+			y = y - 30
 
-		-- Draw current class state
-		ShadowedText(text, "CurrentClass", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
+			local text = GetClassTranslation(cd)
+
+			-- Draw current class state
+			ShadowedText(text, "CurrentClass", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
+		end
 	end
 end
 
@@ -220,7 +252,7 @@ local function ClassesOptions(client)
 			local x1 = ScrW() / 2 - tw - border
 			local x2 = ScrW() / 2 + border
 			local y = ScrH() / 2 - 100 - th / 2
-
+			
 			HUDDrawOption(class_option1, x1, y, tw, th)
 			HUDDrawOption(class_option2, x2, y, tw, th)
 
