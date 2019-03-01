@@ -89,38 +89,55 @@ end
 
 local margin = 10
 
+local classInformationAdded = false
+
 local function ClassesInfo(client)
 	local round_state = GAMEMODE.round_state
 
-	if (round_state == ROUND_PREP or client:IsActive()) and GetConVar("ttt_customclasses_enabled"):GetBool() and client:HasCustomClass() then
-		local cd = client:GetClassData()
-
-		local x = margin
-		local y = ScrH() - margin - 120 * 2 -- add a padding between role and class for other addons, so multiply 120 with 2 (otherwise without 2)
-
-		local xStr = tostring(x)
-		local yStr = tostring(y)
-
-		x = CreateClientConVar("tttc_hud_x", xStr, true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: " .. xStr):GetFloat()
-		y = CreateClientConVar("tttc_hud_y", yStr, true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. yStr):GetFloat()
-
-		DrawBg(x, y, client)
-
-		x = x + margin + 73
-		y = y - 30
-
-		local text = GetClassTranslation(cd)
-
-		-- Draw current class state
-		ShadowedText(text, "CurrentClass", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
-		
-		print("HudManager")
-		if HUDManager then
-		print("HudManager found!")
-			local hud = huds.GetStored(HUDManager.GetHUD())
-			for _, elemName in ipairs(hud:GetHUDElements()) do
-				print(elemName)
+	if HUDManager and not classInformationAdded then
+		local hud = huds.GetStored(HUDManager.GetHUD())
+		print(string.format("[TTTC] HudManager found! (%s)", HUDManager.GetHUD()))
+		for _, elemName in ipairs(hud:GetHUDElements()) do
+			if string.match(elemName, "info") then
+				local el = hudelements.GetStored(elemName)
+				if type(el.SetSecondaryRoleInfoFunction) == "function" then
+					el:SetSecondaryRoleInfoFunction(function()
+						if (round_state == ROUND_PREP or LocalPlayer():IsActive()) and GetConVar("ttt_customclasses_enabled"):GetBool() and LocalPlayer():HasCustomClass() then
+							return {color=LocalPlayer():GetClassData().color or COLOR_CLASS, text=GetClassTranslation(LocalPlayer():GetClassData())}
+						else
+							return nil
+						end
+					end)
+					print("[TTTC] Class informations added!")
+					classInformationAdded = true
+				end
 			end
+		end
+	end
+	
+	if not classInformationAdded then
+		if (round_state == ROUND_PREP or client:IsActive()) and GetConVar("ttt_customclasses_enabled"):GetBool() and client:HasCustomClass() then
+
+			local cd = client:GetClassData()
+
+			local x = margin
+			local y = ScrH() - margin - 120 * 2 -- add a padding between role and class for other addons, so multiply 120 with 2 (otherwise without 2)
+
+			local xStr = tostring(x)
+			local yStr = tostring(y)
+
+			x = CreateClientConVar("tttc_hud_x", xStr, true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: " .. xStr):GetFloat()
+			y = CreateClientConVar("tttc_hud_y", yStr, true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. yStr):GetFloat()
+
+			DrawBg(x, y, client)
+
+			x = x + margin + 73
+			y = y - 30
+
+			local text = GetClassTranslation(cd)
+
+			-- Draw current class state
+			ShadowedText(text, "CurrentClass", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
 		end
 	end
 end
@@ -229,8 +246,6 @@ local function ClassesOptions(client)
 			local x1 = ScrW() / 2 - tw - border
 			local x2 = ScrW() / 2 + border
 			local y = ScrH() / 2 - 100 - th / 2
-			
-			gui.EnableScreenClicker(true)
 			
 			HUDDrawOption(class_option1, x1, y, tw, th)
 			HUDDrawOption(class_option2, x2, y, tw, th)
