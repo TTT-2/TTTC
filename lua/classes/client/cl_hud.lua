@@ -113,6 +113,15 @@ local function ClassesInfo(client)
 
 		-- Draw current class state
 		ShadowedText(text, "CurrentClass", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
+		
+		print("HudManager")
+		if HUDManager then
+		print("HudManager found!")
+			local hud = huds.GetStored(HUDManager.GetHUD())
+			for _, elemName in ipairs(hud:GetHUDElements()) do
+				print(elemName)
+			end
+		end
 	end
 end
 
@@ -220,7 +229,9 @@ local function ClassesOptions(client)
 			local x1 = ScrW() / 2 - tw - border
 			local x2 = ScrW() / 2 + border
 			local y = ScrH() / 2 - 100 - th / 2
-
+			
+			gui.EnableScreenClicker(true)
+			
 			HUDDrawOption(class_option1, x1, y, tw, th)
 			HUDDrawOption(class_option2, x2, y, tw, th)
 
