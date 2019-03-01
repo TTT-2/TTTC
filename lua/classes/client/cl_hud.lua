@@ -24,6 +24,7 @@ sf.CreateFont("CurrentClassDesc", {font = "Trebuchet24", size = 52, weight = 100
 sf.CreateFont("ClassDesc", {font = "Trebuchet24", size = 21, weight = 1000})
 sf.CreateFont("ClassDescOptions", {font = "Trebuchet24", size = 28, weight = 1000})
 
+
 local function RoundedBoxOutlined(x, y, w, h, color)
 	local bordersize = 8
 	local bordercol = COLOR_BLACK
@@ -90,6 +91,11 @@ end
 local margin = 10
 
 local classInformationAdded = false
+
+cvars.AddChangeCallback( "cttt2_current_hud", function( convar_name, value_old, value_new )
+	classInformationAdded = false
+	ClassesInfo(LocalPlayer())
+end )
 
 local function ClassesInfo(client)
 	local round_state = GAMEMODE.round_state
