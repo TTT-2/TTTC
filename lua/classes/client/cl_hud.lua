@@ -102,7 +102,7 @@ local function ClassesInfo(client)
 
 	if HUDManager and not classInformationAdded then
 		local hud = huds.GetStored(HUDManager.GetHUD())
-		print(string.format("[TTTC] HudManager found! (%s)", HUDManager.GetHUD()))
+		--print(string.format("[TTTC] HudManager found! (%s)", HUDManager.GetHUD()))
 		for _, elemName in ipairs(hud:GetElements()) do
 			if string.match(elemName, "info") then
 				local el = hudelements.GetStored(elemName)
@@ -114,7 +114,7 @@ local function ClassesInfo(client)
 							return nil
 						end
 					end)
-					print("[TTTC] Class informations added!")
+					--print("[TTTC] Class informations added!")
 					classInformationAdded = true
 				end
 			end
