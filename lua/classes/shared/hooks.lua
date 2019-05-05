@@ -346,7 +346,7 @@ hook.Add("PlayerPostThink", "TTTCSetWeaponKind", function(ply)
 	if GetConVar("tttc_traitorbuy"):GetBool() and not ply.TTTCKindSet then
 		for _, w in pairs(ply:GetWeapons()) do
 			if w:GetNWBool("TTTC_class_weapon") then
-				w.Kind = WEAPON_EXTRA
+				w.Kind = WEAPON_CLASS
 				w.Doublicated = true
 
 				ply.TTTCKindSet = true
