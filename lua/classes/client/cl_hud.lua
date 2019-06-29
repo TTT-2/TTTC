@@ -92,11 +92,6 @@ local margin = 10
 
 local classInformationAdded = false
 
-cvars.AddChangeCallback( "cttt2_current_hud", function( convar_name, value_old, value_new )
-	classInformationAdded = false
-	ClassesInfo(LocalPlayer())
-end )
-
 local function ClassesInfo(client)
 	local round_state = GAMEMODE.round_state
 
@@ -478,4 +473,9 @@ hook.Add("VGUIMousePressed", "VGUIMousePressedTTTC", function(pnl, Mouse)
 
 		gui.EnableScreenClicker(false)
 	end
+end)
+
+hook.Add("TTT2HUDUpdated", "TTTCUpdateClassesInfo", function()
+	classInformationAdded = false
+	ClassesInfo(LocalPlayer())
 end)
