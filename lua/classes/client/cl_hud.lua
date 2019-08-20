@@ -17,10 +17,10 @@ local default_hud_x = margin
 local default_hud_y = ScrH() - margin - 120 * 2 -- add a padding between role and class for other addons, so multiply 120 with 2 (otherwise without 2)
 
 -- ConVars
-local cvar_class_notification = CreateClientConVar("ttth_class_notification", "1", true, false, "Toggle the notification on receiving a class class.")
-local cvar_class_hud_width = CreateClientConVar("ttth_hud_width", "20", true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: 20")
-local cvar_class_hud_y = CreateClientConVar("ttth_hud_y", tostring(default_hud_y), true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. tostring(default_hud_y))
-local cvar_class_hud_x = CreateClientConVar("ttth_hud_x", tostring(default_hud_x), true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: " .. tostring(default_hud_x))
+local cvar_class_notification = CreateClientConVar("tttc_class_notification", "1", true, false, "Toggle the notification on receiving a class class.")
+local cvar_class_hud_width = CreateClientConVar("tttc_hud_width", "20", true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: 20")
+local cvar_class_hud_y = CreateClientConVar("tttc_hud_y", tostring(default_hud_y), true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. tostring(default_hud_y))
+local cvar_class_hud_x = CreateClientConVar("tttc_hud_x", tostring(default_hud_x), true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: " .. tostring(default_hud_x))
 
 local function DrawBg(x, y, client, xw)
 	-- Traitor area sizes

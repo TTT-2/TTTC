@@ -12,8 +12,8 @@ function CLASS.AddHero(name, classData, conVarData)
 	classData.name = string.Trim(string.lower(name))
 
 	if SERVER and not oldId then
-		CreateConVar("ttth_class_" .. classData.name .. "_enabled", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
-		CreateConVar("ttth_class_" .. classData.name .. "_random", tostring(conVarData.random or 100), {FCVAR_ARCHIVE})
+		CreateConVar("tttc_class_" .. classData.name .. "_enabled", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
+		CreateConVar("tttc_class_" .. classData.name .. "_random", tostring(conVarData.random or 100), {FCVAR_ARCHIVE})
 	end
 
 	-- necessary to init classes in this way, because we need to wait until the CLASS.CLASSES array is initialized

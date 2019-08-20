@@ -37,9 +37,9 @@ if SERVER then
 		if not GetGlobalBool("ttt2_classes") then return end
 
 		for _, v in pairs(CLASS.CLASSES) do
-			if GetConVar("ttth_class_" .. v.name .. "_enabled"):GetBool() then
+			if GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then
 				local b = true
-				local r = GetConVar("ttth_class_" .. v.name .. "_random"):GetInt()
+				local r = GetConVar("tttc_class_" .. v.name .. "_random"):GetInt()
 
 				if r > 0 and r < 100 then
 					b = math.random(1, 100) <= r
@@ -130,13 +130,13 @@ if SERVER then
 	end)
 
 	hook.Add("PlayerDroppedWeapon", "TTTHDontDropOnDeath", function(owner, wep)
-		if IsValid(wep) and wep:GetNWBool("ttth_class_weapon") then
+		if IsValid(wep) and wep:GetNWBool("tttc_class_weapon") then
 			wep:Remove()
 		end
 	end)
 
 	hook.Add("PlayerCanPickupWeapon", "TTTHPickupWeapon", function(ply, wep)
-		if IsValid(wep) and wep:GetNWBool("ttth_class_weapon") then
+		if IsValid(wep) and wep:GetNWBool("tttc_class_weapon") then
 			return true
 		elseif ply:IsHero() and ply:IsHeroActive() and not ply:GetHeroData().avoidWeaponReset then
 			return false

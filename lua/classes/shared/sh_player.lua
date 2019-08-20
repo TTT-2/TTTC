@@ -156,7 +156,7 @@ function plymeta:HeroActivate()
 		if SERVER and not hd.endless then
 			local ply = self
 
-			timer.Create("ttth_deactivation_" .. self:UniqueID(), hd.time, 1, function()
+			timer.Create("tttc_deactivation_" .. self:UniqueID(), hd.time, 1, function()
 				if IsValid(ply) then
 					net.Start("TTTHDeactivateHero")
 					net.Send(ply)
@@ -193,8 +193,8 @@ function plymeta:HeroDeactivate()
 	local cooldown = true
 
 	if SERVER then
-		if timer.Exists("ttth_deactivation_" .. self:UniqueID()) then
-			timer.Remove("ttth_deactivation_" .. self:UniqueID())
+		if timer.Exists("tttc_deactivation_" .. self:UniqueID()) then
+			timer.Remove("tttc_deactivation_" .. self:UniqueID())
 		end
 
 		if self:Alive() and hd.time ~= 0 then
@@ -279,7 +279,7 @@ if SERVER then
 				end
 			end
 
-			rt:SetNWBool("ttth_class_weapon", true)
+			rt:SetNWBool("tttc_class_weapon", true)
 
 			rt.AllowDrop = false
 		end
