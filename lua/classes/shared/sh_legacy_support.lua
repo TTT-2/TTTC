@@ -24,7 +24,7 @@ function AddCustomClass(name, classData, conVarData)
 end
 
 local function ConvertLegacyClasses()
-        for name, class in pairs(CLASSES) do
+        for name, class in SortedPairs(CLASSES) do
                 HEROES.AddHero(name, 
                 {
                         color = class.color or COLOR_WHITE,
