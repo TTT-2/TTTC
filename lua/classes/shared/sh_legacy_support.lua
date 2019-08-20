@@ -31,7 +31,8 @@ local function ConvertLegacyClasses()
                         name = string.lower(name),
                         passiveWeapons = table.Copy(class.weapons),
                         passiveItems = table.Copy(class.items),
-                        passive = true
+                        passive = true,
+                        deactivated = true
                 })
 
                 class.index = HEROES.HEROES[name].index
