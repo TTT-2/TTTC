@@ -1,24 +1,62 @@
 if SERVER then
 	AddCSLuaFile()
-	AddCSLuaFile("classes/cl_init.lua")
 
 	-- shared files
-	AddCSLuaFile("classes/shared/tables.lua")
-	AddCSLuaFile("classes/shared/defines.lua")
-	AddCSLuaFile("classes/shared/functions.lua")
-	AddCSLuaFile("classes/shared/player.lua")
-	AddCSLuaFile("classes/shared/hooks.lua")
-	AddCSLuaFile("classes/shared/commands.lua")
+	AddCSLuaFile("classes/shared/sh_tables.lua")
+	AddCSLuaFile("classes/shared/sh_defines.lua")
+	AddCSLuaFile("classes/shared/sh_functions.lua")
+	AddCSLuaFile("classes/shared/sh_player.lua")
+	AddCSLuaFile("classes/shared/sh_hooks.lua")
+	AddCSLuaFile("classes/shared/sh_legacy_support.lua")
 
 	-- client files
+	AddCSLuaFile("classes/client/cl_commands.lua")
 	AddCSLuaFile("classes/client/cl_hud.lua")
-	AddCSLuaFile("classes/client/cl_lang.lua")
 
-	-- include main file
-	include("classes/init.lua")
-else
-	-- include main file
-	include("classes/cl_init.lua")
+	resource.AddFile("materials/vgui/ttt/score_logo_heroes.vmt")
 end
 
-TTTC = true -- identifier for TTTC. Just use "if TTTC then ... end"
+local heroPre = "classes/classes/"
+local heroFiles = file.Find(heroPre .. "hero_*.lua", "LUA")
+
+for _, fl in ipairs(heroFiles) do
+	AddCSLuaFile(heroPre .. fl)
+end
+
+include("classes/shared/sh_tables.lua")
+include("classes/shared/sh_defines.lua")
+include("classes/shared/sh_functions.lua")
+include("classes/shared/sh_player.lua")
+include("classes/shared/sh_hooks.lua")
+include("classes/shared/sh_legacy_support.lua")
+
+if CLIENT then
+	include("classes/client/cl_commands.lua")
+	include("classes/client/cl_hud.lua")
+end
+
+for _, fl in ipairs(heroFiles) do
+	include(heroPre .. fl)
+end
+
+hook.Add("TTT2HUDUpdated", "TTTCUpdateClassesInfo", function()
+	if hudelements then
+		local hudInfoElements = hudelements.GetAllTypeElements("tttinfopanel")
+		for _, v in ipairs(hudInfoElements) do
+			if v.SetSecondaryRoleInfoFunction then
+				v:SetSecondaryRoleInfoFunction(function()
+					local hd = LocalPlayer():GetHeroData()
+
+					if not hd then return end
+
+					return {
+						color = hd.color or COLOR_HERO,
+						text = HEROES.GetHeroTranslation(hd)
+					}
+				end)
+			end
+		end
+	else
+		Msg("Warning: New HUD module does not seem to be loaded in TTT2Initialize, so we cannot register to custom huds.\n")
+	end
+end)
