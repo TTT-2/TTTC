@@ -1,4 +1,4 @@
-function CLASS.AddHero(name, heroData, conVarData)
+function CLASS.AddHero(name, classData, conVarData)
 	conVarData = conVarData or {}
 
 	local oldId
@@ -9,39 +9,39 @@ function CLASS.AddHero(name, heroData, conVarData)
 		CLASS.CLASSES[name] = nil
 	end
 
-	heroData.name = string.Trim(string.lower(name))
+	classData.name = string.Trim(string.lower(name))
 
 	if SERVER and not oldId then
-		CreateConVar("ttth_hero_" .. heroData.name .. "_enabled", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
-		CreateConVar("ttth_hero_" .. heroData.name .. "_random", tostring(conVarData.random or 100), {FCVAR_ARCHIVE})
+		CreateConVar("ttth_class_" .. classData.name .. "_enabled", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
+		CreateConVar("ttth_class_" .. classData.name .. "_random", tostring(conVarData.random or 100), {FCVAR_ARCHIVE})
 	end
 
-	-- necessary to init heroes in this way, because we need to wait until the CLASS.CLASSES array is initialized
+	-- necessary to init classes in this way, because we need to wait until the CLASS.CLASSES array is initialized
 	-- and every important function works properly
 	local i = oldId or table.Count(CLASS.CLASSES) + 1
 
-	heroData.index = i
+	classData.index = i
 
-	-- init hero arrays
-	heroData.weapons = heroData.weapons or {}
-	heroData.items = heroData.items or {}
+	-- init class arrays
+	classData.weapons = classData.weapons or {}
+	classData.items = classData.items or {}
 
-	heroData.time = heroData.time or HERO_TIME
-	heroData.cooldown = heroData.cooldown or HERO_COOLDOWN
-	heroData.endless = heroData.endless or false
-	heroData.passive = heroData.passive or false
+	classData.time = classData.time or HERO_TIME
+	classData.cooldown = classData.cooldown or HERO_COOLDOWN
+	classData.endless = classData.endless or false
+	classData.passive = classData.passive or false
 
-	if CLIENT and heroData.langs and not oldId then
-		hook.Add("TTT2FinishedLoading", "TTTHInitLangFor" .. heroData.name, function()
+	if CLIENT and classData.langs and not oldId then
+		hook.Add("TTT2FinishedLoading", "TTTHInitLangFor" .. classData.name, function()
 			if LANG then
-				for lang, key in pairs(heroData.langs) do
-					LANG.AddToLanguage(lang, heroData.name, key)
+				for lang, key in pairs(classData.langs) do
+					LANG.AddToLanguage(lang, classData.name, key)
 				end
 			end
 		end)
 	end
 
-	CLASS.CLASSES[name] = heroData
+	CLASS.CLASSES[name] = classData
 
 	-- spend an answer
 	print("[TTTH][HERO] Added '" .. name .. "' Hero (index: " .. i .. ")")
@@ -64,15 +64,15 @@ function CLASS.GetHeroDataByIndex(index)
 end
 
 function CLASS.GetSortedHeroes()
-	local heroes = {}
+	local classes = {}
 
 	for _, v in pairs(CLASS.CLASSES) do
-		heroes[v.index] = v
+		classes[v.index] = v
 	end
 
-	CLASS.SortHeroesTable(heroes)
+	CLASS.SortHeroesTable(classes)
 
-	return heroes
+	return classes
 end
 
 if CLIENT then

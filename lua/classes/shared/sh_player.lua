@@ -2,19 +2,19 @@ local plymeta = FindMetaTable("Player")
 
 if not plymeta then return end
 
-AccessorFunc(plymeta, "heroTime", "HeroTime", FORCE_NUMBER)
-AccessorFunc(plymeta, "heroTimestamp", "HeroTimestamp", FORCE_NUMBER)
-AccessorFunc(plymeta, "heroEndless", "HeroEndless", FORCE_BOOL)
-AccessorFunc(plymeta, "heroCooldownTS", "HeroCooldownTS", FORCE_NUMBER)
+AccessorFunc(plymeta, "classTime", "HeroTime", FORCE_NUMBER)
+AccessorFunc(plymeta, "classTimestamp", "HeroTimestamp", FORCE_NUMBER)
+AccessorFunc(plymeta, "classEndless", "HeroEndless", FORCE_BOOL)
+AccessorFunc(plymeta, "classCooldownTS", "HeroCooldownTS", FORCE_NUMBER)
 
 function plymeta:GetHero()
-	return self.hero
+	return self.class
 end
 
-function plymeta:SetHero(hero)
+function plymeta:SetHero(class)
 	local old = self:GetHero()
 
-	if hero ~= old then
+	if class ~= old then
 		local hd = self:GetHeroData()
 
 		if hd and self.prepareActivation and isfunction(hd.onFinishPreparingActivation) then
@@ -24,9 +24,9 @@ function plymeta:SetHero(hero)
 		end
 
 		self.charging = nil
-		self.heroTime = nil
-		self.heroTimestamp = nil
-		self.heroAmount = nil
+		self.classTime = nil
+		self.classTimestamp = nil
+		self.classAmount = nil
 
 		if CLIENT and self.sendCharge then
 			net.Start("TTTHChangeCharge")
@@ -37,60 +37,60 @@ function plymeta:SetHero(hero)
 		end
 	end
 
-	if not hero then -- reset
+	if not class then -- reset
 		hook.Run("TTTHResetHero", self)
 
-		self:SetHeroOptions() -- reset hero options
+		self:SetHeroOptions() -- reset class options
 
 		self.oldHero = nil
-		self.heroAmount = nil
-		self.heroTime = nil
-		self.heroTimestamp = nil
-		self.heroEndless = nil
-		self.heroCooldown = nil
-		self.heroCooldownTS = nil
+		self.classAmount = nil
+		self.classTime = nil
+		self.classTimestamp = nil
+		self.classEndless = nil
+		self.classCooldown = nil
+		self.classCooldownTS = nil
 		self.prepareActivation = nil
 		self.chargingWaiting = nil
 	end
 
-	self.hero = hero
+	self.class = class
 
-	if old ~= hero then
-		hook.Run("TTTHUpdateHero", self, old, hero)
+	if old ~= class then
+		hook.Run("TTTHUpdateHero", self, old, class)
 	end
 end
 
 function plymeta:GetHeroCooldown()
-	return self.heroCooldown or 0
+	return self.classCooldown or 0
 end
 
-function plymeta:SetHeroCooldown(heroCooldown)
-	self.heroCooldown = heroCooldown
+function plymeta:SetHeroCooldown(classCooldown)
+	self.classCooldown = classCooldown
 end
 
 function plymeta:GetHeroData()
 	return CLASS.GetHeroDataByIndex(self:GetHero())
 end
 
-function plymeta:IsHero(hero)
-	return self:GetHero() and (not hero or hero and self:GetHero() == hero)
+function plymeta:IsHero(class)
+	return self:GetHero() and (not class or class and self:GetHero() == class)
 end
 
 function plymeta:SetHeroOptions(opt1, opt2)
-	self.heroOpt1 = opt1
-	self.heroOpt2 = opt2
+	self.classOpt1 = opt1
+	self.classOpt2 = opt2
 end
 
 function plymeta:GetHeroOptions()
-	return self.heroOpt1, self.heroOpt2
+	return self.classOpt1, self.classOpt2
 end
 
 function plymeta:IsHeroActive()
-	return self.heroActive or false
+	return self.classActive or false
 end
 
 function plymeta:SetHeroActive(b)
-	self.heroActive = b
+	self.classActive = b
 end
 
 function plymeta:HeroActivate()
@@ -101,11 +101,11 @@ function plymeta:HeroActivate()
 		net.Send(self)
 	end
 
-	self.heroAmount = self.heroAmount or 0
+	self.classAmount = self.classAmount or 0
 
 	local hd = self:GetHeroData()
 
-	if not hd or not self:IsActive() or isfunction(hd.checkActivation) and not hd.checkActivation(self) or hd.amount and hd.amount <= self.heroAmount then return end
+	if not hd or not self:IsActive() or isfunction(hd.checkActivation) and not hd.checkActivation(self) or hd.amount and hd.amount <= self.classAmount then return end
 
 	if isfunction(hd.onPrepareActivation) and not self.prepareActivation then
 		self.prepareActivation = true
@@ -174,7 +174,7 @@ function plymeta:HeroActivate()
 		self:HeroDeactivate()
 	end
 
-	self.heroAmount = self.heroAmount + 1
+	self.classAmount = self.classAmount + 1
 end
 
 function plymeta:HeroDeactivate()
@@ -229,7 +229,7 @@ function plymeta:HeroDeactivate()
 		cooldown = not hd.onDeactivate(self)
 	end
 
-	self.heroTimestamp = nil -- Still used???
+	self.classTimestamp = nil -- Still used???
 
 	if cooldown and hd.cooldown ~= 0 then
 		self:SetHeroCooldown(hd.cooldown)
@@ -272,14 +272,14 @@ if SERVER then
 		local rt = self:Give(newWep)
 		if IsValid(rt) then
 			if not avoidReset then
-				self.heroWeapons = self.heroWeapons or {}
+				self.classWeapons = self.classWeapons or {}
 
-				if not table.HasValue(self.heroWeapons, newWep) then
-					table.insert(self.heroWeapons, newWep)
+				if not table.HasValue(self.classWeapons, newWep) then
+					table.insert(self.classWeapons, newWep)
 				end
 			end
 
-			rt:SetNWBool("ttth_hero_weapon", true)
+			rt:SetNWBool("ttth_class_weapon", true)
 
 			rt.AllowDrop = false
 		end
@@ -290,10 +290,10 @@ if SERVER then
 	function plymeta:GiveHeroEquipmentItem(id)
 		self:GiveItem(id)
 
-		self.heroItems = self.heroItems or {}
+		self.classItems = self.classItems or {}
 
-		if not table.HasValue(self.heroItems, id) then
-			table.insert(self.heroItems, id)
+		if not table.HasValue(self.classItems, id) then
+			table.insert(self.classItems, id)
 		end
 	end
 
@@ -357,16 +357,16 @@ if SERVER then
 	end
 
 	function plymeta:RemoveAbility()
-		if self.heroWeapons then
-			for _, wep in ipairs(self.heroWeapons) do
+		if self.classWeapons then
+			for _, wep in ipairs(self.classWeapons) do
 				if self:HasWeapon(wep) then
 					self:StripWeapon(wep)
 				end
 			end
 		end
 
-		if self.heroItems then
-			for _, equip in ipairs(self.heroItems) do
+		if self.classItems then
+			for _, equip in ipairs(self.classItems) do
 				if not self.savedHeroInventoryItems or not table.HasValue(self.savedHeroInventoryItems, equip) then -- not had this item
 					self:RemoveItem(equip)
 				end
@@ -375,8 +375,8 @@ if SERVER then
 			self:SendEquipment()
 		end
 
-		self.heroWeapons = nil
-		self.heroItems = nil
+		self.classWeapons = nil
+		self.classItems = nil
 	end
 
 	function plymeta:GivePassiveHeroEquipment()

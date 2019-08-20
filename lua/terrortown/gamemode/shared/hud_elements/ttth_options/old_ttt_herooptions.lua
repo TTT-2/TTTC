@@ -45,7 +45,7 @@ if CLIENT then
 
 		draw.RoundedBoxEx(0, x + pad + 1, y, 1, optionHeight, COLOR_WHITE)
 
-		-- draw hero name
+		-- draw class name
 		draw.SimpleText(name, "HeroDesc", x + pad + line + (optionWidth - pad - line) * 0.5, y + optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 
@@ -55,17 +55,17 @@ if CLIENT then
 		local client = LocalPlayer()
 
 		if client:IsActive() and GetGlobalBool("ttt_classes_option") then
-			if not client.heroOpt1 or not client.heroOpt2 then return end
+			if not client.classOpt1 or not client.classOpt2 then return end
 
 			rawT = rawT or LANG.GetRawTranslation
 
-			local key1 = string.upper(input.GetKeyName(bind.Find("togglehero")) or "?")
-			local key2 = string.upper(input.GetKeyName(bind.Find("aborthero")) or "?")
+			local key1 = string.upper(input.GetKeyName(bind.Find("toggleclass")) or "?")
+			local key2 = string.upper(input.GetKeyName(bind.Find("abortclass")) or "?")
 
 			local y = optionMargin + 80
 
-			local hd1 = CLASS.GetHeroDataByIndex(client.heroOpt1)
-			local hd2 = CLASS.GetHeroDataByIndex(client.heroOpt2)
+			local hd1 = CLASS.GetHeroDataByIndex(client.classOpt1)
+			local hd2 = CLASS.GetHeroDataByIndex(client.classOpt2)
 
 			self:DrawHeroOption(y, key1, rawT(hd1.name), hd1.color)
 

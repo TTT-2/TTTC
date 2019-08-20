@@ -107,7 +107,7 @@ if CLIENT then
 		 	icon = diamondMaterial
 		elseif hd.passive and not ttt2HeroesActive then
 			return
-		elseif hd.passive or hd.deactivated or not crystalValid and not client:GetNWBool("CanSpawnCrystal") or hd.amount and hd.amount <= (client.heroAmount or 0) then
+		elseif hd.passive or hd.deactivated or not crystalValid and not client:GetNWBool("CanSpawnCrystal") or hd.amount and hd.amount <= (client.classAmount or 0) then
 			oldTimerVal = nil
 			text = "-"
 		elseif cooldownStartTime and cooldownStartTime + cooldownDuration > timeNow then

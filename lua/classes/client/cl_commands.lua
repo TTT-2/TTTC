@@ -1,26 +1,26 @@
-local function force_hero(ply, cmd, args, argStr)
-	local hero = tonumber(args[1])
+local function force_class(ply, cmd, args, argStr)
+	local class = tonumber(args[1])
 	local i = 0
 
 	for _, v in pairs(CLASS.CLASSES) do
 		i = i + 1
 	end
 
-	local hd = CLASS.GetHeroDataByIndex(hero)
+	local hd = CLASS.GetHeroDataByIndex(class)
 
-	if hd and hero and hero <= i then
-		ply:ServerUpdateHeroes(hero)
+	if hd and class and class <= i then
+		ply:ServerUpdateHeroes(class)
 
-		ply:ChatPrint("You changed to '" .. hd.name .. "' (hero: " .. hero .. ")")
+		ply:ChatPrint("You changed to '" .. hd.name .. "' (class: " .. class .. ")")
 	end
 end
-concommand.Add("ttt_force_hero", force_hero, nil, nil, FCVAR_CHEAT)
+concommand.Add("ttt_force_class", force_class, nil, nil, FCVAR_CHEAT)
 
 ------------------
 
-local function heroes_index(ply)
+local function classes_index(ply)
 	if ply:IsAdmin() then
-		ply:ChatPrint("[TTTH] heroes_index...")
+		ply:ChatPrint("[TTTH] classes_index...")
 		ply:ChatPrint("-----------------")
 		ply:ChatPrint("[Hero] | [Index]")
 
@@ -31,7 +31,7 @@ local function heroes_index(ply)
 		ply:ChatPrint("----------------")
 	end
 end
-concommand.Add("ttt_heroes_index", heroes_index)
+concommand.Add("ttt_classes_index", classes_index)
 
 function CLASS.HeroActivate()
 	if not GetGlobalBool("ttt2_classes") then return end
@@ -40,12 +40,12 @@ function CLASS.HeroActivate()
 
 	if not ply:IsActive() then return end
 
-	if ply.heroOpt1 and GetGlobalBool("ttt_classes_option") then
+	if ply.classOpt1 and GetGlobalBool("ttt_classes_option") then
 		net.Start("TTTHChooseHeroOption")
 		net.WriteBool(false)
 		net.SendToServer()
 
-		ply:SetHeroOptions() -- reset hero options
+		ply:SetHeroOptions() -- reset class options
 
 		return
 	end
@@ -91,7 +91,7 @@ function CLASS.HeroActivate()
 		end
 	end
 end
-concommand.Add("togglehero", CLASS.HeroActivate, nil, "Activates hero ability", {FCVAR_DONTRECORD})
+concommand.Add("toggleclass", CLASS.HeroActivate, nil, "Activates class ability", {FCVAR_DONTRECORD})
 
 function CLASS.AbortHero()
 	if not GetGlobalBool("ttt2_classes") then return end
@@ -100,12 +100,12 @@ function CLASS.AbortHero()
 
 	if not ply:IsActive() then return end
 
-	if ply.heroOpt2 and GetGlobalBool("ttt_classes_option") then
+	if ply.classOpt2 and GetGlobalBool("ttt_classes_option") then
 		net.Start("TTTHChooseHeroOption")
 		net.WriteBool(true)
 		net.SendToServer()
 
-		ply:SetHeroOptions() -- reset hero options
+		ply:SetHeroOptions() -- reset class options
 
 		return
 	end
@@ -121,15 +121,15 @@ function CLASS.AbortHero()
 		net.SendToServer()
 	end
 end
-concommand.Add("aborthero", CLASS.AbortHero, nil, "Abort ability preview", {FCVAR_DONTRECORD})
+concommand.Add("abortclass", CLASS.AbortHero, nil, "Abort ability preview", {FCVAR_DONTRECORD})
 
 hook.Add("Initialize", "TTTCKeyBinds", function()
 	-- Register binding functions
-	bind.Register("togglehero", function()
+	bind.Register("toggleclass", function()
 		CLASS.HeroActivate()
 	end, nil, "TTT Classes", "Class Ability:", KEY_X)
 
-	bind.Register("aborthero", function()
+	bind.Register("abortclass", function()
 		CLASS.AbortHero()
 	end, nil, "TTT Classes", "Abort ability preview:", KEY_N)
 

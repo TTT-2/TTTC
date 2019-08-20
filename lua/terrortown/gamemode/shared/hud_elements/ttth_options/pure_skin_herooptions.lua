@@ -74,7 +74,7 @@ if CLIENT then
 
 		draw.RoundedBoxEx(0, x + pad + 1, ty + 3, 1, self.optionHeight - 6, COLOR_WHITE)
 
-		-- draw hero name
+		-- draw class name
 		draw.SimpleText(name, "HeroDesc", x + pad + line + (w - pad - line) * 0.5, ty + self.optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 		-- draw lines around the element
@@ -90,13 +90,13 @@ if CLIENT then
 
 		rawT = rawT or LANG.GetRawTranslation
 
-		local key1 = string.upper(input.GetKeyName(bind.Find("togglehero")) or "?")
-		local key2 = string.upper(input.GetKeyName(bind.Find("aborthero")) or "?")
+		local key1 = string.upper(input.GetKeyName(bind.Find("toggleclass")) or "?")
+		local key2 = string.upper(input.GetKeyName(bind.Find("abortclass")) or "?")
 
 		local y_temp = y
 
-		local hd1 = CLASS.GetHeroDataByIndex(client.heroOpt1)
-		local hd2 = CLASS.GetHeroDataByIndex(client.heroOpt2)
+		local hd1 = CLASS.GetHeroDataByIndex(client.classOpt1)
+		local hd2 = CLASS.GetHeroDataByIndex(client.classOpt2)
 
 		self:DrawHeroOption(y_temp, key1, rawT(hd1.name), hd1.color)
 
@@ -109,6 +109,6 @@ if CLIENT then
 	function HUDELEMENT:ShouldDraw()
 		local client = LocalPlayer()
 
-		return client:IsActive() and GetGlobalBool("ttt_classes_option") and client.heroOpt1 and client.heroOpt2
+		return client:IsActive() and GetGlobalBool("ttt_classes_option") and client.classOpt1 and client.classOpt2
 	end
 end
