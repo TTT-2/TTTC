@@ -251,7 +251,7 @@ if SERVER then
 		self:SetHero(index)
 
 		net.Start("TTTCSendHero")
-		net.WriteUInt(index or 0, HERO_BITS)
+		net.WriteUInt(index or 0, CLASS_BITS)
 		net.Send(self)
 	end
 
@@ -259,8 +259,8 @@ if SERVER then
 		self:SetHeroOptions(opt1, opt2)
 
 		net.Start("TTTCSendHeroOptions")
-		net.WriteUInt(opt1 or 0, HERO_BITS)
-		net.WriteUInt(opt2 or 0, HERO_BITS)
+		net.WriteUInt(opt1 or 0, CLASS_BITS)
+		net.WriteUInt(opt2 or 0, CLASS_BITS)
 		net.Send(self)
 	end
 
@@ -438,7 +438,7 @@ if SERVER then
 	end
 
 	net.Receive("TTTCClientSendHeroes", function(len, ply)
-		local hr = net.ReadUInt(HERO_BITS)
+		local hr = net.ReadUInt(CLASS_BITS)
 
 		if hr == 0 then
 			hr = nil
@@ -451,7 +451,7 @@ if SERVER then
 else
 	net.Receive("TTTCSendHero", function(len)
 		local client = LocalPlayer()
-		local hr = net.ReadUInt(HERO_BITS)
+		local hr = net.ReadUInt(CLASS_BITS)
 
 		if hr == 0 then
 			hr = nil
@@ -464,8 +464,8 @@ else
 
 	net.Receive("TTTCSendHeroOptions", function()
 		local client = LocalPlayer()
-		local opt1 = net.ReadUInt(HERO_BITS)
-		local opt2 = net.ReadUInt(HERO_BITS)
+		local opt1 = net.ReadUInt(CLASS_BITS)
+		local opt2 = net.ReadUInt(CLASS_BITS)
 
 		if not IsValid(client) or opt1 == 0 or opt2 == 0 then return end
 
@@ -474,7 +474,7 @@ else
 
 	function plymeta:ServerUpdateHeroes(index)
 		net.Start("TTTCClientSendHeroes")
-		net.WriteUInt(index or 0, HERO_BITS)
+		net.WriteUInt(index or 0, CLASS_BITS)
 		net.SendToServer()
 	end
 end

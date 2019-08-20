@@ -117,7 +117,7 @@ if SERVER then
 		if GetRoundState() == ROUND_ACTIVE and IsValid(deadply) and deadply.oldHero then
 			net.Start("TTTCSyncHero")
 			net.WriteEntity(deadply)
-			net.WriteUInt(deadply.oldHero or 0, HERO_BITS)
+			net.WriteUInt(deadply.oldHero or 0, CLASS_BITS)
 			net.Broadcast()
 		end
 	end)
@@ -183,7 +183,7 @@ else -- CLIENT
 
 	net.Receive("TTTCSyncHero", function(len)
 		local ply = net.ReadEntity()
-		local hr = net.ReadUInt(HERO_BITS)
+		local hr = net.ReadUInt(CLASS_BITS)
 
 		if hr == 0 then
 			hr = nil
@@ -203,13 +203,13 @@ else -- CLIENT
 				if ply:IsHero() then
 					local hd = ply:GetHeroData()
 
-					label:SetColor(hd.color or COLOR_HERO)
+					label:SetColor(hd.color or COLOR_CLASS)
 
 					return CLASS.GetHeroTranslation(hd)
 				elseif ply.oldHero then
 					local hd = CLASS.GetHeroDataByIndex(ply.oldHero)
 					if hd then
-						label:SetColor(hd.color or COLOR_HERO)
+						label:SetColor(hd.color or COLOR_CLASS)
 
 						return CLASS.GetHeroTranslation(hd)
 					end

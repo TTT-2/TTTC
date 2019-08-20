@@ -25,7 +25,7 @@ end
 
 local function ConvertLegacyClasses()
         for name, class in pairs(CLASSES) do
-                CLASS.AddHero(name, 
+                CLASS.AddClass(name, 
                 {
                         color = class.color or COLOR_WHITE,
                         name = string.lower(name),

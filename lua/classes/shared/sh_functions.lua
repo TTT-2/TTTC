@@ -1,4 +1,4 @@
-function CLASS.AddHero(name, classData, conVarData)
+function CLASS.AddClass(name, classData, conVarData)
 	conVarData = conVarData or {}
 
 	local oldId
@@ -26,8 +26,8 @@ function CLASS.AddHero(name, classData, conVarData)
 	classData.weapons = classData.weapons or {}
 	classData.items = classData.items or {}
 
-	classData.time = classData.time or HERO_TIME
-	classData.cooldown = classData.cooldown or HERO_COOLDOWN
+	classData.time = classData.time or CLASS_TIME
+	classData.cooldown = classData.cooldown or CLASS_COOLDOWN
 	classData.endless = classData.endless or false
 	classData.passive = classData.passive or false
 
@@ -44,7 +44,7 @@ function CLASS.AddHero(name, classData, conVarData)
 	CLASS.CLASSES[name] = classData
 
 	-- spend an answer
-	print("[TTTC][HERO] Added '" .. name .. "' Hero (index: " .. i .. ")")
+	print("[TTTC][CLASS] Added '" .. name .. "' Hero (index: " .. i .. ")")
 end
 
 function CLASS.SortHeroesTable(tbl)

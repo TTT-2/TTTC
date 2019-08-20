@@ -1,8 +1,8 @@
-HERO_BITS = 10
+CLASS_BITS = 10
 
-COLOR_HERO = Color(255, 155, 0, 255)
-HERO_TIME = 60
-HERO_COOLDOWN = 60
+COLOR_CLASS = Color(255, 155, 0, 255)
+CLASS_TIME = 60
+CLASS_COOLDOWN = 60
 
 TTTC = true
 
@@ -27,7 +27,7 @@ if SERVER then
 	local ttt_classes_option = CreateConVar("ttt_classes_option", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
 
 	-- ConVar syncing
-	hook.Add("TTT2SyncGlobals", "AddHeroesGlobals", function()
+	hook.Add("TTT2SyncGlobals", "AddClassesGlobals", function()
 		SetGlobalBool(ttt2_classes:GetName(), ttt2_classes:GetBool())
 		SetGlobalBool(ttt_classes_limited:GetName(), ttt_classes_limited:GetBool())
 		SetGlobalBool(ttt_classes_option:GetName(), ttt_classes_option:GetBool())

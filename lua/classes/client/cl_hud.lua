@@ -30,7 +30,7 @@ local function DrawBg(x, y, client, xw)
 
 	if not hd then return end
 
-	local col = hd.color or COLOR_HERO
+	local col = hd.color or COLOR_CLASS
 
 	-- main border, traitor based
 	draw.RoundedBox(8, x, y - th, tw, th, col)
