@@ -69,7 +69,7 @@ function plymeta:SetHeroCooldown(heroCooldown)
 end
 
 function plymeta:GetHeroData()
-	return HEROES.GetHeroDataByIndex(self:GetHero())
+	return CLASS.GetHeroDataByIndex(self:GetHero())
 end
 
 function plymeta:IsHero(hero)

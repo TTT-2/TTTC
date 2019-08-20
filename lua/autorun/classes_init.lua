@@ -51,7 +51,7 @@ hook.Add("TTT2HUDUpdated", "TTTCUpdateClassesInfo", function()
 
 					return {
 						color = hd.color or COLOR_HERO,
-						text = HEROES.GetHeroTranslation(hd)
+						text = CLASS.GetHeroTranslation(hd)
 					}
 				end)
 			end

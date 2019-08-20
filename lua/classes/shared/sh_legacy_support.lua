@@ -25,7 +25,7 @@ end
 
 local function ConvertLegacyClasses()
         for name, class in pairs(CLASSES) do
-                HEROES.AddHero(name, 
+                CLASS.AddHero(name, 
                 {
                         color = class.color or COLOR_WHITE,
                         name = string.lower(name),
@@ -34,7 +34,7 @@ local function ConvertLegacyClasses()
                         passive = true
                 })
 
-                class.index = HEROES.HEROES[name].index
+                class.index = CLASS.CLASSES[name].index
 
                 print("[TTTC] LEGACY CLASS Converted '" .. name .. "' Class (index: " .. class.index .. "). Please consider reworking this class!")
         end

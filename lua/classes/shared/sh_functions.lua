@@ -1,12 +1,12 @@
-function HEROES.AddHero(name, heroData, conVarData)
+function CLASS.AddHero(name, heroData, conVarData)
 	conVarData = conVarData or {}
 
 	local oldId
 
-	if HEROES.HEROES[name] then
-		oldId = HEROES.HEROES[name].index
+	if CLASS.CLASSES[name] then
+		oldId = CLASS.CLASSES[name].index
 
-		HEROES.HEROES[name] = nil
+		CLASS.CLASSES[name] = nil
 	end
 
 	heroData.name = string.Trim(string.lower(name))
@@ -16,9 +16,9 @@ function HEROES.AddHero(name, heroData, conVarData)
 		CreateConVar("ttth_hero_" .. heroData.name .. "_random", tostring(conVarData.random or 100), {FCVAR_ARCHIVE})
 	end
 
-	-- necessary to init heroes in this way, because we need to wait until the HEROES.HEROES array is initialized
+	-- necessary to init heroes in this way, because we need to wait until the CLASS.CLASSES array is initialized
 	-- and every important function works properly
-	local i = oldId or table.Count(HEROES.HEROES) + 1
+	local i = oldId or table.Count(CLASS.CLASSES) + 1
 
 	heroData.index = i
 
@@ -41,20 +41,20 @@ function HEROES.AddHero(name, heroData, conVarData)
 		end)
 	end
 
-	HEROES.HEROES[name] = heroData
+	CLASS.CLASSES[name] = heroData
 
 	-- spend an answer
 	print("[TTTH][HERO] Added '" .. name .. "' Hero (index: " .. i .. ")")
 end
 
-function HEROES.SortHeroesTable(tbl)
+function CLASS.SortHeroesTable(tbl)
 	table.sort(tbl, function(a, b)
 		return a.index < b.index
 	end)
 end
 
-function HEROES.GetHeroDataByIndex(index)
-	for _, v in pairs(HEROES.HEROES) do
+function CLASS.GetHeroDataByIndex(index)
+	for _, v in pairs(CLASS.CLASSES) do
 		if v.index == index then
 			return v
 		end
@@ -63,14 +63,14 @@ function HEROES.GetHeroDataByIndex(index)
 	return nil
 end
 
-function HEROES.GetSortedHeroes()
+function CLASS.GetSortedHeroes()
 	local heroes = {}
 
-	for _, v in pairs(HEROES.HEROES) do
+	for _, v in pairs(CLASS.CLASSES) do
 		heroes[v.index] = v
 	end
 
-	HEROES.SortHeroesTable(heroes)
+	CLASS.SortHeroesTable(heroes)
 
 	return heroes
 end
@@ -78,7 +78,7 @@ end
 if CLIENT then
 	local GetLang
 
-	function HEROES.GetHeroTranslation(hd)
+	function CLASS.GetHeroTranslation(hd)
 		GetLang = GetLang or LANG.GetRawTranslation
 
 		return GetLang(hd.name) or hd.name or "-UNKNOWN-"

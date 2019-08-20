@@ -66,7 +66,7 @@ local function HeroInfo(client)
 		x = x + margin + 63 + xw * 0.5
 		y = y - 30
 
-		local text = HEROES.GetHeroTranslation(hd)
+		local text = CLASS.GetHeroTranslation(hd)
 
 		-- Draw current hero state
 		ShadowedText(text, "CurrentHero", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)

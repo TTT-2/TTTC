@@ -32,11 +32,11 @@ end)
 
 if SERVER then
 	hook.Add("TTTBeginRound", "TTTHSelectClasses", function()
-		table.Empty(HEROES.AVAILABLEHEROES)
+		table.Empty(CLASS.AVAILABLECLASSES)
 
 		if not GetGlobalBool("ttt2_classes") then return end
 
-		for _, v in pairs(HEROES.HEROES) do
+		for _, v in pairs(CLASS.CLASSES) do
 			if GetConVar("ttth_hero_" .. v.name .. "_enabled"):GetBool() then
 				local b = true
 				local r = GetConVar("ttth_hero_" .. v.name .. "_random"):GetInt()
@@ -48,18 +48,18 @@ if SERVER then
 				end
 
 				if b then
-					table.insert(HEROES.AVAILABLEHEROES, v)
+					table.insert(CLASS.AVAILABLECLASSES, v)
 				end
 			end
 		end
 
-		if #HEROES.AVAILABLEHEROES == 0 then return end
+		if #CLASS.AVAILABLECLASSES == 0 then return end
 
-		table.Empty(HEROES.FREEHEROES)
+		table.Empty(CLASS.FREECLASSES)
 
 		if GetGlobalBool("ttt_classes_limited") then
-			for _, v in ipairs(HEROES.AVAILABLEHEROES) do
-				table.insert(HEROES.FREEHEROES, v)
+			for _, v in ipairs(CLASS.AVAILABLECLASSES) do
+				table.insert(CLASS.FREECLASSES, v)
 			end
 		end
 
@@ -67,16 +67,16 @@ if SERVER then
 			if v:IsActive() then
 				local hr
 
-				if #HEROES.FREEHEROES == 0 then
-					local rand = math.random(1, #HEROES.AVAILABLEHEROES)
+				if #CLASS.FREECLASSES == 0 then
+					local rand = math.random(1, #CLASS.AVAILABLECLASSES)
 
-					hr = HEROES.AVAILABLEHEROES[rand].index
+					hr = CLASS.AVAILABLECLASSES[rand].index
 				else
-					local rand = math.random(1, #HEROES.FREEHEROES)
+					local rand = math.random(1, #CLASS.FREECLASSES)
 
-					hr = HEROES.FREEHEROES[rand].index
+					hr = CLASS.FREECLASSES[rand].index
 
-					table.remove(HEROES.FREEHEROES, rand)
+					table.remove(CLASS.FREECLASSES, rand)
 				end
 
 				if not GetGlobalBool("ttt_classes_limited") then
@@ -84,16 +84,16 @@ if SERVER then
 				else
 					local opt = hr
 
-					if #HEROES.FREEHEROES == 0 then
-						local rand = math.random(1, #HEROES.AVAILABLEHEROES)
+					if #CLASS.FREECLASSES == 0 then
+						local rand = math.random(1, #CLASS.AVAILABLECLASSES)
 
-						hr = HEROES.AVAILABLEHEROES[rand].index
+						hr = CLASS.AVAILABLECLASSES[rand].index
 					else
-						local rand = math.random(1, #HEROES.FREEHEROES)
+						local rand = math.random(1, #CLASS.FREECLASSES)
 
-						hr = HEROES.FREEHEROES[rand].index
+						hr = CLASS.FREECLASSES[rand].index
 
-						table.remove(HEROES.FREEHEROES, rand)
+						table.remove(CLASS.FREECLASSES, rand)
 					end
 
 					v:UpdateHeroOptions(opt, hr)
@@ -205,13 +205,13 @@ else -- CLIENT
 
 					label:SetColor(hd.color or COLOR_HERO)
 
-					return HEROES.GetHeroTranslation(hd)
+					return CLASS.GetHeroTranslation(hd)
 				elseif ply.oldHero then
-					local hd = HEROES.GetHeroDataByIndex(ply.oldHero)
+					local hd = CLASS.GetHeroDataByIndex(ply.oldHero)
 					if hd then
 						label:SetColor(hd.color or COLOR_HERO)
 
-						return HEROES.GetHeroTranslation(hd)
+						return CLASS.GetHeroTranslation(hd)
 					end
 				elseif not ply:IsActive() and ply:GetNWBool("body_found") then
 					return "-" -- died without any hero
@@ -276,7 +276,7 @@ else -- CLIENT
 							ply.sendCharge = nil
 						end
 					elseif ply.charging and ply.charging + charging - 1 <= time then
-						HEROES.HeroActivate()
+						CLASS.HeroActivate()
 					end
 				end
 			end

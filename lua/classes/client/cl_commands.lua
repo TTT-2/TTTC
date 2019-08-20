@@ -2,11 +2,11 @@ local function force_hero(ply, cmd, args, argStr)
 	local hero = tonumber(args[1])
 	local i = 0
 
-	for _, v in pairs(HEROES.HEROES) do
+	for _, v in pairs(CLASS.CLASSES) do
 		i = i + 1
 	end
 
-	local hd = HEROES.GetHeroDataByIndex(hero)
+	local hd = CLASS.GetHeroDataByIndex(hero)
 
 	if hd and hero and hero <= i then
 		ply:ServerUpdateHeroes(hero)
@@ -24,7 +24,7 @@ local function heroes_index(ply)
 		ply:ChatPrint("-----------------")
 		ply:ChatPrint("[Hero] | [Index]")
 
-		for _, v in pairs(HEROES.GetSortedHeroes()) do
+		for _, v in pairs(CLASS.GetSortedHeroes()) do
 			ply:ChatPrint(v.name .. " | " .. v.index)
 		end
 
@@ -33,7 +33,7 @@ local function heroes_index(ply)
 end
 concommand.Add("ttt_heroes_index", heroes_index)
 
-function HEROES.HeroActivate()
+function CLASS.HeroActivate()
 	if not GetGlobalBool("ttt2_classes") then return end
 
 	local ply = LocalPlayer()
@@ -91,9 +91,9 @@ function HEROES.HeroActivate()
 		end
 	end
 end
-concommand.Add("togglehero", HEROES.HeroActivate, nil, "Activates hero ability", {FCVAR_DONTRECORD})
+concommand.Add("togglehero", CLASS.HeroActivate, nil, "Activates hero ability", {FCVAR_DONTRECORD})
 
-function HEROES.AbortHero()
+function CLASS.AbortHero()
 	if not GetGlobalBool("ttt2_classes") then return end
 
 	local ply = LocalPlayer()
@@ -121,16 +121,16 @@ function HEROES.AbortHero()
 		net.SendToServer()
 	end
 end
-concommand.Add("aborthero", HEROES.AbortHero, nil, "Abort ability preview", {FCVAR_DONTRECORD})
+concommand.Add("aborthero", CLASS.AbortHero, nil, "Abort ability preview", {FCVAR_DONTRECORD})
 
 hook.Add("Initialize", "TTTCKeyBinds", function()
 	-- Register binding functions
 	bind.Register("togglehero", function()
-		HEROES.HeroActivate()
+		CLASS.HeroActivate()
 	end, nil, "TTT Classes", "Class Ability:", KEY_X)
 
 	bind.Register("aborthero", function()
-		HEROES.AbortHero()
+		CLASS.AbortHero()
 	end, nil, "TTT Classes", "Abort ability preview:", KEY_N)
 
 end)
