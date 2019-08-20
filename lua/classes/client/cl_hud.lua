@@ -26,7 +26,7 @@ local function DrawBg(x, y, client, xw)
 	-- Traitor area sizes
 	local tw = 150 + xw
 	local th = 30
-	local hd = client:GetHeroData()
+	local hd = client:GetClassData()
 
 	if not hd then return end
 
@@ -53,8 +53,8 @@ local function HeroInfo(client)
 
 	local round_state = GAMEMODE.round_state
 
-	if (round_state == ROUND_PREP or client:IsActive()) and client:IsHero() then
-		local hd = client:GetHeroData()
+	if (round_state == ROUND_PREP or client:IsActive()) and client:HasClass() then
+		local hd = client:GetClassData()
 
 		local x = cvar_class_hud_x:GetFloat()
 		local y = cvar_class_hud_y:GetFloat()
@@ -66,7 +66,7 @@ local function HeroInfo(client)
 		x = x + margin + 63 + xw * 0.5
 		y = y - 30
 
-		local text = CLASS.GetHeroTranslation(hd)
+		local text = CLASS.GetClassTranslation(hd)
 
 		-- Draw current class state
 		ShadowedText(text, "CurrentHero", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)

@@ -2,7 +2,7 @@
 hook.Add("TTTEndRound", "TTTCResetHeroes", function()
 	if SERVER then
 		for _, v in ipairs(player.GetAll()) do
-			v:UpdateHero(nil)
+			v:UpdateClass(nil)
 
 			v.oldHero = nil
 		end
@@ -18,7 +18,7 @@ end)
 hook.Add("TTTPrepareRound", "TTTCResetHeroes", function()
 	if SERVER then
 		for _, v in ipairs(player.GetAll()) do
-			v:UpdateHero(nil)
+			v:UpdateClass(nil)
 
 			v.oldHero = nil
 		end
@@ -80,7 +80,7 @@ if SERVER then
 				end
 
 				if not GetGlobalBool("ttt_classes_limited") then
-					v:UpdateHero(hr)
+					v:UpdateClass(hr)
 				else
 					local opt = hr
 
@@ -96,7 +96,7 @@ if SERVER then
 						table.remove(CLASS.FREECLASSES, rand)
 					end
 
-					v:UpdateHeroOptions(opt, hr)
+					v:UpdateClassOptions(opt, hr)
 				end
 			end
 		end
@@ -109,7 +109,7 @@ if SERVER then
 	end)
 
 	hook.Add("DoPlayerDeath", "TTTCPostPlayerDeathSave", function(ply)
-		ply.oldHero = ply.oldHero or ply:GetHero()
+		ply.oldHero = ply.oldHero or ply:GetCustomClass()
 	end)
 
 	-- sync dead players with other players
@@ -122,10 +122,10 @@ if SERVER then
 		end
 	end)
 
-	hook.Add("TTTCUpdateHero", "TTTCUpdatePassiveItems", function(ply)
-		if ply:IsHero() and not hook.Run("TTTCPreventClassEquipment", ply) then
-			ply:RemovePassiveHeroEquipment()
-			ply:GivePassiveHeroEquipment()
+	hook.Add("TTTCUpdateClass", "TTTCUpdatePassiveItems", function(ply)
+		if ply:HasClass() and not hook.Run("TTTCPreventClassEquipment", ply) then
+			ply:RemovePassiveClassEquipment()
+			ply:GivePassiveClassEquipment()
 		end
 	end)
 
@@ -138,7 +138,7 @@ if SERVER then
 	hook.Add("PlayerCanPickupWeapon", "TTTCPickupWeapon", function(ply, wep)
 		if IsValid(wep) and wep:GetNWBool("tttc_class_weapon") then
 			return true
-		elseif ply:IsHero() and ply:IsHeroActive() and not ply:GetHeroData().avoidWeaponReset then
+		elseif ply:HasClass() and ply:HasClassActive() and not ply:GetClassData().avoidWeaponReset then
 			return false
 		end
 	end)
@@ -156,15 +156,15 @@ if SERVER then
 	net.Receive("TTTCChooseHeroOption", function(len, ply)
 		local opt = net.ReadBool()
 
-		local opt1, opt2 = ply:GetHeroOptions()
+		local opt1, opt2 = ply:GetClassOptions()
 
 		if not opt then
-			ply:UpdateHero(opt1)
+			ply:UpdateClass(opt1)
 		else
-			ply:UpdateHero(opt2)
+			ply:UpdateClass(opt2)
 		end
 
-		ply:SetHeroOptions() -- reset class options
+		ply:SetClassOptions() -- reset class options
 	end)
 
 	hook.Add("TTTPlayerSpeedModifier", "HeroChargingModifySpeed", function(ply, _, _, noLag)
@@ -175,7 +175,7 @@ if SERVER then
 else -- CLIENT
 	hook.Add("TTTPrepareRound", "TTTCResetHeroes", function()
 		for _, v in ipairs(player.GetAll()) do
-			v:SetHero(nil)
+			v:SetClass(nil)
 
 			v.oldHero = nil
 		end
@@ -189,9 +189,9 @@ else -- CLIENT
 			hr = nil
 		end
 
-		if not ply.SetHero then return end
+		if not ply.SetClass then return end
 
-		ply:SetHero(hr)
+		ply:SetClass(hr)
 
 		ply.oldHero = hr
 	end)
@@ -200,18 +200,18 @@ else -- CLIENT
 	hook.Add("TTTScoreboardColumns", "TTTCScoreboardHero", function(pnl)
 		if GetGlobalBool("ttt2_classes") then
 			pnl:AddColumn("Class", function(ply, label)
-				if ply:IsHero() then
-					local hd = ply:GetHeroData()
+				if ply:HasClass() then
+					local hd = ply:GetClassData()
 
 					label:SetColor(hd.color or COLOR_CLASS)
 
-					return CLASS.GetHeroTranslation(hd)
+					return CLASS.GetClassTranslation(hd)
 				elseif ply.oldHero then
-					local hd = CLASS.GetHeroDataByIndex(ply.oldHero)
+					local hd = CLASS.GetClassDataByIndex(ply.oldHero)
 					if hd then
 						label:SetColor(hd.color or COLOR_CLASS)
 
-						return CLASS.GetHeroTranslation(hd)
+						return CLASS.GetClassTranslation(hd)
 					end
 				elseif not ply:IsActive() and ply:GetNWBool("body_found") then
 					return "-" -- died without any class
@@ -225,8 +225,8 @@ else -- CLIENT
 	local function ThinkCharge()
 		local ply = LocalPlayer()
 
-		if ply:IsActive() and ply:IsHero() then
-			local hd = ply:GetHeroData()
+		if ply:IsActive() and ply:HasClass() then
+			local hd = ply:GetClassData()
 
 			if not hd then return end
 
@@ -234,8 +234,8 @@ else -- CLIENT
 			local time = CurTime()
 
 			if not hd.deactivated
-			and not ply:IsHeroActive()
-			and (not ply:GetHeroCooldownTS() or ply:GetHeroCooldownTS() + ply:GetHeroCooldown() <= time)
+			and not ply:HasClassActive()
+			and (not ply:SetClassCooldownTS() or ply:SetClassCooldownTS() + ply:GetClassCooldown() <= time)
 			and charging
 			and not ply.chargingWaiting
 			and not hook.Run("TTTCPreventCharging", ply)
@@ -276,7 +276,7 @@ else -- CLIENT
 							ply.sendCharge = nil
 						end
 					elseif ply.charging and ply.charging + charging - 1 <= time then
-						CLASS.HeroActivate()
+						CLASS.ClassActivate()
 					end
 				end
 			end
@@ -298,14 +298,14 @@ net.Receive("TTTCActivateHero", function(len, ply)
 		reset = true
 	end
 
-	local hd = ply:GetHeroData()
+	local hd = ply:GetClassData()
 
-	if not hd or hd.deactivated or not ply:IsActive() or ply:GetHeroCooldownTS() and ply:GetHeroCooldownTS() + ply:GetHeroCooldown() > CurTime() or hook.Run("TTTCPreventClassActivation", ply) then
+	if not hd or hd.deactivated or not ply:IsActive() or ply:SetClassCooldownTS() and ply:SetClassCooldownTS() + ply:GetClassCooldown() > CurTime() or hook.Run("TTTCPreventClassActivation", ply) then
 		reset = true
 	end
 
 	if not reset then
-		ply:HeroActivate()
+		ply:ClassActivate()
 
 		if SERVER then
 			net.Start("TTTCActivateHero")
@@ -344,7 +344,7 @@ net.Receive("TTTCDeactivateHero", function(len, ply)
 
 	if not IsValid(ply) then return end
 
-	ply:HeroDeactivate()
+	ply:ClassDeactivate()
 
 	if SERVER then
 		net.Start("TTTCDeactivateHero")
@@ -357,7 +357,7 @@ net.Receive("TTTCAbortHero", function(len, ply)
 
 	if not IsValid(ply) then return end
 
-	local hd = ply:GetHeroData()
+	local hd = ply:GetClassData()
 
 	if ply.prepareActivation and isfunction(hd.onFinishPreparingActivation) then
 		hd.onFinishPreparingActivation(ply)

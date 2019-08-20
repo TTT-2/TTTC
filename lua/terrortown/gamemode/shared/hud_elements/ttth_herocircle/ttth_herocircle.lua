@@ -61,7 +61,7 @@ if CLIENT then
 	function HUDELEMENT:ShouldDraw()
 		local client = LocalPlayer()
 
-		return client:IsHero() and client:IsActive()
+		return client:HasClass() and client:IsActive()
 	end
 
 	function HUDELEMENT:Draw()
@@ -74,16 +74,16 @@ if CLIENT then
 		local r_optionCircleSize = math.Round(self.optionCircleSize * 0.5) -- radius
 		local r_innerCircleSize = r_w - r_optionCircleSize * 2
 
-		local hd = client:GetHeroData()
+		local hd = client:GetClassData()
 		local timeNow = CurTime()
-		local active = client:IsHeroActive()
+		local active = client:HasClassActive()
 
-		local abilityStartTime = client:GetHeroTimestamp()
-		local abilityDuration = client:GetHeroTime()
+		local abilityStartTime = client:GetClassTimestamp()
+		local abilityDuration = client:GetClassTime()
 		local abilityTimeSince = timeNow - (abilityStartTime or 0) -- 0 just to avoid arithmetic with nil exception, this never has a real use case and will never even be used
 
-		local cooldownStartTime = client:GetHeroCooldownTS()
-		local cooldownDuration = client:GetHeroCooldown()
+		local cooldownStartTime = client:SetClassCooldownTS()
+		local cooldownDuration = client:GetClassCooldown()
 		local cooldownTimeSince = timeNow - (cooldownStartTime or 0) -- 0 just to avoid arithmetic with nil exception, this never has a real use case and will never even be used
 
 		local abilityPercentage = 0

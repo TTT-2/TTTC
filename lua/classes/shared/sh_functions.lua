@@ -53,7 +53,7 @@ function CLASS.SortHeroesTable(tbl)
 	end)
 end
 
-function CLASS.GetHeroDataByIndex(index)
+function CLASS.GetClassDataByIndex(index)
 	for _, v in pairs(CLASS.CLASSES) do
 		if v.index == index then
 			return v
@@ -78,7 +78,7 @@ end
 if CLIENT then
 	local GetLang
 
-	function CLASS.GetHeroTranslation(hd)
+	function CLASS.GetClassTranslation(hd)
 		GetLang = GetLang or LANG.GetRawTranslation
 
 		return GetLang(hd.name) or hd.name or "-UNKNOWN-"

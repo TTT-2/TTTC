@@ -2,20 +2,20 @@ local plymeta = FindMetaTable("Player")
 
 if not plymeta then return end
 
-AccessorFunc(plymeta, "classTime", "HeroTime", FORCE_NUMBER)
-AccessorFunc(plymeta, "classTimestamp", "HeroTimestamp", FORCE_NUMBER)
-AccessorFunc(plymeta, "classEndless", "HeroEndless", FORCE_BOOL)
-AccessorFunc(plymeta, "classCooldownTS", "HeroCooldownTS", FORCE_NUMBER)
+AccessorFunc(plymeta, "classTime", "ClassTime", FORCE_NUMBER)
+AccessorFunc(plymeta, "classTimestamp", "ClassTimestamp", FORCE_NUMBER)
+AccessorFunc(plymeta, "classEndless", "ClassEndless", FORCE_BOOL)
+AccessorFunc(plymeta, "classCooldownTS", "ClassCooldownTS", FORCE_NUMBER)
 
-function plymeta:GetHero()
+function plymeta:GetCustomClass()
 	return self.class
 end
 
-function plymeta:SetHero(class)
-	local old = self:GetHero()
+function plymeta:SetClass(class)
+	local old = self:GetCustomClass()
 
 	if class ~= old then
-		local hd = self:GetHeroData()
+		local hd = self:GetClassData()
 
 		if hd and self.prepareActivation and isfunction(hd.onFinishPreparingActivation) then
 			hd.onFinishPreparingActivation(self)
@@ -40,7 +40,7 @@ function plymeta:SetHero(class)
 	if not class then -- reset
 		hook.Run("TTTCResetHero", self)
 
-		self:SetHeroOptions() -- reset class options
+		self:SetClassOptions() -- reset class options
 
 		self.oldHero = nil
 		self.classAmount = nil
@@ -56,44 +56,44 @@ function plymeta:SetHero(class)
 	self.class = class
 
 	if old ~= class then
-		hook.Run("TTTCUpdateHero", self, old, class)
+		hook.Run("TTTCUpdateClass", self, old, class)
 	end
 end
 
-function plymeta:GetHeroCooldown()
+function plymeta:GetClassCooldown()
 	return self.classCooldown or 0
 end
 
-function plymeta:SetHeroCooldown(classCooldown)
+function plymeta:SetClassCooldown(classCooldown)
 	self.classCooldown = classCooldown
 end
 
-function plymeta:GetHeroData()
-	return CLASS.GetHeroDataByIndex(self:GetHero())
+function plymeta:GetClassData()
+	return CLASS.GetClassDataByIndex(self:GetCustomClass())
 end
 
-function plymeta:IsHero(class)
-	return self:GetHero() and (not class or class and self:GetHero() == class)
+function plymeta:HasClass(class)
+	return self:GetCustomClass() and (not class or class and self:GetCustomClass() == class)
 end
 
-function plymeta:SetHeroOptions(opt1, opt2)
+function plymeta:SetClassOptions(opt1, opt2)
 	self.classOpt1 = opt1
 	self.classOpt2 = opt2
 end
 
-function plymeta:GetHeroOptions()
+function plymeta:GetClassOptions()
 	return self.classOpt1, self.classOpt2
 end
 
-function plymeta:IsHeroActive()
+function plymeta:HasClassActive()
 	return self.classActive or false
 end
 
-function plymeta:SetHeroActive(b)
+function plymeta:SetClassActive(b)
 	self.classActive = b
 end
 
-function plymeta:HeroActivate()
+function plymeta:ClassActivate()
 	if CLIENT then
 		self.chargingWaiting = nil
 	else
@@ -103,7 +103,7 @@ function plymeta:HeroActivate()
 
 	self.classAmount = self.classAmount or 0
 
-	local hd = self:GetHeroData()
+	local hd = self:GetClassData()
 
 	if not hd or not self:IsActive() or isfunction(hd.checkActivation) and not hd.checkActivation(self) or hd.amount and hd.amount <= self.classAmount then return end
 
@@ -122,9 +122,9 @@ function plymeta:HeroActivate()
 	end
 
 	if hd.time ~= 0 then
-		self:SetHeroTime(hd.time)
-		self:SetHeroEndless(hd.endless)
-		self:SetHeroTimestamp(CurTime())
+		self:SetClassTime(hd.time)
+		self:SetClassEndless(hd.endless)
+		self:SetClassTimestamp(CurTime())
 
 		if SERVER then
 			self.savedHeroInventoryItems = table.Copy(self:GetEquipmentItems())
@@ -161,24 +161,24 @@ function plymeta:HeroActivate()
 					net.Start("TTTCDeactivateHero")
 					net.Send(ply)
 
-					ply:HeroDeactivate()
+					ply:ClassDeactivate()
 				end
 			end)
 		end
 
-		self:SetHeroActive(true)
+		self:SetClassActive(true)
 	elseif SERVER then
 		net.Start("TTTCDeactivateHero")
 		net.Send(self)
 
-		self:HeroDeactivate()
+		self:ClassDeactivate()
 	end
 
 	self.classAmount = self.classAmount + 1
 end
 
-function plymeta:HeroDeactivate()
-	local hd = self:GetHeroData()
+function plymeta:ClassDeactivate()
+	local hd = self:GetClassData()
 
 	if not hd then return end
 
@@ -188,7 +188,7 @@ function plymeta:HeroDeactivate()
 		self.prepareActivation = nil
 	end
 
-	self:SetHeroActive(false)
+	self:SetClassActive(false)
 
 	local cooldown = true
 
@@ -232,39 +232,39 @@ function plymeta:HeroDeactivate()
 	self.classTimestamp = nil -- Still used???
 
 	if cooldown and hd.cooldown ~= 0 then
-		self:SetHeroCooldown(hd.cooldown)
-		self:SetHeroCooldownTS(CurTime())
+		self:SetClassCooldown(hd.cooldown)
+		self:SetClassCooldownTS(CurTime())
 	end
 end
 
 if SERVER then
-	function plymeta:UpdateHero(index)
-		if self:IsHeroActive() then
+	function plymeta:UpdateClass(index)
+		if self:HasClassActive() then
 			net.Start("TTTCDeactivateHero")
 			net.Send(self)
 
-			self:HeroDeactivate()
+			self:ClassDeactivate()
 		end
 
 		self:RemoveAbility()
-		self:RemovePassiveHeroEquipment()
-		self:SetHero(index)
+		self:RemovePassiveClassEquipment()
+		self:SetClass(index)
 
-		net.Start("TTTCSendHero")
+		net.Start("TTTCSendClass")
 		net.WriteUInt(index or 0, CLASS_BITS)
 		net.Send(self)
 	end
 
-	function plymeta:UpdateHeroOptions(opt1, opt2)
-		self:SetHeroOptions(opt1, opt2)
+	function plymeta:UpdateClassOptions(opt1, opt2)
+		self:SetClassOptions(opt1, opt2)
 
-		net.Start("TTTCSendHeroOptions")
+		net.Start("TTTCSendClassOptions")
 		net.WriteUInt(opt1 or 0, CLASS_BITS)
 		net.WriteUInt(opt2 or 0, CLASS_BITS)
 		net.Send(self)
 	end
 
-	function plymeta:GiveHeroWeapon(wep, avoidReset)
+	function plymeta:GiveClassWeapon(wep, avoidReset)
 		local newWep = wep
 
 		if not newWep then return end
@@ -287,7 +287,7 @@ if SERVER then
 		return rt
 	end
 
-	function plymeta:GiveHeroEquipmentItem(id)
+	function plymeta:GiveClassEquipmentItem(id)
 		self:GiveItem(id)
 
 		self.classItems = self.classItems or {}
@@ -297,10 +297,10 @@ if SERVER then
 		end
 	end
 
-	function plymeta:GiveServerHeroWeapon(cls, clip1, clip2)
-		if not self:IsHero() then return end
+	function plymeta:GiveServerClassWeapon(cls, clip1, clip2)
+		if not self:HasClass() then return end
 
-		local w = self:GiveHeroWeapon(cls)
+		local w = self:GiveClassWeapon(cls)
 
 		if not IsValid(w) then return end
 
@@ -334,7 +334,7 @@ if SERVER then
 	end
 
 	function plymeta:GiveAbility()
-		local hd = self:GetHeroData()
+		local hd = self:GetClassData()
 
 		if not hd then return end
 
@@ -343,14 +343,14 @@ if SERVER then
 
 		if weaps and #weaps > 0 then
 			for _, v in ipairs(weaps) do
-				self:GiveServerHeroWeapon(v)
+				self:GiveServerClassWeapon(v)
 			end
 		end
 
 		if itms and #itms > 0 then
 			for _, v in ipairs(itms) do
 				if not self:HasEquipmentItem(v) then -- not had this item
-					self:GiveHeroEquipmentItem(v)
+					self:GiveClassEquipmentItem(v)
 				end
 			end
 		end
@@ -379,8 +379,8 @@ if SERVER then
 		self.classItems = nil
 	end
 
-	function plymeta:GivePassiveHeroEquipment()
-		local hd = self:GetHeroData()
+	function plymeta:GivePassiveClassEquipment()
+		local hd = self:GetClassData()
 
 		if not hd then return end
 
@@ -393,7 +393,7 @@ if SERVER then
 		if passiveItems and #passiveItems > 0 then
 			for _, v in ipairs(passiveItems) do
 				if not self:HasEquipmentItem(v) then -- not had this item
-					self:GiveHeroEquipmentItem(v)
+					self:GiveClassEquipmentItem(v)
 
 					self.passiveNewItems[#self.passiveNewItems + 1] = v
 				end
@@ -403,7 +403,7 @@ if SERVER then
 		if passiveWeapons and #passiveWeapons > 0 then
 			for _, v in ipairs(passiveWeapons) do
 				if not self:HasWeapon(v) then
-					self:GiveHeroWeapon(v, true)
+					self:GiveClassWeapon(v, true)
 
 					self.passiveNewWeps[#self.passiveNewWeps + 1] = v
 				end
@@ -411,7 +411,7 @@ if SERVER then
 		end
 	end
 
-	function plymeta:RemovePassiveHeroEquipment()
+	function plymeta:RemovePassiveClassEquipment()
 		local passiveWeapons = self.passiveNewWeps
 		local passiveItems = self.passiveNewItems
 
@@ -437,7 +437,7 @@ if SERVER then
 		self.passiveNewItems = nil
 	end
 
-	net.Receive("TTTCClientSendHeroes", function(len, ply)
+	net.Receive("TTTCClientSendClasses", function(len, ply)
 		local hr = net.ReadUInt(CLASS_BITS)
 
 		if hr == 0 then
@@ -446,10 +446,10 @@ if SERVER then
 
 		if not IsValid(ply) then return end
 
-		ply:UpdateHero(hr)
+		ply:UpdateClass(hr)
 	end)
 else
-	net.Receive("TTTCSendHero", function(len)
+	net.Receive("TTTCSendClass", function(len)
 		local client = LocalPlayer()
 		local hr = net.ReadUInt(CLASS_BITS)
 
@@ -459,21 +459,21 @@ else
 
 		if not IsValid(client) then return end
 
-		client:SetHero(hr)
+		client:SetClass(hr)
 	end)
 
-	net.Receive("TTTCSendHeroOptions", function()
+	net.Receive("TTTCSendClassOptions", function()
 		local client = LocalPlayer()
 		local opt1 = net.ReadUInt(CLASS_BITS)
 		local opt2 = net.ReadUInt(CLASS_BITS)
 
 		if not IsValid(client) or opt1 == 0 or opt2 == 0 then return end
 
-		client:SetHeroOptions(opt1, opt2)
+		client:SetClassOptions(opt1, opt2)
 	end)
 
-	function plymeta:ServerUpdateHeroes(index)
-		net.Start("TTTCClientSendHeroes")
+	function plymeta:ServerUpdateClasses(index)
+		net.Start("TTTCClientSendClasses")
 		net.WriteUInt(index or 0, CLASS_BITS)
 		net.SendToServer()
 	end

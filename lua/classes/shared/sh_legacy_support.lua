@@ -156,9 +156,5 @@ end
 local plymeta = FindMetaTable("Player")
 
 function plymeta:HasCustomClass()
-        return self:IsHero() and not hook.Run("TTTCPreventClassActivation", self)
-end
-
-function plymeta:GetCustomClass()
-        return self:GetHero()
+        return self:HasClass() and not hook.Run("TTTCPreventClassActivation", self)
 end

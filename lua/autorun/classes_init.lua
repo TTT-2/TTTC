@@ -45,13 +45,13 @@ hook.Add("TTT2HUDUpdated", "TTTCUpdateClassesInfo", function()
 		for _, v in ipairs(hudInfoElements) do
 			if v.SetSecondaryRoleInfoFunction then
 				v:SetSecondaryRoleInfoFunction(function()
-					local hd = LocalPlayer():GetHeroData()
+					local hd = LocalPlayer():GetClassData()
 
 					if not hd then return end
 
 					return {
 						color = hd.color or COLOR_CLASS,
-						text = CLASS.GetHeroTranslation(hd)
+						text = CLASS.GetClassTranslation(hd)
 					}
 				end)
 			end

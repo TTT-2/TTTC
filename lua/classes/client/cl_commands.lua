@@ -6,10 +6,10 @@ local function force_class(ply, cmd, args, argStr)
 		i = i + 1
 	end
 
-	local hd = CLASS.GetHeroDataByIndex(class)
+	local hd = CLASS.GetClassDataByIndex(class)
 
 	if hd and class and class <= i then
-		ply:ServerUpdateHeroes(class)
+		ply:ServerUpdateClasses(class)
 
 		ply:ChatPrint("You changed to '" .. hd.name .. "' (class: " .. class .. ")")
 	end
@@ -33,7 +33,7 @@ local function classes_index(ply)
 end
 concommand.Add("ttt_classes_index", classes_index)
 
-function CLASS.HeroActivate()
+function CLASS.ClassActivate()
 	if not GetGlobalBool("ttt2_classes") then return end
 
 	local ply = LocalPlayer()
@@ -45,23 +45,23 @@ function CLASS.HeroActivate()
 		net.WriteBool(false)
 		net.SendToServer()
 
-		ply:SetHeroOptions() -- reset class options
+		ply:SetClassOptions() -- reset class options
 
 		return
 	end
 
-	if not ply:IsHero() or hook.Run("TTTCPreventClassActivation", ply) then return end
+	if not ply:HasClass() or hook.Run("TTTCPreventClassActivation", ply) then return end
 
 	if GetRoundState() ~= ROUND_WAIT and ply:IsTerror() then
-		local hd = ply:GetHeroData()
+		local hd = ply:GetClassData()
 
 		if not hd or hd.deactivated then return end
 
 		local time = CurTime()
 
-		if ply:GetHeroCooldownTS() and ply:GetHeroCooldownTS() + ply:GetHeroCooldown() > time then return end
+		if ply:SetClassCooldownTS() and ply:SetClassCooldownTS() + ply:GetClassCooldown() > time then return end
 
-		if not ply:IsHeroActive() then
+		if not ply:HasClassActive() then
 			local charging = hd.charging
 
 			-- TODO ability preview?
@@ -91,7 +91,7 @@ function CLASS.HeroActivate()
 		end
 	end
 end
-concommand.Add("toggleclass", CLASS.HeroActivate, nil, "Activates class ability", {FCVAR_DONTRECORD})
+concommand.Add("toggleclass", CLASS.ClassActivate, nil, "Activates class ability", {FCVAR_DONTRECORD})
 
 function CLASS.AbortHero()
 	if not GetGlobalBool("ttt2_classes") then return end
@@ -105,15 +105,15 @@ function CLASS.AbortHero()
 		net.WriteBool(true)
 		net.SendToServer()
 
-		ply:SetHeroOptions() -- reset class options
+		ply:SetClassOptions() -- reset class options
 
 		return
 	end
 
-	if not ply:IsHero() or hook.Run("TTTCPreventClassAbortion", ply) then return end
+	if not ply:HasClass() or hook.Run("TTTCPreventClassAbortion", ply) then return end
 
 	if GetRoundState() ~= ROUND_WAIT and ply:IsTerror() then
-		local hd = ply:GetHeroData()
+		local hd = ply:GetClassData()
 
 		if not hd or hd.deactivated then return end
 
@@ -126,7 +126,7 @@ concommand.Add("abortclass", CLASS.AbortHero, nil, "Abort ability preview", {FCV
 hook.Add("Initialize", "TTTCKeyBinds", function()
 	-- Register binding functions
 	bind.Register("toggleclass", function()
-		CLASS.HeroActivate()
+		CLASS.ClassActivate()
 	end, nil, "TTT Classes", "Class Ability:", KEY_X)
 
 	bind.Register("abortclass", function()

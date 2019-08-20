@@ -7,10 +7,10 @@ CLASS_COOLDOWN = 60
 TTTC = true
 
 if SERVER then
-	util.AddNetworkString("TTTCSendHero")
-	util.AddNetworkString("TTTCSendHeroOptions")
+	util.AddNetworkString("TTTCSendClass")
+	util.AddNetworkString("TTTCSendClassOptions")
 	util.AddNetworkString("TTTCChooseHeroOption")
-	util.AddNetworkString("TTTCClientSendHeroes")
+	util.AddNetworkString("TTTCClientSendClasses")
 	util.AddNetworkString("TTTCSyncHeroes")
 	util.AddNetworkString("TTTCSyncHero")
 	util.AddNetworkString("TTTCHeroesSynced")

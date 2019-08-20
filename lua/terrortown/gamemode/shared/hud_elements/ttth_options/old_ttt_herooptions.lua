@@ -64,8 +64,8 @@ if CLIENT then
 
 			local y = optionMargin + 80
 
-			local hd1 = CLASS.GetHeroDataByIndex(client.classOpt1)
-			local hd2 = CLASS.GetHeroDataByIndex(client.classOpt2)
+			local hd1 = CLASS.GetClassDataByIndex(client.classOpt1)
+			local hd2 = CLASS.GetClassDataByIndex(client.classOpt2)
 
 			self:DrawHeroOption(y, key1, rawT(hd1.name), hd1.color)
 
