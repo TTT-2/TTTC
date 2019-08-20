@@ -46,10 +46,10 @@ if SERVER then
                 hook.Run("TTTCPreClassesInit")
         
                 hook.Run("TTTCClassesInit")
-        
-                hook.Run("TTTCPostClassesInit")
 
                 ConvertLegacyClasses()
+
+                hook.Run("TTTCPostClassesInit")
         end)
 
 	local function EncodeForStream(tbl)
