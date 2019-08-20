@@ -32,7 +32,7 @@ function CLASS.AddHero(name, classData, conVarData)
 	classData.passive = classData.passive or false
 
 	if CLIENT and classData.langs and not oldId then
-		hook.Add("TTT2FinishedLoading", "TTTHInitLangFor" .. classData.name, function()
+		hook.Add("TTT2FinishedLoading", "TTTCInitLangFor" .. classData.name, function()
 			if LANG then
 				for lang, key in pairs(classData.langs) do
 					LANG.AddToLanguage(lang, classData.name, key)
@@ -44,7 +44,7 @@ function CLASS.AddHero(name, classData, conVarData)
 	CLASS.CLASSES[name] = classData
 
 	-- spend an answer
-	print("[TTTH][HERO] Added '" .. name .. "' Hero (index: " .. i .. ")")
+	print("[TTTC][HERO] Added '" .. name .. "' Hero (index: " .. i .. ")")
 end
 
 function CLASS.SortHeroesTable(tbl)

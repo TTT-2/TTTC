@@ -29,7 +29,7 @@ function plymeta:SetHero(class)
 		self.classAmount = nil
 
 		if CLIENT and self.sendCharge then
-			net.Start("TTTHChangeCharge")
+			net.Start("TTTCChangeCharge")
 			net.WriteBool(false)
 			net.SendToServer()
 
@@ -38,7 +38,7 @@ function plymeta:SetHero(class)
 	end
 
 	if not class then -- reset
-		hook.Run("TTTHResetHero", self)
+		hook.Run("TTTCResetHero", self)
 
 		self:SetHeroOptions() -- reset class options
 
@@ -56,7 +56,7 @@ function plymeta:SetHero(class)
 	self.class = class
 
 	if old ~= class then
-		hook.Run("TTTHUpdateHero", self, old, class)
+		hook.Run("TTTCUpdateHero", self, old, class)
 	end
 end
 
@@ -97,7 +97,7 @@ function plymeta:HeroActivate()
 	if CLIENT then
 		self.chargingWaiting = nil
 	else
-		net.Start("TTTHResetChargingWaiting")
+		net.Start("TTTCResetChargingWaiting")
 		net.Send(self)
 	end
 
@@ -158,7 +158,7 @@ function plymeta:HeroActivate()
 
 			timer.Create("tttc_deactivation_" .. self:UniqueID(), hd.time, 1, function()
 				if IsValid(ply) then
-					net.Start("TTTHDeactivateHero")
+					net.Start("TTTCDeactivateHero")
 					net.Send(ply)
 
 					ply:HeroDeactivate()
@@ -168,7 +168,7 @@ function plymeta:HeroActivate()
 
 		self:SetHeroActive(true)
 	elseif SERVER then
-		net.Start("TTTHDeactivateHero")
+		net.Start("TTTCDeactivateHero")
 		net.Send(self)
 
 		self:HeroDeactivate()
@@ -240,7 +240,7 @@ end
 if SERVER then
 	function plymeta:UpdateHero(index)
 		if self:IsHeroActive() then
-			net.Start("TTTHDeactivateHero")
+			net.Start("TTTCDeactivateHero")
 			net.Send(self)
 
 			self:HeroDeactivate()
@@ -250,7 +250,7 @@ if SERVER then
 		self:RemovePassiveHeroEquipment()
 		self:SetHero(index)
 
-		net.Start("TTTHSendHero")
+		net.Start("TTTCSendHero")
 		net.WriteUInt(index or 0, HERO_BITS)
 		net.Send(self)
 	end
@@ -258,7 +258,7 @@ if SERVER then
 	function plymeta:UpdateHeroOptions(opt1, opt2)
 		self:SetHeroOptions(opt1, opt2)
 
-		net.Start("TTTHSendHeroOptions")
+		net.Start("TTTCSendHeroOptions")
 		net.WriteUInt(opt1 or 0, HERO_BITS)
 		net.WriteUInt(opt2 or 0, HERO_BITS)
 		net.Send(self)
@@ -437,7 +437,7 @@ if SERVER then
 		self.passiveNewItems = nil
 	end
 
-	net.Receive("TTTHClientSendHeroes", function(len, ply)
+	net.Receive("TTTCClientSendHeroes", function(len, ply)
 		local hr = net.ReadUInt(HERO_BITS)
 
 		if hr == 0 then
@@ -449,7 +449,7 @@ if SERVER then
 		ply:UpdateHero(hr)
 	end)
 else
-	net.Receive("TTTHSendHero", function(len)
+	net.Receive("TTTCSendHero", function(len)
 		local client = LocalPlayer()
 		local hr = net.ReadUInt(HERO_BITS)
 
@@ -462,7 +462,7 @@ else
 		client:SetHero(hr)
 	end)
 
-	net.Receive("TTTHSendHeroOptions", function()
+	net.Receive("TTTCSendHeroOptions", function()
 		local client = LocalPlayer()
 		local opt1 = net.ReadUInt(HERO_BITS)
 		local opt2 = net.ReadUInt(HERO_BITS)
@@ -473,7 +473,7 @@ else
 	end)
 
 	function plymeta:ServerUpdateHeroes(index)
-		net.Start("TTTHClientSendHeroes")
+		net.Start("TTTCClientSendHeroes")
 		net.WriteUInt(index or 0, HERO_BITS)
 		net.SendToServer()
 	end

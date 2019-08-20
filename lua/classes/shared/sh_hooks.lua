@@ -1,5 +1,5 @@
 -- reset (TTTEndRound not triggerd bcus of force restart)
-hook.Add("TTTEndRound", "TTTHResetHeroes", function()
+hook.Add("TTTEndRound", "TTTCResetHeroes", function()
 	if SERVER then
 		for _, v in ipairs(player.GetAll()) do
 			v:UpdateHero(nil)
@@ -15,7 +15,7 @@ hook.Add("TTTEndRound", "TTTHResetHeroes", function()
 end)
 
 -- reset (TTTPrepareRound not triggerd bcus of buggy force restart)
-hook.Add("TTTPrepareRound", "TTTHResetHeroes", function()
+hook.Add("TTTPrepareRound", "TTTCResetHeroes", function()
 	if SERVER then
 		for _, v in ipairs(player.GetAll()) do
 			v:UpdateHero(nil)
@@ -31,7 +31,7 @@ hook.Add("TTTPrepareRound", "TTTHResetHeroes", function()
 end)
 
 if SERVER then
-	hook.Add("TTTBeginRound", "TTTHSelectClasses", function()
+	hook.Add("TTTBeginRound", "TTTCSelectClasses", function()
 		table.Empty(CLASS.AVAILABLECLASSES)
 
 		if not GetGlobalBool("ttt2_classes") then return end
@@ -101,41 +101,41 @@ if SERVER then
 			end
 		end
 
-		hook.Run("TTTHPreReceiveHeroes")
+		hook.Run("TTTCPreReceiveHeroes")
 
-		hook.Run("TTTHReceiveHeroes")
+		hook.Run("TTTCReceiveHeroes")
 
-		hook.Run("TTTHPostReceiveHeroes")
+		hook.Run("TTTCPostReceiveHeroes")
 	end)
 
-	hook.Add("DoPlayerDeath", "TTTHPostPlayerDeathSave", function(ply)
+	hook.Add("DoPlayerDeath", "TTTCPostPlayerDeathSave", function(ply)
 		ply.oldHero = ply.oldHero or ply:GetHero()
 	end)
 
 	-- sync dead players with other players
-	hook.Add("TTTBodyFound", "TTTHBodyFound", function(_, deadply)
+	hook.Add("TTTBodyFound", "TTTCBodyFound", function(_, deadply)
 		if GetRoundState() == ROUND_ACTIVE and IsValid(deadply) and deadply.oldHero then
-			net.Start("TTTHSyncHero")
+			net.Start("TTTCSyncHero")
 			net.WriteEntity(deadply)
 			net.WriteUInt(deadply.oldHero or 0, HERO_BITS)
 			net.Broadcast()
 		end
 	end)
 
-	hook.Add("TTTHUpdateHero", "TTTHUpdatePassiveItems", function(ply)
+	hook.Add("TTTCUpdateHero", "TTTCUpdatePassiveItems", function(ply)
 		if ply:IsHero() and not hook.Run("TTTCPreventClassEquipment", ply) then
 			ply:RemovePassiveHeroEquipment()
 			ply:GivePassiveHeroEquipment()
 		end
 	end)
 
-	hook.Add("PlayerDroppedWeapon", "TTTHDontDropOnDeath", function(owner, wep)
+	hook.Add("PlayerDroppedWeapon", "TTTCDontDropOnDeath", function(owner, wep)
 		if IsValid(wep) and wep:GetNWBool("tttc_class_weapon") then
 			wep:Remove()
 		end
 	end)
 
-	hook.Add("PlayerCanPickupWeapon", "TTTHPickupWeapon", function(ply, wep)
+	hook.Add("PlayerCanPickupWeapon", "TTTCPickupWeapon", function(ply, wep)
 		if IsValid(wep) and wep:GetNWBool("tttc_class_weapon") then
 			return true
 		elseif ply:IsHero() and ply:IsHeroActive() and not ply:GetHeroData().avoidWeaponReset then
@@ -143,7 +143,7 @@ if SERVER then
 		end
 	end)
 
-	net.Receive("TTTHChangeCharge", function(len, ply)
+	net.Receive("TTTCChangeCharge", function(len, ply)
 		local bool = net.ReadBool()
 
 		if not bool then
@@ -153,7 +153,7 @@ if SERVER then
 		ply.charging = bool
 	end)
 
-	net.Receive("TTTHChooseHeroOption", function(len, ply)
+	net.Receive("TTTCChooseHeroOption", function(len, ply)
 		local opt = net.ReadBool()
 
 		local opt1, opt2 = ply:GetHeroOptions()
@@ -173,7 +173,7 @@ if SERVER then
 		end
 	end)
 else -- CLIENT
-	hook.Add("TTTPrepareRound", "TTTHResetHeroes", function()
+	hook.Add("TTTPrepareRound", "TTTCResetHeroes", function()
 		for _, v in ipairs(player.GetAll()) do
 			v:SetHero(nil)
 
@@ -181,7 +181,7 @@ else -- CLIENT
 		end
 	end)
 
-	net.Receive("TTTHSyncHero", function(len)
+	net.Receive("TTTCSyncHero", function(len)
 		local ply = net.ReadEntity()
 		local hr = net.ReadUInt(HERO_BITS)
 
@@ -197,7 +197,7 @@ else -- CLIENT
 	end)
 
 	-- TODO remove hook if disabled ttt2_classes cvar
-	hook.Add("TTTScoreboardColumns", "TTTHScoreboardHero", function(pnl)
+	hook.Add("TTTScoreboardColumns", "TTTCScoreboardHero", function(pnl)
 		if GetGlobalBool("ttt2_classes") then
 			pnl:AddColumn("Class", function(ply, label)
 				if ply:IsHero() then
@@ -254,7 +254,7 @@ else -- CLIENT
 							ply.charging = time
 
 							if not ply.sendCharge then
-								net.Start("TTTHChangeCharge")
+								net.Start("TTTCChangeCharge")
 								net.WriteBool(true)
 								net.SendToServer()
 
@@ -269,7 +269,7 @@ else -- CLIENT
 						ply.charging = nil
 
 						if ply.sendCharge then
-							net.Start("TTTHChangeCharge")
+							net.Start("TTTCChangeCharge")
 							net.WriteBool(false)
 							net.SendToServer()
 
@@ -282,10 +282,10 @@ else -- CLIENT
 			end
 		end
 	end
-	hook.Add("Think", "TTTHThinkCharge", ThinkCharge)
+	hook.Add("Think", "TTTCThinkCharge", ThinkCharge)
 end
 
-net.Receive("TTTHActivateHero", function(len, ply)
+net.Receive("TTTCActivateHero", function(len, ply)
 	local reset = false
 
 	if not GetGlobalBool("ttt2_classes") then
@@ -308,17 +308,17 @@ net.Receive("TTTHActivateHero", function(len, ply)
 		ply:HeroActivate()
 
 		if SERVER then
-			net.Start("TTTHActivateHero")
+			net.Start("TTTCActivateHero")
 			net.Send(ply)
 		end
 	elseif SERVER then
-		net.Start("TTTHResetChargingWaiting")
+		net.Start("TTTCResetChargingWaiting")
 		net.Send(ply)
 	end
 end)
 
 if CLIENT then
-	net.Receive("TTTHResetChargingWaiting", function(len)
+	net.Receive("TTTCResetChargingWaiting", function(len)
 		LocalPlayer().chargingWaiting = nil
 	end)
 end
@@ -339,7 +339,7 @@ if CLIENT then
 	end)
 end
 
-net.Receive("TTTHDeactivateHero", function(len, ply)
+net.Receive("TTTCDeactivateHero", function(len, ply)
 	ply = ply or LocalPlayer()
 
 	if not IsValid(ply) then return end
@@ -347,12 +347,12 @@ net.Receive("TTTHDeactivateHero", function(len, ply)
 	ply:HeroDeactivate()
 
 	if SERVER then
-		net.Start("TTTHDeactivateHero")
+		net.Start("TTTCDeactivateHero")
 		net.Send(ply)
 	end
 end)
 
-net.Receive("TTTHAbortHero", function(len, ply)
+net.Receive("TTTCAbortHero", function(len, ply)
 	ply = ply or LocalPlayer()
 
 	if not IsValid(ply) then return end
@@ -366,7 +366,7 @@ net.Receive("TTTHAbortHero", function(len, ply)
 	end
 
 	if SERVER then
-		net.Start("TTTHAbortHero")
+		net.Start("TTTCAbortHero")
 		net.Send(ply)
 	end
 end)

@@ -20,7 +20,7 @@ concommand.Add("ttt_force_class", force_class, nil, nil, FCVAR_CHEAT)
 
 local function classes_index(ply)
 	if ply:IsAdmin() then
-		ply:ChatPrint("[TTTH] classes_index...")
+		ply:ChatPrint("[TTTC] classes_index...")
 		ply:ChatPrint("-----------------")
 		ply:ChatPrint("[Hero] | [Index]")
 
@@ -41,7 +41,7 @@ function CLASS.HeroActivate()
 	if not ply:IsActive() then return end
 
 	if ply.classOpt1 and GetGlobalBool("ttt_classes_option") then
-		net.Start("TTTHChooseHeroOption")
+		net.Start("TTTCChooseHeroOption")
 		net.WriteBool(false)
 		net.SendToServer()
 
@@ -68,7 +68,7 @@ function CLASS.HeroActivate()
 			if charging then
 				if ply.charging and ply.charging + charging - 1 <= time then
 					if ply.sendCharge then
-						net.Start("TTTHChangeCharge")
+						net.Start("TTTCChangeCharge")
 						net.WriteBool(false)
 						net.SendToServer()
 
@@ -83,10 +83,10 @@ function CLASS.HeroActivate()
 
 			ply.chargingWaiting = true
 
-			net.Start("TTTHActivateHero")
+			net.Start("TTTCActivateHero")
 			net.SendToServer()
 		elseif not hd.unstoppable then
-			net.Start("TTTHDeactivateHero")
+			net.Start("TTTCDeactivateHero")
 			net.SendToServer()
 		end
 	end
@@ -101,7 +101,7 @@ function CLASS.AbortHero()
 	if not ply:IsActive() then return end
 
 	if ply.classOpt2 and GetGlobalBool("ttt_classes_option") then
-		net.Start("TTTHChooseHeroOption")
+		net.Start("TTTCChooseHeroOption")
 		net.WriteBool(true)
 		net.SendToServer()
 
@@ -117,7 +117,7 @@ function CLASS.AbortHero()
 
 		if not hd or hd.deactivated then return end
 
-		net.Start("TTTHAbortHero")
+		net.Start("TTTCAbortHero")
 		net.SendToServer()
 	end
 end

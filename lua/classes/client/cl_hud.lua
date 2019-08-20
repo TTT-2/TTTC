@@ -73,10 +73,10 @@ local function HeroInfo(client)
 	end
 end
 
-hook.Add("HUDPaint", "TTTHHeroHudPaint", function()
+hook.Add("HUDPaint", "TTTCHeroHudPaint", function()
 	local client = LocalPlayer()
 
-	if hook.Run("HUDShouldDraw", "TTTHHeroInfo") then
+	if hook.Run("HUDShouldDraw", "TTTCHeroInfo") then
 		HeroInfo(client)
 	end
 end)
