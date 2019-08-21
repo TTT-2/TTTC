@@ -79,7 +79,7 @@ if SERVER then
 					table.remove(CLASS.FREECLASSES, rand)
 				end
 
-				if not GetGlobalBool("ttt_classes_limited") then
+				if not GetGlobalBool("ttt_classes_option") then
 					v:UpdateClass(hr)
 				else
 					local opt = hr
