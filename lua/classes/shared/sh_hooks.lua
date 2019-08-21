@@ -235,7 +235,7 @@ else -- CLIENT
 
 			if not hd.deactivated
 			and not ply:HasClassActive()
-			and (not ply:SetClassCooldownTS() or ply:SetClassCooldownTS() + ply:GetClassCooldown() <= time)
+			and (not ply:GetClassCooldownTS() or ply:GetClassCooldownTS() + ply:GetClassCooldown() <= time)
 			and charging
 			and not ply.chargingWaiting
 			and not hook.Run("TTTCPreventCharging", ply)
@@ -300,7 +300,7 @@ net.Receive("TTTCActivateClass", function(len, ply)
 
 	local hd = ply:GetClassData()
 
-	if not hd or hd.deactivated or not ply:IsActive() or ply:SetClassCooldownTS() and ply:SetClassCooldownTS() + ply:GetClassCooldown() > CurTime() or hook.Run("TTTCPreventClassActivation", ply) then
+	if not hd or hd.deactivated or not ply:IsActive() or ply:GetClassCooldownTS() and ply:GetClassCooldownTS() + ply:GetClassCooldown() > CurTime() or hook.Run("TTTCPreventClassActivation", ply) then
 		reset = true
 	end
 

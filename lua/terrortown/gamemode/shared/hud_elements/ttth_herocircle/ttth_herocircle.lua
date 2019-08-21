@@ -82,7 +82,7 @@ if CLIENT then
 		local abilityDuration = client:GetClassTime()
 		local abilityTimeSince = timeNow - (abilityStartTime or 0) -- 0 just to avoid arithmetic with nil exception, this never has a real use case and will never even be used
 
-		local cooldownStartTime = client:SetClassCooldownTS()
+		local cooldownStartTime = client:GetClassCooldownTS()
 		local cooldownDuration = client:GetClassCooldown()
 		local cooldownTimeSince = timeNow - (cooldownStartTime or 0) -- 0 just to avoid arithmetic with nil exception, this never has a real use case and will never even be used
 

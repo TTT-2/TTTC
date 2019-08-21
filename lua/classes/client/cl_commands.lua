@@ -59,7 +59,7 @@ function CLASS.ClassActivate()
 
 		local time = CurTime()
 
-		if ply:SetClassCooldownTS() and ply:SetClassCooldownTS() + ply:GetClassCooldown() > time then return end
+		if ply:GetClassCooldownTS() and ply:GetClassCooldownTS() + ply:GetClassCooldown() > time then return end
 
 		if not ply:HasClassActive() then
 			local charging = hd.charging
