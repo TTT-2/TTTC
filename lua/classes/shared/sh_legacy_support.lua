@@ -24,14 +24,15 @@ function AddCustomClass(name, classData, conVarData)
 end
 
 local function ConvertLegacyClasses()
-        for name, class in pairs(CLASSES) do
+        for name, class in SortedPairs(CLASSES) do
                 CLASS.AddClass(name, 
                 {
                         color = class.color or COLOR_WHITE,
                         name = string.lower(name),
                         passiveWeapons = table.Copy(class.weapons),
                         passiveItems = table.Copy(class.items),
-                        passive = true
+                        passive = true,
+                        deactivated = true
                 })
 
                 class.index = CLASS.CLASSES[name].index
@@ -45,10 +46,10 @@ if SERVER then
                 hook.Run("TTTCPreClassesInit")
         
                 hook.Run("TTTCClassesInit")
-        
-                hook.Run("TTTCPostClassesInit")
 
                 ConvertLegacyClasses()
+
+                hook.Run("TTTCPostClassesInit")
         end)
 
 	local function EncodeForStream(tbl)
