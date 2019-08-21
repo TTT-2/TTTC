@@ -14,6 +14,7 @@ if SERVER then
 	util.AddNetworkString("TTTCSyncClasses")
 	util.AddNetworkString("TTTCSyncClass")
 	util.AddNetworkString("TTTCClassesSynced")
+	util.AddNetworkString("TTTCManipulateClassWeapons")
 	util.AddNetworkString("TTTCSyncClassWeapon")
 	util.AddNetworkString("TTTCSyncClassItem")
 	util.AddNetworkString("TTTCActivateClass")
@@ -25,12 +26,14 @@ if SERVER then
 	local ttt2_classes = CreateConVar("ttt2_classes", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
 	local ttt_classes_limited = CreateConVar("ttt_classes_limited", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
 	local ttt_classes_option = CreateConVar("ttt_classes_option", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
+	local ttt_classes_extraslot = CreateConVar("ttt_classes_extraslot", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
 
 	-- ConVar syncing
 	hook.Add("TTT2SyncGlobals", "AddClassesGlobals", function()
 		SetGlobalBool(ttt2_classes:GetName(), ttt2_classes:GetBool())
 		SetGlobalBool(ttt_classes_limited:GetName(), ttt_classes_limited:GetBool())
 		SetGlobalBool(ttt_classes_option:GetName(), ttt_classes_option:GetBool())
+		SetGlobalBool(ttt_classes_extraslot:GetName(), ttt_classes_extraslot:GetBool())
 	end)
 
 	cvars.AddChangeCallback(ttt2_classes:GetName(), function(name, old, new)
@@ -44,4 +47,8 @@ if SERVER then
 	cvars.AddChangeCallback(ttt_classes_option:GetName(), function(name, old, new)
 		SetGlobalBool(name, tobool(new))
 	end, "TTT2ClassesCVSyncingOptions")
+
+	cvars.AddChangeCallback(ttt_classes_extraslot:GetName(), function(name, old, new)
+		SetGlobalBool(name, tobool(new))
+	end, "TTT2ClassesCVSyncingExtraslot")
 end

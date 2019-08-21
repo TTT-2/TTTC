@@ -93,6 +93,17 @@ function plymeta:SetClassActive(b)
 	self.classActive = b
 end
 
+function plymeta:ManipulateClassWeapons()
+	for _, w in pairs(self:GetWeapons()) do
+		if w:GetNWBool("tttc_class_weapon") then
+			w.Kind = WEAPON_CLASS
+
+			w.AllowDrop = false
+		end
+	end
+	self.refresh_inventory_cache = true
+end
+
 function plymeta:ClassActivate()
 	if CLIENT then
 		self.chargingWaiting = nil
@@ -280,8 +291,6 @@ if SERVER then
 			end
 
 			rt:SetNWBool("tttc_class_weapon", true)
-
-			rt.AllowDrop = false
 		end
 
 		return rt
@@ -409,6 +418,14 @@ if SERVER then
 				end
 			end
 		end
+
+		if GetGlobalBool("ttt_classes_extraslot") then
+			self:ManipulateClassWeapons()
+			timer.Simple(0.1, function()
+				net.Start("TTTCManipulateClassWeapons")
+				net.Send(self)
+			end)
+		end
 	end
 
 	function plymeta:RemovePassiveClassEquipment()
@@ -470,6 +487,10 @@ else
 		if not IsValid(client) or opt1 == 0 or opt2 == 0 then return end
 
 		client:SetClassOptions(opt1, opt2)
+	end)
+
+	net.Receive("TTTCManipulateClassWeapons", function()
+		LocalPlayer():ManipulateClassWeapons()
 	end)
 
 	function plymeta:ServerUpdateClasses(index)
