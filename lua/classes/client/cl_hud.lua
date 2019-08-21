@@ -7,10 +7,10 @@ local draw = draw
 local math = math
 
 -- Fonts
-surface.CreateFont("CurrentHero", {font = "Trebuchet24", size = 28, weight = 1000})
-surface.CreateFont("CurrentHeroDesc", {font = "Trebuchet24", size = 52, weight = 1000})
-surface.CreateFont("HeroDesc", {font = "Trebuchet24", size = 14, weight = 1000})
-surface.CreateFont("HeroDescOptions", {font = "Trebuchet24", size = 28, weight = 1000})
+surface.CreateFont("CurrentClass", {font = "Trebuchet24", size = 28, weight = 1000})
+surface.CreateFont("CurrentClassDesc", {font = "Trebuchet24", size = 52, weight = 1000})
+surface.CreateFont("ClassDesc", {font = "Trebuchet24", size = 14, weight = 1000})
+surface.CreateFont("ClassDescOptions", {font = "Trebuchet24", size = 28, weight = 1000})
 
 local margin = 10
 local default_hud_x = margin
@@ -41,7 +41,7 @@ local function ShadowedText(text, font, x, y, color, xalign, yalign)
 	draw.SimpleText(text, font, x, y, color, xalign, yalign)
 end
 
-local function HeroInfo(client)
+local function ClassInfo(client)
 	if huds and HUDManager then
 		local hud = huds.GetStored(HUDManager.GetHUD())
 
@@ -69,15 +69,15 @@ local function HeroInfo(client)
 		local text = CLASS.GetClassTranslation(hd)
 
 		-- Draw current class state
-		ShadowedText(text, "CurrentHero", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
+		ShadowedText(text, "CurrentClass", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
 	end
 end
 
-hook.Add("HUDPaint", "TTTCHeroHudPaint", function()
+hook.Add("HUDPaint", "TTTCClassHudPaint", function()
 	local client = LocalPlayer()
 
-	if hook.Run("HUDShouldDraw", "TTTCHeroInfo") then
-		HeroInfo(client)
+	if hook.Run("HUDShouldDraw", "TTTCClassInfo") then
+		ClassInfo(client)
 	end
 end)
 

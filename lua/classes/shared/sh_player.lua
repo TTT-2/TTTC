@@ -38,11 +38,11 @@ function plymeta:SetClass(class)
 	end
 
 	if not class then -- reset
-		hook.Run("TTTCResetHero", self)
+		hook.Run("TTTCResetClass", self)
 
 		self:SetClassOptions() -- reset class options
 
-		self.oldHero = nil
+		self.oldClass = nil
 		self.classAmount = nil
 		self.classTime = nil
 		self.classTimestamp = nil
@@ -127,19 +127,19 @@ function plymeta:ClassActivate()
 		self:SetClassTimestamp(CurTime())
 
 		if SERVER then
-			self.savedHeroInventoryItems = table.Copy(self:GetEquipmentItems())
+			self.savedClassInventoryItems = table.Copy(self:GetEquipmentItems())
 
 			if not hd.avoidWeaponReset then
 
 				-- reset inventory
-				self.savedHeroInventory = {}
+				self.savedClassInventory = {}
 
 				-- save inventory
 				for _, v in pairs(self:GetWeapons()) do
-					self.savedHeroInventory[#self.savedHeroInventory + 1] = {cls = WEPS.GetClass(v), clip1 = v:Clip1(), clip2 = v:Clip2()}
+					self.savedClassInventory[#self.savedClassInventory + 1] = {cls = WEPS.GetClass(v), clip1 = v:Clip1(), clip2 = v:Clip2()}
 				end
 
-				self.savedHeroInventoryWeapon = WEPS.GetClass(self:GetActiveWeapon())
+				self.savedClassInventoryWeapon = WEPS.GetClass(self:GetActiveWeapon())
 
 				-- take inventory
 				self:StripWeapons()
@@ -158,7 +158,7 @@ function plymeta:ClassActivate()
 
 			timer.Create("tttc_deactivation_" .. self:UniqueID(), hd.time, 1, function()
 				if IsValid(ply) then
-					net.Start("TTTCDeactivateHero")
+					net.Start("TTTCDeactivateClass")
 					net.Send(ply)
 
 					ply:ClassDeactivate()
@@ -168,7 +168,7 @@ function plymeta:ClassActivate()
 
 		self:SetClassActive(true)
 	elseif SERVER then
-		net.Start("TTTCDeactivateHero")
+		net.Start("TTTCDeactivateClass")
 		net.Send(self)
 
 		self:ClassDeactivate()
@@ -202,8 +202,8 @@ function plymeta:ClassDeactivate()
 			self:RemoveAbility()
 
 			-- give inventory
-			if self.savedHeroInventory then
-				for _, tbl in ipairs(self.savedHeroInventory) do
+			if self.savedClassInventory then
+				for _, tbl in ipairs(self.savedClassInventory) do
 					if tbl.cls then
 						local wep = self:Give(tbl.cls)
 
@@ -215,13 +215,13 @@ function plymeta:ClassDeactivate()
 				end
 			end
 
-			if self.savedHeroInventoryWeapon then
-				self:SelectWeapon(self.savedHeroInventoryWeapon)
+			if self.savedClassInventoryWeapon then
+				self:SelectWeapon(self.savedClassInventoryWeapon)
 			end
 
 			-- reset inventory
-			self.savedHeroInventory = nil
-			self.savedHeroInventoryItems = nil
+			self.savedClassInventory = nil
+			self.savedClassInventoryItems = nil
 		end
 	end
 
@@ -240,7 +240,7 @@ end
 if SERVER then
 	function plymeta:UpdateClass(index)
 		if self:HasClassActive() then
-			net.Start("TTTCDeactivateHero")
+			net.Start("TTTCDeactivateClass")
 			net.Send(self)
 
 			self:ClassDeactivate()
@@ -367,7 +367,7 @@ if SERVER then
 
 		if self.classItems then
 			for _, equip in ipairs(self.classItems) do
-				if not self.savedHeroInventoryItems or not table.HasValue(self.savedHeroInventoryItems, equip) then -- not had this item
+				if not self.savedClassInventoryItems or not table.HasValue(self.savedClassInventoryItems, equip) then -- not had this item
 					self:RemoveItem(equip)
 				end
 			end

@@ -44,10 +44,10 @@ function CLASS.AddClass(name, classData, conVarData)
 	CLASS.CLASSES[name] = classData
 
 	-- spend an answer
-	print("[TTTC][CLASS] Added '" .. name .. "' Hero (index: " .. i .. ")")
+	print("[TTTC][CLASS] Added '" .. name .. "' Class (index: " .. i .. ")")
 end
 
-function CLASS.SortHeroesTable(tbl)
+function CLASS.SortClassesTable(tbl)
 	table.sort(tbl, function(a, b)
 		return a.index < b.index
 	end)
@@ -63,14 +63,14 @@ function CLASS.GetClassDataByIndex(index)
 	return nil
 end
 
-function CLASS.GetSortedHeroes()
+function CLASS.GetSortedClasses()
 	local classes = {}
 
 	for _, v in pairs(CLASS.CLASSES) do
 		classes[v.index] = v
 	end
 
-	CLASS.SortHeroesTable(classes)
+	CLASS.SortClassesTable(classes)
 
 	return classes
 end

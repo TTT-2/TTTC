@@ -57,7 +57,7 @@ if CLIENT then
 		BaseClass.PerformLayout(self)
 	end
 
-	function HUDELEMENT:DrawHeroOption(ty, key, name, color)
+	function HUDELEMENT:DrawClassOption(ty, key, name, color)
 		local x = self:GetPos().x
 		local w = self:GetSize().w
 
@@ -67,7 +67,7 @@ if CLIENT then
 		-- draw key
 		local pad = 40
 
-		draw.SimpleText(key, "HeroDescOptions", x + pad * 0.5, ty + self.optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(key, "ClassDescOptions", x + pad * 0.5, ty + self.optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 		-- draw line
 		local line = 3
@@ -75,7 +75,7 @@ if CLIENT then
 		draw.RoundedBoxEx(0, x + pad + 1, ty + 3, 1, self.optionHeight - 6, COLOR_WHITE)
 
 		-- draw class name
-		draw.SimpleText(name, "HeroDesc", x + pad + line + (w - pad - line) * 0.5, ty + self.optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(name, "ClassDesc", x + pad + line + (w - pad - line) * 0.5, ty + self.optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 		-- draw lines around the element
 		self:DrawLines(x, ty, w, self.optionHeight)
@@ -98,11 +98,11 @@ if CLIENT then
 		local hd1 = CLASS.GetClassDataByIndex(client.classOpt1)
 		local hd2 = CLASS.GetClassDataByIndex(client.classOpt2)
 
-		self:DrawHeroOption(y_temp, key1, rawT(hd1.name), hd1.color)
+		self:DrawClassOption(y_temp, key1, rawT(hd1.name), hd1.color)
 
 		y_temp = y_temp + self.optionHeight + 5
 
-		self:DrawHeroOption(y_temp, key2, rawT(hd2.name), hd2.color)
+		self:DrawClassOption(y_temp, key2, rawT(hd2.name), hd2.color)
 
 	end
 

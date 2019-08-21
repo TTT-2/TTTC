@@ -1,10 +1,10 @@
 -- reset (TTTEndRound not triggerd bcus of force restart)
-hook.Add("TTTEndRound", "TTTCResetHeroes", function()
+hook.Add("TTTEndRound", "TTTCResetClasses", function()
 	if SERVER then
 		for _, v in ipairs(player.GetAll()) do
 			v:UpdateClass(nil)
 
-			v.oldHero = nil
+			v.oldClass = nil
 		end
 	else
 		local ply = LocalPlayer()
@@ -15,12 +15,12 @@ hook.Add("TTTEndRound", "TTTCResetHeroes", function()
 end)
 
 -- reset (TTTPrepareRound not triggerd bcus of buggy force restart)
-hook.Add("TTTPrepareRound", "TTTCResetHeroes", function()
+hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
 	if SERVER then
 		for _, v in ipairs(player.GetAll()) do
 			v:UpdateClass(nil)
 
-			v.oldHero = nil
+			v.oldClass = nil
 		end
 	else
 		local ply = LocalPlayer()
@@ -101,23 +101,23 @@ if SERVER then
 			end
 		end
 
-		hook.Run("TTTCPreReceiveHeroes")
+		hook.Run("TTTCPreReceiveClasses")
 
-		hook.Run("TTTCReceiveHeroes")
+		hook.Run("TTTCReceiveClasses")
 
-		hook.Run("TTTCPostReceiveHeroes")
+		hook.Run("TTTCPostReceiveClasses")
 	end)
 
 	hook.Add("DoPlayerDeath", "TTTCPostPlayerDeathSave", function(ply)
-		ply.oldHero = ply.oldHero or ply:GetCustomClass()
+		ply.oldClass = ply.oldClass or ply:GetCustomClass()
 	end)
 
 	-- sync dead players with other players
 	hook.Add("TTTBodyFound", "TTTCBodyFound", function(_, deadply)
-		if GetRoundState() == ROUND_ACTIVE and IsValid(deadply) and deadply.oldHero then
-			net.Start("TTTCSyncHero")
+		if GetRoundState() == ROUND_ACTIVE and IsValid(deadply) and deadply.oldClass then
+			net.Start("TTTCSyncClass")
 			net.WriteEntity(deadply)
-			net.WriteUInt(deadply.oldHero or 0, CLASS_BITS)
+			net.WriteUInt(deadply.oldClass or 0, CLASS_BITS)
 			net.Broadcast()
 		end
 	end)
@@ -153,7 +153,7 @@ if SERVER then
 		ply.charging = bool
 	end)
 
-	net.Receive("TTTCChooseHeroOption", function(len, ply)
+	net.Receive("TTTCChooseClassOption", function(len, ply)
 		local opt = net.ReadBool()
 
 		local opt1, opt2 = ply:GetClassOptions()
@@ -167,21 +167,21 @@ if SERVER then
 		ply:SetClassOptions() -- reset class options
 	end)
 
-	hook.Add("TTTPlayerSpeedModifier", "HeroChargingModifySpeed", function(ply, _, _, noLag)
+	hook.Add("TTTPlayerSpeedModifier", "ClassChargingModifySpeed", function(ply, _, _, noLag)
 		if IsValid(ply) and ply.charging then
 			noLag[1] = noLag[1] * 0.5
 		end
 	end)
 else -- CLIENT
-	hook.Add("TTTPrepareRound", "TTTCResetHeroes", function()
+	hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
 		for _, v in ipairs(player.GetAll()) do
 			v:SetClass(nil)
 
-			v.oldHero = nil
+			v.oldClass = nil
 		end
 	end)
 
-	net.Receive("TTTCSyncHero", function(len)
+	net.Receive("TTTCSyncClass", function(len)
 		local ply = net.ReadEntity()
 		local hr = net.ReadUInt(CLASS_BITS)
 
@@ -193,11 +193,11 @@ else -- CLIENT
 
 		ply:SetClass(hr)
 
-		ply.oldHero = hr
+		ply.oldClass = hr
 	end)
 
 	-- TODO remove hook if disabled ttt2_classes cvar
-	hook.Add("TTTScoreboardColumns", "TTTCScoreboardHero", function(pnl)
+	hook.Add("TTTScoreboardColumns", "TTTCScoreboardClass", function(pnl)
 		if GetGlobalBool("ttt2_classes") then
 			pnl:AddColumn("Class", function(ply, label)
 				if ply:HasClass() then
@@ -206,8 +206,8 @@ else -- CLIENT
 					label:SetColor(hd.color or COLOR_CLASS)
 
 					return CLASS.GetClassTranslation(hd)
-				elseif ply.oldHero then
-					local hd = CLASS.GetClassDataByIndex(ply.oldHero)
+				elseif ply.oldClass then
+					local hd = CLASS.GetClassDataByIndex(ply.oldClass)
 					if hd then
 						label:SetColor(hd.color or COLOR_CLASS)
 
@@ -285,7 +285,7 @@ else -- CLIENT
 	hook.Add("Think", "TTTCThinkCharge", ThinkCharge)
 end
 
-net.Receive("TTTCActivateHero", function(len, ply)
+net.Receive("TTTCActivateClass", function(len, ply)
 	local reset = false
 
 	if not GetGlobalBool("ttt2_classes") then
@@ -308,7 +308,7 @@ net.Receive("TTTCActivateHero", function(len, ply)
 		ply:ClassActivate()
 
 		if SERVER then
-			net.Start("TTTCActivateHero")
+			net.Start("TTTCActivateClass")
 			net.Send(ply)
 		end
 	elseif SERVER then
@@ -330,7 +330,7 @@ local addons_devs = {
 }
 
 if CLIENT then
-	hook.Add("TTT2ScoreboardAddPlayerRow", "TTT2AddHeroesDevs", function(ply)
+	hook.Add("TTT2ScoreboardAddPlayerRow", "TTT2AddClassesDevs", function(ply)
 	    local tsid64 = ply:SteamID64()
 
 	    if addons_devs[tostring(tsid64)] then
@@ -339,7 +339,7 @@ if CLIENT then
 	end)
 end
 
-net.Receive("TTTCDeactivateHero", function(len, ply)
+net.Receive("TTTCDeactivateClass", function(len, ply)
 	ply = ply or LocalPlayer()
 
 	if not IsValid(ply) then return end
@@ -347,12 +347,12 @@ net.Receive("TTTCDeactivateHero", function(len, ply)
 	ply:ClassDeactivate()
 
 	if SERVER then
-		net.Start("TTTCDeactivateHero")
+		net.Start("TTTCDeactivateClass")
 		net.Send(ply)
 	end
 end)
 
-net.Receive("TTTCAbortHero", function(len, ply)
+net.Receive("TTTCAbortClass", function(len, ply)
 	ply = ply or LocalPlayer()
 
 	if not IsValid(ply) then return end
@@ -366,7 +366,7 @@ net.Receive("TTTCAbortHero", function(len, ply)
 	end
 
 	if SERVER then
-		net.Start("TTTCAbortHero")
+		net.Start("TTTCAbortClass")
 		net.Send(ply)
 	end
 end)

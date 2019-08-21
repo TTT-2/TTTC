@@ -22,9 +22,9 @@ local function classes_index(ply)
 	if ply:IsAdmin() then
 		ply:ChatPrint("[TTTC] classes_index...")
 		ply:ChatPrint("-----------------")
-		ply:ChatPrint("[Hero] | [Index]")
+		ply:ChatPrint("[Class] | [Index]")
 
-		for _, v in pairs(CLASS.GetSortedHeroes()) do
+		for _, v in pairs(CLASS.GetSortedClasses()) do
 			ply:ChatPrint(v.name .. " | " .. v.index)
 		end
 
@@ -41,7 +41,7 @@ function CLASS.ClassActivate()
 	if not ply:IsActive() then return end
 
 	if ply.classOpt1 and GetGlobalBool("ttt_classes_option") then
-		net.Start("TTTCChooseHeroOption")
+		net.Start("TTTCChooseClassOption")
 		net.WriteBool(false)
 		net.SendToServer()
 
@@ -83,17 +83,17 @@ function CLASS.ClassActivate()
 
 			ply.chargingWaiting = true
 
-			net.Start("TTTCActivateHero")
+			net.Start("TTTCActivateClass")
 			net.SendToServer()
 		elseif not hd.unstoppable then
-			net.Start("TTTCDeactivateHero")
+			net.Start("TTTCDeactivateClass")
 			net.SendToServer()
 		end
 	end
 end
 concommand.Add("toggleclass", CLASS.ClassActivate, nil, "Activates class ability", {FCVAR_DONTRECORD})
 
-function CLASS.AbortHero()
+function CLASS.AbortClass()
 	if not GetGlobalBool("ttt2_classes") then return end
 
 	local ply = LocalPlayer()
@@ -101,7 +101,7 @@ function CLASS.AbortHero()
 	if not ply:IsActive() then return end
 
 	if ply.classOpt2 and GetGlobalBool("ttt_classes_option") then
-		net.Start("TTTCChooseHeroOption")
+		net.Start("TTTCChooseClassOption")
 		net.WriteBool(true)
 		net.SendToServer()
 
@@ -117,11 +117,11 @@ function CLASS.AbortHero()
 
 		if not hd or hd.deactivated then return end
 
-		net.Start("TTTCAbortHero")
+		net.Start("TTTCAbortClass")
 		net.SendToServer()
 	end
 end
-concommand.Add("abortclass", CLASS.AbortHero, nil, "Abort ability preview", {FCVAR_DONTRECORD})
+concommand.Add("abortclass", CLASS.AbortClass, nil, "Abort ability preview", {FCVAR_DONTRECORD})
 
 hook.Add("Initialize", "TTTCKeyBinds", function()
 	-- Register binding functions
@@ -130,7 +130,7 @@ hook.Add("Initialize", "TTTCKeyBinds", function()
 	end, nil, "TTT Classes", "Class Ability:", KEY_X)
 
 	bind.Register("abortclass", function()
-		CLASS.AbortHero()
+		CLASS.AbortClass()
 	end, nil, "TTT Classes", "Abort ability preview:", KEY_N)
 
 end)

@@ -29,7 +29,7 @@ if CLIENT then
 		return const_defaults
 	end
 
-	function HUDELEMENT:DrawHeroOption(y, key, name, color)
+	function HUDELEMENT:DrawClassOption(y, key, name, color)
 		local x = ScrW() - optionWidth - optionMargin
 
 		-- draw background
@@ -38,7 +38,7 @@ if CLIENT then
 		-- draw key
 		local pad = 40
 
-		draw.SimpleText(key, "HeroDescOptions", x + pad * 0.5, y + optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(key, "ClassDescOptions", x + pad * 0.5, y + optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 		-- draw line
 		local line = 3
@@ -46,7 +46,7 @@ if CLIENT then
 		draw.RoundedBoxEx(0, x + pad + 1, y, 1, optionHeight, COLOR_WHITE)
 
 		-- draw class name
-		draw.SimpleText(name, "HeroDesc", x + pad + line + (optionWidth - pad - line) * 0.5, y + optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(name, "ClassDesc", x + pad + line + (optionWidth - pad - line) * 0.5, y + optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 
 	local rawT
@@ -67,11 +67,11 @@ if CLIENT then
 			local hd1 = CLASS.GetClassDataByIndex(client.classOpt1)
 			local hd2 = CLASS.GetClassDataByIndex(client.classOpt2)
 
-			self:DrawHeroOption(y, key1, rawT(hd1.name), hd1.color)
+			self:DrawClassOption(y, key1, rawT(hd1.name), hd1.color)
 
 			y = y + optionHeight + 5
 
-			self:DrawHeroOption(y, key2, rawT(hd2.name), hd2.color)
+			self:DrawClassOption(y, key2, rawT(hd2.name), hd2.color)
 		end
 	end
 end
