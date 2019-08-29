@@ -11,6 +11,7 @@ if CLIENT then
 	local optionMargin = 20
 	local optionWidth = 200
 	local optionHeight = 40
+	local linePad = 5
 
 	local const_defaults = {
 		basepos = {x = 0, y = 0},
@@ -32,6 +33,7 @@ if CLIENT then
 		self.optionMargin = optionMargin
 		self.optionWidth = optionWidth
 		self.optionHeight = optionHeight
+		self.linePad = linePad
 
 		BaseClass.Initialize(self)
 	end
@@ -53,6 +55,7 @@ if CLIENT then
 		self.optionMargin = optionMargin * self.scale
 		self.optionWidth = optionWidth * self.scale
 		self.optionHeight = optionHeight * self.scale
+		self.linePad = linePad * self.scale
 
 		BaseClass.PerformLayout(self)
 	end
@@ -67,15 +70,15 @@ if CLIENT then
 		-- draw key
 		local pad = 40
 
-		draw.SimpleText(key, "ClassDescOptions", x + pad * 0.5, ty + self.optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.AdvancedText(key, "ClassDescOptions", x + pad * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw line
 		local line = 3
 
-		draw.RoundedBoxEx(0, x + pad + 1, ty + 3, 1, self.optionHeight - 6, COLOR_WHITE)
+		draw.RoundedBoxEx(0, x + pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, COLOR_WHITE)
 
 		-- draw class name
-		draw.SimpleText(name, "ClassDesc", x + pad + line + (w - pad - line) * 0.5, ty + self.optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.AdvancedText(name, "ClassDesc", x + pad + line + (w - pad - line) * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw lines around the element
 		self:DrawLines(x, ty, w, self.optionHeight)
