@@ -98,6 +98,10 @@ if CLIENT then
 			abilityPercentage = 1 -- set ability circle to zero when cooldown is active
 		end
 
+		if hd.endless then
+			abilityPercentage = 0
+		end
+
 		local ttt2HeroesActive = GetGlobalBool("ttt2_heroes")
 		local crystalValid = not ttt2HeroesActive or client:HasCrystal() -- TODO to improve performance, use a var and just update it on destruction
 		local text, icon

@@ -75,7 +75,7 @@ if CLIENT then
 		-- draw line
 		local line = 3
 
-		draw.RoundedBoxEx(0, x + pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, COLOR_WHITE)
+		draw.RoundedBoxEx(0, x + pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, self:GetDefaultFontColor(color))
 
 		-- draw class name
 		draw.AdvancedText(name, "ClassDesc", x + pad + line + (w - pad - line) * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
