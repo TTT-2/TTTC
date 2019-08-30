@@ -16,11 +16,11 @@ if SERVER then
 	resource.AddFile("materials/vgui/ttt/score_logo_heroes.vmt")
 end
 
-local heroPre = "classes/classes/"
-local heroFiles = file.Find(heroPre .. "hero_*.lua", "LUA")
+local classPre = "classes/classes/"
+local classFiles = file.Find(classPre .. "class_*.lua", "LUA")
 
-for _, fl in ipairs(heroFiles) do
-	AddCSLuaFile(heroPre .. fl)
+for _, fl in ipairs(classFiles) do
+	AddCSLuaFile(classPre .. fl)
 end
 
 include("classes/shared/sh_tables.lua")
@@ -35,8 +35,8 @@ if CLIENT then
 	include("classes/client/cl_hud.lua")
 end
 
-for _, fl in ipairs(heroFiles) do
-	include(heroPre .. fl)
+for _, fl in ipairs(classFiles) do
+	include(classPre .. fl)
 end
 
 hook.Add("TTT2HUDUpdated", "TTTCUpdateClassesInfo", function()
