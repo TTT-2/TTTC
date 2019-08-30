@@ -11,6 +11,7 @@ if CLIENT then
 	local optionMargin = 20
 	local optionWidth = 200
 	local optionHeight = 40
+	local pad = 40
 	local linePad = 5
 
 	local const_defaults = {
@@ -33,6 +34,7 @@ if CLIENT then
 		self.optionMargin = optionMargin
 		self.optionWidth = optionWidth
 		self.optionHeight = optionHeight
+		self.pad = pad
 		self.linePad = linePad
 
 		BaseClass.Initialize(self)
@@ -55,6 +57,7 @@ if CLIENT then
 		self.optionMargin = optionMargin * self.scale
 		self.optionWidth = optionWidth * self.scale
 		self.optionHeight = optionHeight * self.scale
+		self.pad = pad * self.scale
 		self.linePad = linePad * self.scale
 
 		BaseClass.PerformLayout(self)
@@ -68,17 +71,15 @@ if CLIENT then
 		self:DrawBg(x, ty, w, self.optionHeight, color)
 
 		-- draw key
-		local pad = 40
-
-		draw.AdvancedText(key, "ClassDescOptions", x + pad * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
+		draw.AdvancedText(key, "ClassDescOptions", x + self.pad * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw line
 		local line = 3
 
-		draw.RoundedBoxEx(0, x + pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, self:GetDefaultFontColor(color))
+		draw.RoundedBoxEx(0, x + self.pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, self:GetDefaultFontColor(color))
 
 		-- draw class name
-		draw.AdvancedText(name, "ClassDesc", x + pad + line + (w - pad - line) * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
+		draw.AdvancedText(name, "ClassDesc", x + self.pad + line + (w - self.pad - line) * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw lines around the element
 		self:DrawLines(x, ty, w, self.optionHeight)

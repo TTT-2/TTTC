@@ -6,11 +6,14 @@ local surface = surface
 local draw = draw
 local math = math
 
+
 -- Fonts
-surface.CreateFont("CurrentClass", {font = "Trebuchet24", size = 28, weight = 1000})
-surface.CreateFont("CurrentClassDesc", {font = "Trebuchet24", size = 52, weight = 1000})
-surface.CreateFont("ClassDesc", {font = "Trebuchet24", size = 14, weight = 1000})
-surface.CreateFont("ClassDescOptions", {font = "Trebuchet24", size = 28, weight = 1000})
+hook.Add("TTT2Initialize", "TTTCCreateAdvancdFonts", function()
+	surface.CreateAdvancedFont("CurrentClass", {font = "Trebuchet24", size = 28, weight = 1000})
+	surface.CreateAdvancedFont("CurrentClassDesc", {font = "Trebuchet24", size = 52, weight = 1000})
+	surface.CreateAdvancedFont("ClassDesc", {font = "Trebuchet24", size = 14, weight = 1000})
+	surface.CreateAdvancedFont("ClassDescOptions", {font = "Trebuchet24", size = 28, weight = 1000})
+end)
 
 local margin = 10
 local default_hud_x = margin
