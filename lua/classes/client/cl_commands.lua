@@ -123,13 +123,21 @@ function CLASS.AbortClass()
 end
 concommand.Add("abortclass", CLASS.AbortClass, nil, "Abort ability preview", {FCVAR_DONTRECORD})
 
+hook.Add("Initialize", "TTTCLanguage", function()
+	LANG.AddToLanguage("English", "ttt2_tttc_abort_ability", "Abort Ability Preview")
+	LANG.AddToLanguage("Deutsch", "ttt2_tttc_abort_ability", "Abbruch Klassen Fähigkeit")
+
+	LANG.AddToLanguage("English", "ttt2_tttc_class_ability", "Class Ability")
+	LANG.AddToLanguage("Deutsch", "ttt2_tttc_class_ability", "Klassen Fähigkeit")
+end)
+
 hook.Add("Initialize", "TTTCKeyBinds", function()
 	-- Register binding functions
 	bind.Register("toggleclass", function()
 		CLASS.ClassActivate()
-	end, nil, "TTT2 Classes", "Class Ability:", KEY_X)
+	end, nil, "TTT2 Classes", "ttt2_tttc_class_ability", KEY_X)
 
 	bind.Register("abortclass", function()
 		CLASS.AbortClass()
-	end, nil, "TTT2 Classes", "Abort ability preview:", KEY_N)
+	end, nil, "TTT2 Classes", "ttt2_tttc_abort_ability", KEY_N)
 end)
