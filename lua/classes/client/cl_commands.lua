@@ -127,10 +127,9 @@ hook.Add("Initialize", "TTTCKeyBinds", function()
 	-- Register binding functions
 	bind.Register("toggleclass", function()
 		CLASS.ClassActivate()
-	end, nil, "TTT Classes", "Class Ability:", KEY_X)
+	end, nil, "TTT2 Classes", "Class Ability:", KEY_X)
 
 	bind.Register("abortclass", function()
 		CLASS.AbortClass()
-	end, nil, "TTT Classes", "Abort ability preview:", KEY_N)
-
+	end, nil, "TTT2 Classes", "Abort ability preview:", KEY_N)
 end)
