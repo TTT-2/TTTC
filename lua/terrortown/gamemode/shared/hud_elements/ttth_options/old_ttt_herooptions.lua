@@ -13,15 +13,21 @@ if CLIENT then
 	local optionHeight = 40
 
 	local const_defaults = {
-							basepos = {x = 0, y = 0},
-							size = {w = optionWidth, h = optionHeight * 2 + optionMargin},
-							minsize = {w = 0, h = 0}
-		}
+		basepos = {x = 0, y = 0},
+		size = {w = optionWidth, h = optionHeight * 2 + optionMargin},
+		minsize = {w = 0, h = 0}
+	}
 
 	function HUDELEMENT:PreInitialize()
 		BaseClass.PreInitialize(self)
 
-		huds.GetStored("old_ttt"):ForceElement(self.id)
+		local hud = huds.GetStored("old_ttt")
+        if hud then
+            hud:ForceElement(self.id)
+        end
+
+        -- set as NOT fallback default
+        self.disabledUnlessForced = true
 	end
 
 	function HUDELEMENT:GetDefaults()
