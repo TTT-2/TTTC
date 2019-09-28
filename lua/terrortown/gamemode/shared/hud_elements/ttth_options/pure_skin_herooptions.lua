@@ -113,6 +113,6 @@ if CLIENT then
 	function HUDELEMENT:ShouldDraw()
 		local client = LocalPlayer()
 
-		return client:IsActive() and GetGlobalBool("ttt_classes_option") and client.classOpt1 and client.classOpt2
+		return client:IsActive() and GetGlobalBool("ttt2_classes") and GetGlobalBool("ttt_classes_option") and client.classOpt1 and client.classOpt2
 	end
 end

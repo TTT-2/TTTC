@@ -54,7 +54,7 @@ if CLIENT then
 	function HUDELEMENT:Draw()
 		local client = LocalPlayer()
 
-		if client:IsActive() and GetGlobalBool("ttt_classes_option") then
+		if client:IsActive() and GetGlobalBool("ttt2_classes") and GetGlobalBool("ttt_classes_option") then
 			if not client.classOpt1 or not client.classOpt2 then return end
 
 			rawT = rawT or LANG.GetRawTranslation
