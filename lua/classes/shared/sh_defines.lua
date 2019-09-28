@@ -7,6 +7,7 @@ CLASS_COOLDOWN = 60
 TTTC = true
 
 if SERVER then
+	util.AddNetworkString("TTTCDropClass")
 	util.AddNetworkString("TTTCSendClass")
 	util.AddNetworkString("TTTCSendClassOptions")
 	util.AddNetworkString("TTTCChooseClassOption")

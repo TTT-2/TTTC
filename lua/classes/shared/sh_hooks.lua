@@ -167,9 +167,27 @@ if SERVER then
 		ply:SetClassOptions() -- reset class options
 	end)
 
+	net.Receive("TTTCDropClass", function(len, ply)
+		hook.Run("TTTCDropClass", ply)
+
+		ply:UpdateClass(nil)
+
+		ply.oldClass = nil
+	end)
+
 	hook.Add("TTTPlayerSpeedModifier", "ClassChargingModifySpeed", function(ply, _, _, noLag)
 		if IsValid(ply) and ply.charging then
 			noLag[1] = noLag[1] * 0.5
+		end
+	end)
+
+	hook.Add("PlayerSay", "TTTCClassCommands", function(ply, text, public)
+		text = string.Trim(string.lower(text))
+
+		if text == "!dropclass" then
+			ply:ConCommand("dropclass")
+
+			return ""
 		end
 	end)
 else -- CLIENT

@@ -1,3 +1,9 @@
+function DropClass(ply)
+	net.Start("TTTCDropClass")
+	net.SendToServer()
+end
+concommand.Add("dropclass", DropClass)
+
 local function force_class(ply, cmd, args, argStr)
 	local class = tonumber(args[1])
 	local i = 0
