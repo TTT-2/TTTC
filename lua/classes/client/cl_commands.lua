@@ -135,6 +135,9 @@ hook.Add("Initialize", "TTTCLanguage", function()
 
 	LANG.AddToLanguage("English", "ttt2_tttc_class_ability", "Class Ability")
 	LANG.AddToLanguage("Deutsch", "ttt2_tttc_class_ability", "Klassen Fähigkeit")
+
+	LANG.AddToLanguage("English", "ttt2_tttc_drop_class", "Drop Class")
+	LANG.AddToLanguage("Deutsch", "ttt2_tttc_drop_class", "Klasse Verlieren")
 end)
 
 hook.Add("Initialize", "TTTCKeyBinds", function()
@@ -146,4 +149,8 @@ hook.Add("Initialize", "TTTCKeyBinds", function()
 	bind.Register("abortclass", function()
 		CLASS.AbortClass()
 	end, nil, "TTT2 Classes", "ttt2_tttc_abort_ability", KEY_N)
+
+	bind.Register("dropclass", function()
+		DropClass()
+	end, nil, "TTT2 Classes", "ttt2_tttc_drop_class")
 end)
