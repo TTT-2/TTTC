@@ -88,14 +88,14 @@ if CLIENT then
 		self:DrawLines(x, ty, w, self.optionHeight)
 	end
 
-	local rawT
+	local tryT
 
 	function HUDELEMENT:Draw()
 		local client = LocalPlayer()
 		local pos = self:GetPos()
 		local y = pos.y
 
-		rawT = rawT or LANG.GetRawTranslation
+		tryT = tryT or LANG.TryTranslation
 
 		local key1 = string.upper(input.GetKeyName(bind.Find("toggleclass")) or "?")
 		local key2 = string.upper(input.GetKeyName(bind.Find("abortclass")) or "?")
@@ -105,17 +105,25 @@ if CLIENT then
 		local hd1 = CLASS.GetClassDataByIndex(client.classOpt1)
 		local hd2 = CLASS.GetClassDataByIndex(client.classOpt2)
 
-		self:DrawClassOption(y_temp, key1, rawT(hd1.name), hd1.color)
+		-- make sure hd1 and hd2 are always defined to make sure the HUD editor is working
+		if not hd1 then	
+			hd1 = {name = "Placeholder Class 1", color = Color(255, 100, 120)}
+		end
+		if not hd2 then	
+			hd2 = {name = "Placeholder Class 2", color = Color(70, 120, 180)}
+		end
+
+		self:DrawClassOption(y_temp, key1, tryT(hd1.name), hd1.color)
 
 		y_temp = y_temp + self.optionHeight + 5
 
-		self:DrawClassOption(y_temp, key2, rawT(hd2.name), hd2.color)
+		self:DrawClassOption(y_temp, key2, tryT(hd2.name), hd2.color)
 
 	end
 
 	function HUDELEMENT:ShouldDraw()
 		local client = LocalPlayer()
 
-		return client:IsActive() and GetGlobalBool("ttt2_classes") and GetGlobalBool("ttt_classes_option") and client.classOpt1 and client.classOpt2
+		return HUDEditor.IsEditing or (client.classOpt1 and client.classOpt2 and client:IsActive() and GetGlobalBool("ttt2_classes") and GetGlobalBool("ttt_classes_option"))
 	end
 end

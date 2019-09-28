@@ -17,10 +17,10 @@ if CLIENT then
 	local diamondMaterial = Material("vgui/ttt/icon_diamond")
 
 	local const_defaults = {
-							basepos = {x = 0, y = 0},
-							size = {w = optionSize, h = optionSize},
-							minsize = {w = 90, h = 90}
-		}
+		basepos = {x = 0, y = 0},
+		size = {w = optionSize, h = optionSize},
+		minsize = {w = 90, h = 90}
+	}
 
 	function HUDELEMENT:Initialize()
 		self.scale = 1.0
@@ -61,7 +61,7 @@ if CLIENT then
 	function HUDELEMENT:ShouldDraw()
 		local client = LocalPlayer()
 
-		return client:HasClass() and client:IsActive()
+		return HUDEditor.IsEditing or (client:HasClass() and client:IsActive())
 	end
 
 	function HUDELEMENT:Draw()
@@ -74,7 +74,7 @@ if CLIENT then
 		local r_optionCircleSize = math.Round(self.optionCircleSize * 0.5) -- radius
 		local r_innerCircleSize = r_w - r_optionCircleSize * 2
 
-		local hd = client:GetClassData()
+		local hd = client:GetClassData() or {}
 		local timeNow = CurTime()
 		local active = client:HasClassActive()
 
@@ -154,7 +154,7 @@ if CLIENT then
 		draw.Arc(1, tx, ty, r_innerCircleSize, r_innerCircleSize, 0, 360, 10, Color(0, 0, 0, 240))
 		draw.Arc(2, tx, ty, 0, r_innerCircleSize, 0, circle, 10, Color(0, 0, 0, 230))
 		draw.Arc(3, tx, ty, r_w, r_optionCircleSize, 0, outer, 2, Color(0, 0, 0, 200))
-		draw.Arc(4, tx, ty, r_w - r_optionCircleSize, r_optionCircleSize, 0, inner * ((hd.charging and not active) and (client.charging and val or 0) or 1), 5, ColorAlpha(hd.color, 170))
+		draw.Arc(4, tx, ty, r_w - r_optionCircleSize, r_optionCircleSize, 0, inner * ((hd.charging and not active) and (client.charging and val or 0) or 1), 5, ColorAlpha(hd.color or Color(255,155,55), 170))
 		--draw.Arc(id, cx, cy, radius, thickness, startang, endang, roughness, color)
 
 		if icon then
