@@ -9,7 +9,7 @@ HUDELEMENT.Base = base
 
 if CLIENT then
 	local optionMargin = 20
-	local optionWidth = 200
+	local optionWidth = 150
 	local optionHeight = 40
 
 	local const_defaults = {
@@ -35,24 +35,24 @@ if CLIENT then
 		return const_defaults
 	end
 
-	function HUDELEMENT:DrawClassOption(y, key, name, color)
-		local x = ScrW() - optionWidth - optionMargin
+	function HUDELEMENT:DrawClassOption(y, key, name, color, key_width)
+		local x = ScrW() - optionWidth - optionMargin - key_width
 
 		-- draw background
-		draw.RoundedBoxEx(0, x, y, optionWidth, optionHeight, color)
+		draw.RoundedBoxEx(0, x, y, optionWidth + key_width, optionHeight, color)
 
 		-- draw key
-		local pad = 40
+		local pad = 20
 
-		draw.SimpleText(key, "ClassDescOptions", x + pad * 0.5, y + optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(key, "ClassDescOptions", x + (key_width + pad) * 0.5, y + optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 		-- draw line
 		local line = 3
 
-		draw.RoundedBoxEx(0, x + pad + 1, y, 1, optionHeight, COLOR_WHITE)
+		draw.RoundedBoxEx(0, x + key_width + pad + 1, y, 1, optionHeight, COLOR_WHITE)
 
 		-- draw class name
-		draw.SimpleText(name, "ClassDesc", x + pad + line + (optionWidth - pad - line) * 0.5, y + optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(name, "ClassDesc", x + pad + line + key_width + (optionWidth - pad - line) * 0.5, y + optionHeight * 0.5, COLOR_WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 
 	local rawT
@@ -73,11 +73,16 @@ if CLIENT then
 			local hd1 = CLASS.GetClassDataByIndex(client.classOpt1)
 			local hd2 = CLASS.GetClassDataByIndex(client.classOpt2)
 
-			self:DrawClassOption(y, key1, rawT(hd1.name), hd1.color)
+			-- get keysize of both bound keys and use the bigger one
+			surface.SetFont("ClassDescOptions")
+			local key_width = surface.GetTextSize(string.upper(key1))
+			key_width = math.max(key_width, surface.GetTextSize(string.upper(key2)))
+
+			self:DrawClassOption(y, key1, rawT(hd1.name), hd1.color, key_width)
 
 			y = y + optionHeight + 5
 
-			self:DrawClassOption(y, key2, rawT(hd2.name), hd2.color)
+			self:DrawClassOption(y, key2, rawT(hd2.name), hd2.color, key_width)
 		end
 	end
 end

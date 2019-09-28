@@ -9,10 +9,10 @@ HUDELEMENT.Base = base
 
 if CLIENT then
 	local optionMargin = 20
-	local optionWidth = 200
+	local optionWidth = 150
 	local optionHeight = 40
-	local pad = 40
-	local linePad = 5
+	local pad = 20
+	local linePad = 8
 
 	local const_defaults = {
 		basepos = {x = 0, y = 0},
@@ -66,23 +66,23 @@ if CLIENT then
 		BaseClass.PerformLayout(self)
 	end
 
-	function HUDELEMENT:DrawClassOption(ty, key, name, color)
-		local x = self:GetPos().x
-		local w = self:GetSize().w
+	function HUDELEMENT:DrawClassOption(ty, key, name, color, key_width)
+		local x = self:GetPos().x - key_width - self.pad
+		local w = self:GetSize().w + key_width + self.pad
 
 		-- draw bg and shadow
 		self:DrawBg(x, ty, w, self.optionHeight, color)
 
 		-- draw key
-		draw.AdvancedText(key, "ClassDescOptions", x + self.pad * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
+		draw.AdvancedText(key, "ClassDescOptions", x + (self.pad + key_width) * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw line
 		local line = 3
 
-		draw.RoundedBoxEx(0, x + self.pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, self:GetDefaultFontColor(color))
+		draw.RoundedBoxEx(0, x + key_width + self.pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, self:GetDefaultFontColor(color))
 
 		-- draw class name
-		draw.AdvancedText(name, "ClassDesc", x + self.pad + line + (w - self.pad - line) * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
+		draw.AdvancedText(name, "ClassDesc", x + self.pad + key_width + line + (w - self.pad - line - key_width) * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw lines around the element
 		self:DrawLines(x, ty, w, self.optionHeight)
@@ -113,12 +113,16 @@ if CLIENT then
 			hd2 = {name = "Placeholder Class 2", color = Color(70, 120, 180)}
 		end
 
-		self:DrawClassOption(y_temp, key1, tryT(hd1.name), hd1.color)
+		-- get keysize of both bound keys and use the bigger one
+        surface.SetFont("ClassDescOptions")
+        local key_width = surface.GetTextSize(string.upper(key1))
+        key_width = math.max(key_width, surface.GetTextSize(string.upper(key2)))
+
+		self:DrawClassOption(y_temp, key1, tryT(hd1.name), hd1.color, key_width)
 
 		y_temp = y_temp + self.optionHeight + 5
 
-		self:DrawClassOption(y_temp, key2, tryT(hd2.name), hd2.color)
-
+		self:DrawClassOption(y_temp, key2, tryT(hd2.name), hd2.color, key_width)
 	end
 
 	function HUDELEMENT:ShouldDraw()
