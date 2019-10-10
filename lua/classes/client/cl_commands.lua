@@ -1,6 +1,8 @@
 function DropClass(ply)
-	net.Start("TTTCDropClass")
-	net.SendToServer()
+	if LocalPlayer():HasClass() then
+		net.Start("TTTCDropClass")
+		net.SendToServer()
+	end
 end
 concommand.Add("dropclass", DropClass)
 
