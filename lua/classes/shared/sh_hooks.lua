@@ -37,19 +37,25 @@ if SERVER then
 		if not GetGlobalBool("ttt2_classes") then return end
 
 		for _, v in pairs(CLASS.CLASSES) do
-			if GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then
-				local b = true
-				local r = GetConVar("tttc_class_" .. v.name .. "_random"):GetInt()
+			if not GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then continue end
+			
+			local b = true
+			local r = GetConVar("tttc_class_" .. v.name .. "_random"):GetInt()
 
-				if r > 0 and r < 100 then
-					b = math.random(1, 100) <= r
-				elseif r <= 0 then
-					b = false
-				end
+			if r > 0 and r < 100 then
+				b = math.random(100) <= r
+			elseif r <= 0 then
+				b = false
+			end
+			
+			local nextEntry = #CLASS.AVAILABLECLASSES + 1
 
-				if b then
-					table.insert(CLASS.AVAILABLECLASSES, v)
-				end
+			if b then
+				CLASS.AVAILABLECLASSES[nextEntry] = v
+				
+				local maxEntries = GetGlobalInt("ttt_classes_different")
+				
+				if maxEntries > 0 and nextEntry >= maxEntries then break end
 			end
 		end
 
@@ -68,11 +74,11 @@ if SERVER then
 				local hr
 
 				if #CLASS.FREECLASSES == 0 then
-					local rand = math.random(1, #CLASS.AVAILABLECLASSES)
+					local rand = math.random(#CLASS.AVAILABLECLASSES)
 
 					hr = CLASS.AVAILABLECLASSES[rand].index
 				else
-					local rand = math.random(1, #CLASS.FREECLASSES)
+					local rand = math.random(#CLASS.FREECLASSES)
 
 					hr = CLASS.FREECLASSES[rand].index
 
@@ -85,11 +91,11 @@ if SERVER then
 					local opt = hr
 
 					if #CLASS.FREECLASSES == 0 then
-						local rand = math.random(1, #CLASS.AVAILABLECLASSES)
+						local rand = math.random(#CLASS.AVAILABLECLASSES)
 
 						hr = CLASS.AVAILABLECLASSES[rand].index
 					else
-						local rand = math.random(1, #CLASS.FREECLASSES)
+						local rand = math.random(#CLASS.FREECLASSES)
 
 						hr = CLASS.FREECLASSES[rand].index
 

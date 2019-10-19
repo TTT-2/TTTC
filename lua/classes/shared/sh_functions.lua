@@ -33,10 +33,10 @@ function CLASS.AddClass(name, classData, conVarData)
 
 	if CLIENT and classData.langs and not oldId then
 		hook.Add("TTT2FinishedLoading", "TTTCInitLangFor" .. classData.name, function()
-			if LANG then
-				for lang, key in pairs(classData.langs) do
-					LANG.AddToLanguage(lang, classData.name, key)
-				end
+			if not LANG then return end
+				
+			for lang, key in pairs(classData.langs) do
+				LANG.AddToLanguage(lang, classData.name, key)
 			end
 		end)
 	end
