@@ -47,13 +47,12 @@ if SERVER then
 			elseif r <= 0 then
 				b = false
 			end
-			
-			local nextEntry = #CLASS.AVAILABLECLASSES + 1
 
 			if b then
-				CLASS.AVAILABLECLASSES[nextEntry] = v
-				
+				local nextEntry = #CLASS.AVAILABLECLASSES + 1
 				local maxEntries = GetGlobalInt("ttt_classes_different")
+			
+				CLASS.AVAILABLECLASSES[nextEntry] = v
 				
 				if maxEntries > 0 and nextEntry >= maxEntries then break end
 			end
