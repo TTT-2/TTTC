@@ -97,7 +97,7 @@ hook.Add("TTTRenderEntityInfo", "tttc_add_class_info", function(data, params)
 
 	params.displayInfo.desc[#params.displayInfo.desc + 1] = {
 		text = GetLang("ttt2_tttc_class") .. ": " .. CLASS.GetClassTranslation(class_data),
-		color = class_data.color
+		color = class_data and class_data.color or COLOR_LGRAY
 	}
 end)
 
