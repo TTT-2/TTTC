@@ -74,15 +74,15 @@ if CLIENT then
 		self:DrawBg(x, ty, w, self.optionHeight, color)
 
 		-- draw key
-		draw.AdvancedText(key, "ClassDescOptions", x + (self.pad + key_width) * 0.5, ty + self.optionHeight * 0.5, draw.GetDefaultColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
+		draw.AdvancedText(key, "ClassDescOptions", x + (self.pad + key_width) * 0.5, ty + self.optionHeight * 0.5, util.GetDefaultColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw line
 		local line = 3
 
-		draw.RoundedBoxEx(0, x + key_width + self.pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, draw.GetDefaultColor(color))
+		draw.RoundedBoxEx(0, x + key_width + self.pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, util.GetDefaultColor(color))
 
 		-- draw class name
-		draw.AdvancedText(name, "ClassDesc", x + self.pad + key_width + line + (w - self.pad - line - key_width) * 0.5, ty + self.optionHeight * 0.5, draw.GetDefaultColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
+		draw.AdvancedText(name, "ClassDesc", x + self.pad + key_width + line + (w - self.pad - line - key_width) * 0.5, ty + self.optionHeight * 0.5, util.GetDefaultColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw lines around the element
 		self:DrawLines(x, ty, w, self.optionHeight)
