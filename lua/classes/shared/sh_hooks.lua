@@ -180,12 +180,6 @@ if SERVER then
 		ply.oldClass = nil
 	end)
 
-	hook.Add("TTTPlayerSpeedModifier", "ClassChargingModifySpeed", function(ply, _, _, noLag)
-		if IsValid(ply) and ply.charging then
-			noLag[1] = noLag[1] * 0.5
-		end
-	end)
-
 	hook.Add("PlayerSay", "TTTCClassCommands", function(ply, text, public)
 		text = string.Trim(string.lower(text))
 
@@ -307,6 +301,13 @@ else -- CLIENT
 	end
 	hook.Add("Think", "TTTCThinkCharge", ThinkCharge)
 end
+
+-- shared because it is predicted
+hook.Add("TTTPlayerSpeedModifier", "ClassChargingModifySpeed", function(ply, _, _, refTbl)
+	if not IsValid(ply) or not ply.charging then return end
+
+	refTbl[1] = refTbl[1] * 0.5
+end)
 
 net.Receive("TTTCActivateClass", function(len, ply)
 	local reset = false
