@@ -81,6 +81,8 @@ if CLIENT then
 	function CLASS.GetClassTranslation(hd)
 		GetLang = GetLang or LANG.GetRawTranslation
 
-		return GetLang(hd.name) or hd.name or "-UNKNOWN-"
+		local classname = hd and (GetLang(hd.name) or hd.name)
+
+		return classname and classname or ("- " .. GetLang("ttt2_tttc_class_unknown") .. " -")
 	end
 end

@@ -24,12 +24,12 @@ if CLIENT then
 		BaseClass.PreInitialize(self)
 
 		local hud = huds.GetStored("pure_skin")
-        if hud then
-            hud:ForceElement(self.id)
-        end
+		if hud then
+			hud:ForceElement(self.id)
+		end
 
-        -- set as fallback default, other skins have to be set to true!
-        self.disabledUnlessForced = false
+		-- set as fallback default, other skins have to be set to true!
+		self.disabledUnlessForced = false
 	end
 
 	function HUDELEMENT:Initialize()
@@ -74,15 +74,15 @@ if CLIENT then
 		self:DrawBg(x, ty, w, self.optionHeight, color)
 
 		-- draw key
-		draw.AdvancedText(key, "ClassDescOptions", x + (self.pad + key_width) * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
+		draw.AdvancedText(key, "ClassDescOptions", x + (self.pad + key_width) * 0.5, ty + self.optionHeight * 0.5, util.GetDefaultColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw line
 		local line = 3
 
-		draw.RoundedBoxEx(0, x + key_width + self.pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, self:GetDefaultFontColor(color))
+		draw.RoundedBoxEx(0, x + key_width + self.pad + 1, ty + self.linePad, 1, self.optionHeight - 2 * self.linePad, util.GetDefaultColor(color))
 
 		-- draw class name
-		draw.AdvancedText(name, "ClassDesc", x + self.pad + key_width + line + (w - self.pad - line - key_width) * 0.5, ty + self.optionHeight * 0.5, self:GetDefaultFontColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
+		draw.AdvancedText(name, "ClassDesc", x + self.pad + key_width + line + (w - self.pad - line - key_width) * 0.5, ty + self.optionHeight * 0.5, util.GetDefaultColor(color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, true, self.scale)
 
 		-- draw lines around the element
 		self:DrawLines(x, ty, w, self.optionHeight)
@@ -114,9 +114,9 @@ if CLIENT then
 		end
 
 		-- get keysize of both bound keys and use the bigger one
-        surface.SetFont("ClassDescOptions")
-        local key_width = surface.GetTextSize(string.upper(key1))
-        key_width = math.max(key_width, surface.GetTextSize(string.upper(key2)))
+		surface.SetFont("ClassDescOptions")
+		local key_width = surface.GetTextSize(string.upper(key1))
+		key_width = math.max(key_width, surface.GetTextSize(string.upper(key2)))
 
 		self:DrawClassOption(y_temp, key1, tryT(hd1.name), hd1.color, key_width)
 

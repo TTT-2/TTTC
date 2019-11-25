@@ -1,5 +1,6 @@
 -- caching
 local GetRawLang
+local GetLang
 local cached_arcs = {}
 
 local surface = surface
@@ -82,6 +83,22 @@ hook.Add("HUDPaint", "TTTCClassHudPaint", function()
 	if hook.Run("HUDShouldDraw", "TTTCClassInfo") then
 		ClassInfo(client)
 	end
+end)
+
+----- target ID
+hook.Add("TTTRenderEntityInfo", "tttc_add_class_info", function(data, params)
+	-- has to be a player
+	if not data.ent:IsPlayer() then return end
+	if GetRoundState() == ROUND_PREP then return end
+
+	GetLang = GetLang or LANG.GetRawTranslation
+
+	local class_data = data.ent:GetClassData()
+
+	params.displayInfo.desc[#params.displayInfo.desc + 1] = {
+		text = GetLang("ttt2_tttc_class") .. ": " .. CLASS.GetClassTranslation(class_data),
+		color = class_data and class_data.color or COLOR_LGRAY
+	}
 end)
 
 ------------------------ Experimental -------------------------
