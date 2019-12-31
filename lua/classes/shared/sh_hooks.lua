@@ -2,9 +2,10 @@
 hook.Add("TTTEndRound", "TTTCResetClasses", function()
 	if SERVER then
 		for _, v in ipairs(player.GetAll()) do
-			v:UpdateClass(nil)
-
-			v.oldClass = nil
+			net.Start("TTTCSyncClass")
+			net.WriteEntity(v)
+			net.WriteUInt(v:GetCustomClass() or 0, CLASS_BITS)
+			net.Broadcast()
 		end
 	else
 		local ply = LocalPlayer()
