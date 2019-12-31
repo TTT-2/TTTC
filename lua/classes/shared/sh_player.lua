@@ -258,7 +258,6 @@ if SERVER then
 		end
 
 		self:RemoveAbility()
-		self:RemovePassiveClassEquipment()
 		self:SetClass(index)
 
 		net.Start("TTTCSendClass")
@@ -388,13 +387,16 @@ if SERVER then
 		self.classItems = nil
 	end
 
-	function plymeta:GivePassiveClassEquipment()
-		local hd = self:GetClassData()
+	function plymeta:GivePassiveClassEquipment(classData)
+		classData = classData or self:GetClassData()
+		if not classData then return end
+		
+		if classData.onClassSet and isfunction(classData.onClassSet) then
+			classData.onClassSet(self)
+		end
 
-		if not hd then return end
-
-		local passiveItems = hd.passiveItems
-		local passiveWeapons = hd.passiveWeapons
+		local passiveItems = classData.passiveItems
+		local passiveWeapons = classData.passiveWeapons
 
 		self.passiveNewItems = {}
 		self.passiveNewWeps = {}
@@ -428,7 +430,13 @@ if SERVER then
 		end
 	end
 
-	function plymeta:RemovePassiveClassEquipment()
+	function plymeta:RemovePassiveClassEquipment(classData)
+		classData = classData or self:GetClassData()
+
+		if classData and classData.onClassUnset and isfunction(classData.onClassUnset) then
+			classData.onClassUnset(self)
+		end
+
 		local passiveWeapons = self.passiveNewWeps
 		local passiveItems = self.passiveNewItems
 
