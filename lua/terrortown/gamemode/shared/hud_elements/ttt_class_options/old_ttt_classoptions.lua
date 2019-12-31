@@ -22,12 +22,12 @@ if CLIENT then
 		BaseClass.PreInitialize(self)
 
 		local hud = huds.GetStored("old_ttt")
-        if hud then
-            hud:ForceElement(self.id)
-        end
+		if hud then
+			hud:ForceElement(self.id)
+		end
 
-        -- set as NOT fallback default
-        self.disabledUnlessForced = true
+		-- set as NOT fallback default
+		self.disabledUnlessForced = true
 	end
 
 	function HUDELEMENT:GetDefaults()

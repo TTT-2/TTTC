@@ -39,7 +39,7 @@ if SERVER then
 
 		for _, v in pairs(CLASS.CLASSES) do
 			if not GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then continue end
-			
+
 			local b = true
 			local r = GetConVar("tttc_class_" .. v.name .. "_random"):GetInt()
 
@@ -52,9 +52,9 @@ if SERVER then
 			if b then
 				local nextEntry = #CLASS.AVAILABLECLASSES + 1
 				local maxEntries = GetGlobalInt("ttt_classes_different")
-			
+
 				CLASS.AVAILABLECLASSES[nextEntry] = v
-				
+
 				if maxEntries > 0 and nextEntry >= maxEntries then break end
 			end
 		end

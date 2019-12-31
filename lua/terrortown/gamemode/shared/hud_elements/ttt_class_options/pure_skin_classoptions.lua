@@ -106,10 +106,10 @@ if CLIENT then
 		local hd2 = CLASS.GetClassDataByIndex(client.classOpt2)
 
 		-- make sure hd1 and hd2 are always defined to make sure the HUD editor is working
-		if not hd1 then	
+		if not hd1 then
 			hd1 = {name = "Placeholder Class 1", color = Color(255, 100, 120)}
 		end
-		if not hd2 then	
+		if not hd2 then
 			hd2 = {name = "Placeholder Class 2", color = Color(70, 120, 180)}
 		end
 

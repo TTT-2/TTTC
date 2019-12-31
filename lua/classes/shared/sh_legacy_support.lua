@@ -136,7 +136,7 @@ else
 				hook.Run("TTTCPreFinishedClassesSync", client, first)
 				hook.Run("TTTCFinishedClassesSync", client, first)
 				hook.Run("TTTCPostFinishedClassesSync", client, first)
-				
+
 				ConvertLegacyClasses()
 			end
 
