@@ -130,7 +130,6 @@ if SERVER then
 
 	hook.Add("TTTCUpdateClass", "TTTCUpdatePassiveItems", function(ply, old, new)
 		if not hook.Run("TTTCPreventClassEquipment", ply) then
-			print("hook update class")
 			ply:RemovePassiveClassEquipment(CLASS.GetClassDataByIndex(old))
 			ply:GivePassiveClassEquipment(CLASS.GetClassDataByIndex(new))
 		end
