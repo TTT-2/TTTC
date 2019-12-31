@@ -235,6 +235,7 @@ else -- CLIENT
 					return "-" -- died without any class
 				end
 
+				label:SetColor(Color(255, 255, 255))
 				return "?"
 			end, 100)
 		end
