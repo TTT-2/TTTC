@@ -118,6 +118,16 @@ if SERVER then
 		ply.oldClass = ply.oldClass or ply:GetCustomClass()
 	end)
 
+	hook.Add("PlayerSpawn", "TTTCRemoveClassOnSpawn", function(ply)
+		if GetRoundState() == ROUND_ACTIVE then
+			if not GetGlobalBool("ttt_classes_keep_on_respawn") then
+				ply:UpdateClass(nil)
+			else
+				hook.Run("TTTCPlayerRespawnedWithClass", ply)
+			end
+		end
+	end)
+
 	-- sync dead players with other players
 	hook.Add("TTTBodyFound", "TTTCBodyFound", function(_, deadply)
 		if GetRoundState() == ROUND_ACTIVE and IsValid(deadply) and deadply.oldClass then
