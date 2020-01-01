@@ -128,13 +128,6 @@ if SERVER then
 		end
 	end)
 
-	hook.Add("TTTCUpdateClass", "TTTCUpdatePassiveItems", function(ply, old, new)
-		if not hook.Run("TTTCPreventClassEquipment", ply) then
-			ply:RemovePassiveClassEquipment(CLASS.GetClassDataByIndex(old))
-			ply:GivePassiveClassEquipment(CLASS.GetClassDataByIndex(new))
-		end
-	end)
-
 	hook.Add("PlayerDroppedWeapon", "TTTCDontDropOnDeath", function(owner, wep)
 		if IsValid(wep) and wep:GetNWBool("tttc_class_weapon") then
 			wep:Remove()

@@ -57,6 +57,11 @@ function plymeta:SetClass(class)
 
 	if old ~= class then
 		hook.Run("TTTCUpdateClass", self, old, class)
+
+		if not hook.Run("TTTCPreventClassEquipment", ply) then
+			ply:RemovePassiveClassEquipment(CLASS.GetClassDataByIndex(old))
+			ply:GivePassiveClassEquipment(CLASS.GetClassDataByIndex(class))
+		end
 	end
 end
 
