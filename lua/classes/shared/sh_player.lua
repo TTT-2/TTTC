@@ -58,9 +58,9 @@ function plymeta:SetClass(class)
 	if old ~= class then
 		hook.Run("TTTCUpdateClass", self, old, class)
 
-		if not hook.Run("TTTCPreventClassEquipment", ply) then
-			ply:RemovePassiveClassEquipment(CLASS.GetClassDataByIndex(old))
-			ply:GivePassiveClassEquipment(CLASS.GetClassDataByIndex(class))
+		if not hook.Run("TTTCPreventClassEquipment", self) then
+			self:RemovePassiveClassEquipment(CLASS.GetClassDataByIndex(old))
+			self:GivePassiveClassEquipment(CLASS.GetClassDataByIndex(class))
 		end
 	end
 end
@@ -253,6 +253,85 @@ function plymeta:ClassDeactivate()
 	end
 end
 
+function plymeta:GivePassiveClassEquipment(classData)
+	classData = classData or self:GetClassData()
+	if not classData then return end
+	
+	if classData.onClassSet and isfunction(classData.onClassSet) then
+		classData.onClassSet(self)
+	end
+
+	if CLIENT then return end
+
+	local passiveItems = classData.passiveItems
+	local passiveWeapons = classData.passiveWeapons
+
+	self.passiveNewItems = {}
+	self.passiveNewWeps = {}
+
+	if passiveItems and #passiveItems > 0 then
+		for _, v in ipairs(passiveItems) do
+			if not self:HasEquipmentItem(v) then -- not had this item
+				self:GiveClassEquipmentItem(v)
+
+				self.passiveNewItems[#self.passiveNewItems + 1] = v
+			end
+		end
+	end
+
+	if passiveWeapons and #passiveWeapons > 0 then
+		for _, v in ipairs(passiveWeapons) do
+			if not self:HasWeapon(v) then
+				self:GiveClassWeapon(v, true)
+
+				self.passiveNewWeps[#self.passiveNewWeps + 1] = v
+			end
+		end
+	end
+
+	if GetGlobalBool("ttt_classes_extraslot") then
+		self:ManipulateClassWeapons()
+		timer.Simple(0.1, function()
+			net.Start("TTTCManipulateClassWeapons")
+			net.Send(self)
+		end)
+	end
+end
+
+function plymeta:RemovePassiveClassEquipment(classData)
+	classData = classData or self:GetClassData()
+
+	if classData and classData.onClassUnset and isfunction(classData.onClassUnset) then
+		classData.onClassUnset(self)
+	end
+
+	if CLIENT then return end
+
+	local passiveWeapons = self.passiveNewWeps
+	local passiveItems = self.passiveNewItems
+
+	if passiveWeapons then
+		for _, wep in ipairs(passiveWeapons) do
+			if self:HasWeapon(wep) then
+				self:StripWeapon(wep)
+			end
+		end
+	end
+
+	self.passiveNewWeps = nil
+
+	-- maybe problems if you have the item already bought
+	if passiveItems then
+		for _, equip in ipairs(passiveItems) do
+			self:RemoveItem(equip)
+		end
+
+		self:SendEquipment()
+	end
+
+	self.passiveNewItems = nil
+end
+
 if SERVER then
 	function plymeta:UpdateClass(index)
 		if self:HasClassActive() then
@@ -390,81 +469,6 @@ if SERVER then
 
 		self.classWeapons = nil
 		self.classItems = nil
-	end
-
-	function plymeta:GivePassiveClassEquipment(classData)
-		classData = classData or self:GetClassData()
-		if not classData then return end
-		
-		if classData.onClassSet and isfunction(classData.onClassSet) then
-			classData.onClassSet(self)
-		end
-
-		local passiveItems = classData.passiveItems
-		local passiveWeapons = classData.passiveWeapons
-
-		self.passiveNewItems = {}
-		self.passiveNewWeps = {}
-
-		if passiveItems and #passiveItems > 0 then
-			for _, v in ipairs(passiveItems) do
-				if not self:HasEquipmentItem(v) then -- not had this item
-					self:GiveClassEquipmentItem(v)
-
-					self.passiveNewItems[#self.passiveNewItems + 1] = v
-				end
-			end
-		end
-
-		if passiveWeapons and #passiveWeapons > 0 then
-			for _, v in ipairs(passiveWeapons) do
-				if not self:HasWeapon(v) then
-					self:GiveClassWeapon(v, true)
-
-					self.passiveNewWeps[#self.passiveNewWeps + 1] = v
-				end
-			end
-		end
-
-		if GetGlobalBool("ttt_classes_extraslot") then
-			self:ManipulateClassWeapons()
-			timer.Simple(0.1, function()
-				net.Start("TTTCManipulateClassWeapons")
-				net.Send(self)
-			end)
-		end
-	end
-
-	function plymeta:RemovePassiveClassEquipment(classData)
-		classData = classData or self:GetClassData()
-
-		if classData and classData.onClassUnset and isfunction(classData.onClassUnset) then
-			classData.onClassUnset(self)
-		end
-
-		local passiveWeapons = self.passiveNewWeps
-		local passiveItems = self.passiveNewItems
-
-		if passiveWeapons then
-			for _, wep in ipairs(passiveWeapons) do
-				if self:HasWeapon(wep) then
-					self:StripWeapon(wep)
-				end
-			end
-		end
-
-		self.passiveNewWeps = nil
-
-		-- maybe problems if you have the item already bought
-		if passiveItems then
-			for _, equip in ipairs(passiveItems) do
-				self:RemoveItem(equip)
-			end
-
-			self:SendEquipment()
-		end
-
-		self.passiveNewItems = nil
 	end
 
 	net.Receive("TTTCClientSendClasses", function(len, ply)
