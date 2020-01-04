@@ -120,7 +120,9 @@ if SERVER then
 
 	hook.Add("PlayerSpawn", "TTTCRemoveClassOnSpawn", function(ply)
 		if GetRoundState() == ROUND_ACTIVE then
-			if not GetGlobalBool("ttt_classes_keep_on_respawn") then
+			local cd = ply:GetClassData()
+
+			if not GetGlobalBool("ttt_classes_keep_on_respawn") or cd and cd.surpressKeepOnRespawn then
 				ply:UpdateClass(nil)
 			else
 				hook.Run("TTTCPlayerRespawnedWithClass", ply)
