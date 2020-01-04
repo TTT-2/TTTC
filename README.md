@@ -62,10 +62,11 @@ classData.weapons = {}
 classData.items = {}
 
 -- A function that is called when this class is given to a player
--- You can use the hook "TTTCPreventClassEquipment" to prevent this function & equipment hand-out to run
+-- You can use the hook "TTTCPreventClassEquipment" to prevent this function & equipment hand-out to happen
 classData.onClassSet = function(ply) [default: nil]
 
 -- A function that is called when this class is removed from a player
+-- You can use the hook "TTTCPreventClassRemovement" to prevent this function & equipment removement to happen
 classData.onClassUnset = function(ply) [default: nil]
 
 -- A function that is called on activation of an ability. If avoidWeaponReset is equal to false
