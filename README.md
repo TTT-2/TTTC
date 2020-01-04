@@ -61,7 +61,7 @@ classData.weapons = {}
 -- removed when the ability is disabled.
 classData.items = {}
 
--- A function that is called when this class is given to a player
+-- A function that is called when this class is given to a player after class change or on respawn
 -- You can use the hook "TTTCPreventClassEquipment" to prevent this function & equipment hand-out to happen
 classData.onClassSet = function(ply) [default: nil]
 

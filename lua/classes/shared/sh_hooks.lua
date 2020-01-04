@@ -125,6 +125,7 @@ if SERVER then
 			if not GetGlobalBool("ttt_classes_keep_on_respawn") or cd and cd.surpressKeepOnRespawn then
 				ply:UpdateClass(nil)
 			else
+				ply:GivePassiveClassEquipment()
 				hook.Run("TTTCPlayerRespawnedWithClass", ply)
 			end
 		end
