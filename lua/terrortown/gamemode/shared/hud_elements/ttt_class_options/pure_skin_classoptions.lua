@@ -118,11 +118,11 @@ if CLIENT then
 		local key_width = surface.GetTextSize(string.upper(key1))
 		key_width = math.max(key_width, surface.GetTextSize(string.upper(key2)))
 
-		self:DrawClassOption(y_temp, key1, tryT(hd1.name), hd1.color, key_width)
+		self:DrawClassOption(y_temp, key1, tryT("tttc_class_" .. hd1.name .. "_name"), hd1.color, key_width)
 
 		y_temp = y_temp + self.optionHeight + 5
 
-		self:DrawClassOption(y_temp, key2, tryT(hd2.name), hd2.color, key_width)
+		self:DrawClassOption(y_temp, key2, tryT("tttc_class_" .. hd2.name .. "_name"), hd2.color, key_width)
 	end
 
 	function HUDELEMENT:ShouldDraw()

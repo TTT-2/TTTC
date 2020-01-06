@@ -58,6 +58,17 @@ function plymeta:SetClass(class)
 	if old ~= class then
 		hook.Run("TTTCUpdateClass", self, old, class)
 	end
+
+	-- show popup if new class is set
+	if CLIENT and class and GetGlobalBool("ttt_classes_show_popup", false) then
+		local hd = self:GetClassData()
+
+		EPOP:AddMessage(
+			LANG.TryTranslation("tttc_class_" .. hd.name .. "_name"),
+			LANG.TryTranslation("tttc_class_" .. hd.name .. "_desc"),
+			10
+		)
+	end
 end
 
 function plymeta:GetClassCooldown()
