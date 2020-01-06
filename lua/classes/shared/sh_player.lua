@@ -65,7 +65,7 @@ function plymeta:SetClass(class)
 
 		EPOP:AddMessage(
 			LANG.TryTranslation("tttc_class_" .. hd.name .. "_name"),
-			LANG.TryTranslation("tttc_class_" .. hd.name .. "_desc"),
+			hd.lang.desc and LANG.TryTranslation("tttc_class_" .. hd.name .. "_desc") or nil,
 			10
 		)
 	end
