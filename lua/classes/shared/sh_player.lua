@@ -63,11 +63,16 @@ function plymeta:SetClass(class)
 	if CLIENT and class and GetGlobalBool("ttt_classes_show_popup", false) then
 		local hd = self:GetClassData()
 
-		EPOP:AddMessage(
-			LANG.TryTranslation("tttc_class_" .. hd.name .. "_name"),
-			hd.lang.desc and LANG.TryTranslation("tttc_class_" .. hd.name .. "_desc") or nil,
-			10
-		)
+		if hd.lang then
+			EPOP:AddMessage(
+				{
+					text = LANG.TryTranslation("tttc_class_" .. hd.name .. "_name"),
+					color = hd.color
+				},
+				hd.lang.desc and LANG.TryTranslation("tttc_class_" .. hd.name .. "_desc") or nil,
+				12
+			)
+		end
 	end
 end
 
