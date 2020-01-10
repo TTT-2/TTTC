@@ -61,6 +61,14 @@ classData.weapons = {}
 -- removed when the ability is disabled.
 classData.items = {}
 
+-- A function that is called when this class is given to a player after class change or on respawn
+-- You can use the hook "TTTCPreventClassEquipment" to prevent this function & equipment hand-out to happen
+classData.onClassSet = function(ply) [default: nil]
+
+-- A function that is called when this class is removed from a player
+-- You can use the hook "TTTCPreventClassRemovement" to prevent this function & equipment removement to happen
+classData.onClassUnset = function(ply) [default: nil]
+
 -- A function that is called on activation of an ability. If avoidWeaponReset is equal to false
 -- wepons will be removed prior to this function call.
 classData.onActivate = function(ply) [default: nil]
@@ -106,6 +114,13 @@ classData.unstoppable = <boolean> -- [default: false]
 
 -- If false, all weapons will be removed while the player uses their ability.
 classData.avoidWeaponReset = <boolean> -- [default: false]
+
+-- If true, the player won't get the class back on respawn, no matter how the ConVar "ttt_classes_keep_on_respawn" is set
+classData.surpressKeepOnRespawn = <boolean> -- [default: false]
+
+-- Should be set to true, if the class is getting active after the players death and should not get removed after death. 
+-- This information is important for other addons like "TTTC Class Dropper"
+classData.activeDuringDeath = <boolean> -- [default: false]
 ```
 
 Check out [this folder](https://github.com/TTT-2/ttt2h-pack-default/tree/master/lua/classes/classes) for a bunch of examples or [this class](https://github.com/TTT-2/tttc-class_shooter/blob/master/lua/classes/classes/class_shooter.lua) for a really simple example.
