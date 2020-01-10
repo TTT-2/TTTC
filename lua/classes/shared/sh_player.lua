@@ -68,7 +68,7 @@ function plymeta:SetClass(class)
 	end
 
 	-- show popup if new class is set
-	if CLIENT and class and GetGlobalBool("ttt_classes_show_popup", false) then
+	if CLIENT and class and old ~= class and self == LocalPlayer() and GetGlobalBool("ttt_classes_show_popup", false) then
 		local hd = self:GetClassData()
 
 		if hd.lang then
