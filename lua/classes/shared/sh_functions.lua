@@ -31,12 +31,16 @@ function CLASS.AddClass(name, classData, conVarData)
 	classData.endless = classData.endless or false
 	classData.passive = classData.passive or false
 
-	if CLIENT and classData.langs and not oldId then
+	if CLIENT and classData.lang and not oldId then
 		hook.Add("TTT2FinishedLoading", "TTTCInitLangFor" .. classData.name, function()
 			if not LANG then return end
 
-			for lang, key in pairs(classData.langs) do
-				LANG.AddToLanguage(lang, classData.name, key)
+			for lang, text in pairs(classData.lang.name) do
+				LANG.AddToLanguage(lang, "tttc_class_" .. classData.name .. "_name", text)
+			end
+
+			for lang, text in pairs(classData.lang.desc) do
+				LANG.AddToLanguage(lang, "tttc_class_" .. classData.name .. "_desc", text)
 			end
 		end)
 	end
@@ -81,7 +85,7 @@ if CLIENT then
 	function CLASS.GetClassTranslation(hd)
 		GetLang = GetLang or LANG.GetRawTranslation
 
-		local classname = hd and (GetLang(hd.name) or hd.name)
+		local classname = hd and (GetLang("tttc_class_" .. hd.name .. "_name") or hd.name)
 
 		return classname and classname or ("- " .. GetLang("ttt2_tttc_class_unknown") .. " -")
 	end

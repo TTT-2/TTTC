@@ -66,6 +66,22 @@ function plymeta:SetClass(class)
 			self:GivePassiveClassEquipment(CLASS.GetClassDataByIndex(class))
 		end
 	end
+
+	-- show popup if new class is set
+	if CLIENT and class and GetGlobalBool("ttt_classes_show_popup", false) then
+		local hd = self:GetClassData()
+
+		if hd.lang then
+			EPOP:AddMessage(
+				{
+					text = LANG.TryTranslation("tttc_class_" .. hd.name .. "_name"),
+					color = hd.color
+				},
+				hd.lang.desc and LANG.TryTranslation("tttc_class_" .. hd.name .. "_desc") or nil,
+				12
+			)
+		end
+	end
 end
 
 function plymeta:GetClassCooldown()

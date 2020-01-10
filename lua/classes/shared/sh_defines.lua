@@ -30,6 +30,7 @@ if SERVER then
 	local ttt_classes_option = CreateConVar("ttt_classes_option", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
 	local ttt_classes_extraslot = CreateConVar("ttt_classes_extraslot", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
 	local ttt_classes_keep_on_respawn = CreateConVar("ttt_classes_keep_on_respawn", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
+	local ttt_classes_show_popup = CreateConVar("ttt_classes_show_popup", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
 
 	-- ConVar syncing
 	hook.Add("TTT2SyncGlobals", "AddClassesGlobals", function()
@@ -39,6 +40,7 @@ if SERVER then
 		SetGlobalBool(ttt_classes_option:GetName(), ttt_classes_option:GetBool())
 		SetGlobalBool(ttt_classes_extraslot:GetName(), ttt_classes_extraslot:GetBool())
 		SetGlobalBool(ttt_classes_keep_on_respawn:GetName(), ttt_classes_keep_on_respawn:GetBool())
+		SetGlobalBool(ttt_classes_show_popup:GetName(), ttt_classes_show_popup:GetBool())
 	end)
 
 	cvars.AddChangeCallback(ttt2_classes:GetName(), function(name, old, new)
@@ -64,4 +66,8 @@ if SERVER then
 	cvars.AddChangeCallback(ttt_classes_keep_on_respawn:GetName(), function(name, old, new)
 		SetGlobalBool(name, tobool(new))
 	end, "TTT2ClassesCVSyncingRespawn")
+
+	cvars.AddChangeCallback(ttt_classes_show_popup:GetName(), function(name, old, new)
+		SetGlobalBool(name, tobool(new))
+	end, "TTT2ClassesCVSyncingPopup")
 end
