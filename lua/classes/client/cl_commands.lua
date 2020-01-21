@@ -146,6 +146,9 @@ hook.Add("Initialize", "TTTCLanguage", function()
 
 	LANG.AddToLanguage("English", "ttt2_tttc_class_unknown", "UNKNOWN")
 	LANG.AddToLanguage("Deutsch", "ttt2_tttc_class_unknown", "UNBEKANNT")
+
+	LANG.AddToLanguage("English", "ttt2_tttc_class_desc_not_provided", "No class description provided, please switch to the new class format.")
+	LANG.AddToLanguage("Deutsch", "ttt2_tttc_class_desc_not_provided", "Keine Klassenbeschreibung verfügbar, bitte wechsel zum neuen Klassensystem.")
 end)
 
 hook.Add("Initialize", "TTTCKeyBinds", function()

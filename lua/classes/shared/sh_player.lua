@@ -80,6 +80,16 @@ function plymeta:SetClass(class)
 				hd.lang.desc and LANG.TryTranslation("tttc_class_" .. hd.name .. "_desc") or nil,
 				12
 			)
+		else
+			-- fallback popup for legacy classes
+			EPOP:AddMessage(
+				{
+					text = LANG.TryTranslation(hd.name),
+					color = hd.color
+				},
+				LANG.TryTranslation("ttt2_tttc_class_desc_not_provided"),
+				12
+			)
 		end
 	end
 end

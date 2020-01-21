@@ -80,13 +80,19 @@ function CLASS.GetSortedClasses()
 end
 
 if CLIENT then
-	local GetLang
+	local TryT
 
 	function CLASS.GetClassTranslation(hd)
-		GetLang = GetLang or LANG.GetRawTranslation
+		TryT = TryT or LANG.TryTranslation
 
-		local classname = hd and (GetLang("tttc_class_" .. hd.name .. "_name") or hd.name)
+		if not hd then
+			return ("- " .. TryT("ttt2_tttc_class_unknown") .. " -")
+		end
 
-		return classname and classname or ("- " .. GetLang("ttt2_tttc_class_unknown") .. " -")
+		if hd.langs then
+			return (TryT("tttc_class_" .. hd.name .. "_name")
+		end
+
+		return TryT(hd.name)
 	end
 end
