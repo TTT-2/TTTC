@@ -242,6 +242,7 @@ else -- CLIENT
 				end
 
 				label:SetColor(Color(255, 255, 255))
+
 				return "?"
 			end, 100)
 		end

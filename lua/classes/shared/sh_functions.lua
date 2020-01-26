@@ -86,11 +86,11 @@ if CLIENT then
 		TryT = TryT or LANG.TryTranslation
 
 		if not hd then
-			return ("- " .. TryT("ttt2_tttc_class_unknown") .. " -")
+			return "- " .. TryT("ttt2_tttc_class_unknown") .. " -"
 		end
 
-		if hd.langs then
-			return (TryT("tttc_class_" .. hd.name .. "_name")
+		if hd.lang then
+			return TryT("tttc_class_" .. hd.name .. "_name")
 		end
 
 		return TryT(hd.name)
