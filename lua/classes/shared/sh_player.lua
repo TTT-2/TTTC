@@ -285,7 +285,7 @@ end
 function plymeta:GivePassiveClassEquipment(classData)
 	classData = classData or self:GetClassData()
 	if not classData then return end
-	
+
 	if classData.onClassSet and isfunction(classData.onClassSet) then
 		classData.onClassSet(self)
 	end

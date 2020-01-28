@@ -318,6 +318,36 @@ hook.Add("TTTPlayerSpeedModifier", "ClassChargingModifySpeed", function(ply, _, 
 	refTbl[1] = refTbl[1] * 0.5
 end)
 
+-- handle class removal on death / disconnect
+if SERVER then
+	local function ClassDeinit(ply)
+		if not IsValid(ply) then return end
+
+		-- handle class deactivation
+		ply:ClassDeactivate()
+
+		-- do it on the client as well
+		net.Start("TTTCDeactivateClass")
+		net.Send(ply)
+
+		-- handle class abort
+		local hd = ply:GetClassData()
+
+		if ply.prepareActivation and isfunction(hd.onFinishPreparingActivation) then
+			hd.onFinishPreparingActivation(ply)
+
+			ply.prepareActivation = nil
+		end
+
+		-- do it on the client as well
+		net.Start("TTTCAbortClass")
+		net.Send(ply)
+	end
+
+	hook.Add("PlayerDeath", "TTTC_deinit_death", ClassDeinit)
+	hook.Add("PlayerDisconnected", "TTTC_deinit_disconnect", ClassDeinit)
+end
+
 net.Receive("TTTCActivateClass", function(len, ply)
 	local reset = false
 
@@ -364,11 +394,11 @@ local addons_devs = {
 
 if CLIENT then
 	hook.Add("TTT2ScoreboardAddPlayerRow", "TTT2AddClassesDevs", function(ply)
-	    local tsid64 = ply:SteamID64()
+		local tsid64 = ply:SteamID64()
 
-	    if addons_devs[tostring(tsid64)] then
-	        AddTTT2AddonDev(tsid64)
-	    end
+		if addons_devs[tostring(tsid64)] then
+			AddTTT2AddonDev(tsid64)
+		end
 	end)
 end
 
