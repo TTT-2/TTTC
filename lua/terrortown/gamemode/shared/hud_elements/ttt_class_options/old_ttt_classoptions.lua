@@ -78,11 +78,11 @@ if CLIENT then
 			local key_width = surface.GetTextSize(string.upper(key1))
 			key_width = math.max(key_width, surface.GetTextSize(string.upper(key2)))
 
-			self:DrawClassOption(y, key1, rawT("tttc_class_" .. hd1.name .. "_name"), hd1.color, key_width)
+			self:DrawClassOption(y, key1,  CLASS.GetClassTranslation(hd1), hd1.color, key_width)
 
 			y = y + optionHeight + 5
 
-			self:DrawClassOption(y, key2, rawT("tttc_class_" .. hd2.name .. "_name"), hd2.color, key_width)
+			self:DrawClassOption(y, key2,  CLASS.GetClassTranslation(hd2), hd2.color, key_width)
 		end
 	end
 end
