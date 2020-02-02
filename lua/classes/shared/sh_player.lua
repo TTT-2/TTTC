@@ -150,7 +150,11 @@ function plymeta:ClassActivate()
 
 	local hd = self:GetClassData()
 
-	if not hd or not self:IsActive() or isfunction(hd.checkActivation) and not hd.checkActivation(self) or hd.amount and hd.amount <= self.classAmount then return end
+	if not hd or not self:IsActive()
+		or isfunction(hd.checkActivation) and not hd.checkActivation(self)
+		or hd.amount and hd.amount <= self.classAmount
+		or self:HasClassActive()
+	then return end
 
 	if isfunction(hd.onPrepareActivation) and not self.prepareActivation then
 		self.prepareActivation = true
