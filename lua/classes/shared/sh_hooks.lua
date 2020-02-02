@@ -321,7 +321,7 @@ end)
 -- handle class removal on death / disconnect
 if SERVER then
 	local function ClassDeinit(ply)
-		if not IsValid(ply) then return end
+		if not IsValid(ply) or not ply:HasClassActive() then return end
 
 		-- handle class deactivation
 		ply:ClassDeactivate()
