@@ -37,7 +37,27 @@ if SERVER then
 
 		if not GetGlobalBool("ttt2_classes") then return end
 
-		for _, v in pairs(CLASS.CLASSES) do
+		local maxEntries = GetGlobalInt("ttt_classes_different")
+		local classAmount = table.Count(CLASS.CLASSES)
+
+		local classes = {}
+
+		-- if the amount of available classes is smaller than the amount of classes to
+		-- be selected, the class array should be shuffled
+		if maxEntries > 0 and classAmount >= maxEntries then
+			local num_index = 1
+			for _, v in pairs(CLASS.CLASSES) do
+				classes[num_index] = v
+
+				num_index = num_index + 1
+			end
+
+			table.Shuffle(classes)
+		else
+			classes = CLASS.CLASSES
+		end
+
+		for _, v in pairs(classes) do
 			if not GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then continue end
 
 			local b = true
@@ -51,7 +71,6 @@ if SERVER then
 
 			if b then
 				local nextEntry = #CLASS.AVAILABLECLASSES + 1
-				local maxEntries = GetGlobalInt("ttt_classes_different")
 
 				CLASS.AVAILABLECLASSES[nextEntry] = v
 
