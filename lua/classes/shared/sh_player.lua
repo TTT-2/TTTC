@@ -504,6 +504,14 @@ if SERVER then
 		self.classItems = nil
 	end
 
+	function plymeta:SyncClassState()
+		net.Start("TTTCSyncClassState")
+		net.WriteInt(self.classAmount, 8)
+		net.WriteFloat(self.classCooldown)
+		net.WriteFloat(self.classCooldownTS)
+		net.Send(self)
+	end
+
 	net.Receive("TTTCClientSendClasses", function(len, ply)
 		local hr = net.ReadUInt(CLASS_BITS)
 
@@ -527,6 +535,17 @@ else
 		if not IsValid(client) then return end
 
 		client:SetClass(hr)
+	end)
+
+	net.Receive("TTTCSyncClassState", function()
+		local client = LocalPlayer()
+		local classAmount = net.ReadInt(8)
+		local classCooldown = net.ReadFloat()
+		local classCooldownTS = net.ReadFloat()
+
+		client.classAmount = classAmount
+		client:SetClassCooldown(classCooldown)
+		client:SetClassCooldownTS(classCooldownTS)
 	end)
 
 	net.Receive("TTTCSendClassOptions", function()
