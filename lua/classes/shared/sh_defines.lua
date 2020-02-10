@@ -14,6 +14,7 @@ if SERVER then
 	util.AddNetworkString("TTTCClientSendClasses")
 	util.AddNetworkString("TTTCSyncClasses")
 	util.AddNetworkString("TTTCSyncClass")
+	util.AddNetworkString("TTTCSyncClassState")
 	util.AddNetworkString("TTTCClassesSynced")
 	util.AddNetworkString("TTTCManipulateClassWeapons")
 	util.AddNetworkString("TTTCSyncClassWeapon")
