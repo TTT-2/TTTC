@@ -140,7 +140,7 @@ hook.Add("Initialize", "TTTCLanguage", function()
 
 	LANG.AddToLanguage("English", "ttt2_tttc_drop_class", "Drop Class")
 	LANG.AddToLanguage("Deutsch", "ttt2_tttc_drop_class", "Klasse Verlieren")
-	
+
 	LANG.AddToLanguage("English", "ttt2_tttc_class", "CLASS")
 	LANG.AddToLanguage("Deutsch", "ttt2_tttc_class", "KLASSE")
 

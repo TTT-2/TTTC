@@ -1,5 +1,4 @@
 -- caching
-local GetRawLang
 local GetLang
 local cached_arcs = {}
 
@@ -21,10 +20,12 @@ local default_hud_x = margin
 local default_hud_y = ScrH() - margin - 120 * 2 -- add a padding between role and class for other addons, so multiply 120 with 2 (otherwise without 2)
 
 -- ConVars
-local cvar_class_notification = CreateClientConVar("tttc_class_notification", "1", true, false, "Toggle the notification on receiving a class class.")
-local cvar_class_hud_width = CreateClientConVar("tttc_hud_width", "20", true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: 20")
-local cvar_class_hud_y = CreateClientConVar("tttc_hud_y", tostring(default_hud_y), true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. tostring(default_hud_y))
-local cvar_class_hud_x = CreateClientConVar("tttc_hud_x", tostring(default_hud_x), true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: " .. tostring(default_hud_x))
+local cv = {}
+
+cv.class_notification = CreateClientConVar("tttc_class_notification", "1", true, false, "Toggle the notification on receiving a class class.")
+cv.class_hud_width = CreateClientConVar("tttc_hud_width", "20", true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: 20")
+cv.class_hud_y = CreateClientConVar("tttc_hud_y", tostring(default_hud_y), true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. tostring(default_hud_y))
+cv.class_hud_x = CreateClientConVar("tttc_hud_x", tostring(default_hud_x), true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: " .. tostring(default_hud_x))
 
 local function DrawBg(x, y, client, xw)
 	-- Traitor area sizes
@@ -60,10 +61,10 @@ local function ClassInfo(client)
 	if (round_state == ROUND_PREP or client:IsActive()) and client:HasClass() then
 		local hd = client:GetClassData()
 
-		local x = cvar_class_hud_x:GetFloat()
-		local y = cvar_class_hud_y:GetFloat()
+		local x = cv.class_hud_x:GetFloat()
+		local y = cv.class_hud_y:GetFloat()
 
-		local xw = cvar_class_hud_width:GetFloat()
+		local xw = cv.class_hud_width:GetFloat()
 
 		DrawBg(x, y, client, xw)
 
@@ -86,19 +87,21 @@ hook.Add("HUDPaint", "TTTCClassHudPaint", function()
 end)
 
 ----- target ID
-hook.Add("TTTRenderEntityInfo", "tttc_add_class_info", function(data, params)
+hook.Add("TTTRenderEntityInfo", "tttc_add_class_info", function(tData)
+	local ent = tData:GetEntity()
+
 	-- has to be a player
-	if not data.ent:IsPlayer() then return end
+	if not ent:IsPlayer() then return end
 	if GetRoundState() == ROUND_PREP then return end
 
 	GetLang = GetLang or LANG.GetRawTranslation
 
-	local class_data = data.ent:GetClassData()
+	local class_data = ent:GetClassData()
 
-	params.displayInfo.desc[#params.displayInfo.desc + 1] = {
-		text = GetLang("ttt2_tttc_class") .. ": " .. CLASS.GetClassTranslation(class_data),
-		color = class_data and class_data.color or COLOR_LGRAY
-	}
+	tData:AddDescriptionLine(
+		GetLang("ttt2_tttc_class") .. ": " .. CLASS.GetClassTranslation(class_data),
+		class_data and class_data.color or COLOR_LGRAY
+	)
 end)
 
 ------------------------ Experimental -------------------------
