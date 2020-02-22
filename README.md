@@ -11,9 +11,15 @@ To create a class, the function `CLASS.AddClass(name, classData, conVarData)` ha
 
 CLASS.AddClass("YOURCLASS", {
     color = Color(149, 188, 195, 255),
-    langs = {
-        English = "Your Class",
-        Deutsch = "Deine Klasse"
+    lang = {
+        name = {
+            English = "Your Class",
+            Deutsch = "Deine Klasse"
+        },
+        desc = {
+            English = "A class description",
+            Deutsch = "Eine Klassenbeschreibung"
+        }
     }
 })
 ```
@@ -36,8 +42,8 @@ classData.passive = <boolean> -- [default: false]
 -- handled externally.
 classData.deactivated = <boolean> -- [default: false]
 
--- Sets the language strings of the class that are rendered ingame, at least one should be set.
-classData.langs = {}
+-- Sets the language strings of the class that are rendered ingame, at least the name should be set.
+classData.lang = {}
 
 ---
 -- PASSIVE ABILITY DATA
