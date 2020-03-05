@@ -90,6 +90,8 @@ end)
 hook.Add("TTTRenderEntityInfo", "tttc_add_class_info", function(tData)
 	local ent = tData:GetEntity()
 
+	if not GetGlobalBool("ttt2_classes", false) then return end
+
 	-- has to be a player
 	if not ent:IsPlayer() then return end
 	if GetRoundState() == ROUND_PREP then return end
