@@ -253,13 +253,13 @@ function plymeta:ClassDeactivate()
 			-- give inventory
 			if self.savedClassInventory then
 				for _, tbl in ipairs(self.savedClassInventory) do
-					if tbl.cls then
-						local wep = self:Give(tbl.cls)
+					if not tbl.cls then continue end
 
-						if IsValid(wep) then
-							wep:SetClip1(tbl.clip1 or 0)
-							wep:SetClip2(tbl.clip2 or 0)
-						end
+					local wep = self:Give(tbl.cls)
+
+					if IsValid(wep) then
+						wep:SetClip1(tbl.clip1 or 0)
+						wep:SetClip2(tbl.clip2 or 0)
 					end
 				end
 			end
@@ -506,9 +506,9 @@ if SERVER then
 
 	function plymeta:SyncClassState()
 		net.Start("TTTCSyncClassState")
-		net.WriteInt(self.classAmount, 8)
-		net.WriteFloat(self.classCooldown)
-		net.WriteFloat(self.classCooldownTS)
+		net.WriteInt(self.classAmount or 0, 8)
+		net.WriteFloat(self.classCooldown or 0)
+		net.WriteFloat(self.classCooldownTS or 0)
 		net.Send(self)
 	end
 
