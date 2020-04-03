@@ -24,6 +24,7 @@ if SERVER then
 	util.AddNetworkString("TTTCAbortClass")
 	util.AddNetworkString("TTTCChangeCharge")
 	util.AddNetworkString("TTTCResetChargingWaiting")
+	util.AddNetworkString("TTTCUpdateScoreboard")
 
 	local ttt2_classes = CreateConVar("ttt2_classes", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
 	local ttt_classes_limited = CreateConVar("ttt_classes_limited", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE})
@@ -46,6 +47,10 @@ if SERVER then
 
 	cvars.AddChangeCallback(ttt2_classes:GetName(), function(name, old, new)
 		SetGlobalBool(name, tobool(new))
+
+		net.Start("TTTCUpdateScoreboard")
+		net.WriteBool(tobool(new))
+		net.Broadcast()
 	end, "TTT2ClassesCVSyncingToggled")
 
 	cvars.AddChangeCallback(ttt_classes_limited:GetName(), function(name, old, new)

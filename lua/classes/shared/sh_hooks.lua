@@ -215,7 +215,9 @@ if SERVER then
 			return ""
 		end
 	end)
-else -- CLIENT
+end
+
+if CLIENT then
 	hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
 		for _, v in ipairs(player.GetAll()) do
 			v:SetClass(nil)
@@ -239,32 +241,31 @@ else -- CLIENT
 		ply.oldClass = hr
 	end)
 
-	-- TODO remove hook if disabled ttt2_classes cvar
 	hook.Add("TTTScoreboardColumns", "TTTCScoreboardClass", function(pnl)
-		if GetGlobalBool("ttt2_classes") then
-			pnl:AddColumn("Class", function(ply, label)
-				if ply:HasClass() then
-					local hd = ply:GetClassData()
+		if not GetGlobalBool("ttt2_classes") then return end
 
+		pnl:AddColumn("Class", function(ply, label)
+			if ply:HasClass() then
+				local hd = ply:GetClassData()
+
+				label:SetColor(hd.color or COLOR_CLASS)
+
+				return CLASS.GetClassTranslation(hd)
+			elseif ply.oldClass then
+				local hd = CLASS.GetClassDataByIndex(ply.oldClass)
+				if hd then
 					label:SetColor(hd.color or COLOR_CLASS)
 
 					return CLASS.GetClassTranslation(hd)
-				elseif ply.oldClass then
-					local hd = CLASS.GetClassDataByIndex(ply.oldClass)
-					if hd then
-						label:SetColor(hd.color or COLOR_CLASS)
-
-						return CLASS.GetClassTranslation(hd)
-					end
-				elseif not ply:IsActive() and ply:GetNWBool("body_found") then
-					return "-" -- died without any class
 				end
+			elseif not ply:IsActive() and ply:GetNWBool("body_found") then
+				return "-" -- died without any class
+			end
 
-				label:SetColor(Color(255, 255, 255))
+			label:SetColor(Color(255, 255, 255))
 
-				return "?"
-			end, 100)
-		end
+			return "?"
+		end, 100)
 	end)
 
 	local function ThinkCharge()
@@ -328,6 +329,15 @@ else -- CLIENT
 		end
 	end
 	hook.Add("Think", "TTTCThinkCharge", ThinkCharge)
+
+	net.Receive("TTTCUpdateScoreboard", function()
+		-- set the value to the global bool manually because the update of
+		-- the global bool might come with a delay
+		SetGlobalBool("ttt2_classes", net.ReadBool() or false)
+
+		GAMEMODE:ScoreboardCreate()
+		GAMEMODE:ScoreboardHide()
+	end)
 end
 
 -- shared because it is predicted
