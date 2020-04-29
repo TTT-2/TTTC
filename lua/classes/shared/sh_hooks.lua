@@ -239,15 +239,15 @@ if SERVER then
 	end)
 end
 
+hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
+	for _, v in ipairs(player.GetAll()) do
+		v:SetClass(nil)
+
+		v.oldClass = nil
+	end
+end)
+
 if CLIENT then
-	hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
-		for _, v in ipairs(player.GetAll()) do
-			v:SetClass(nil)
-
-			v.oldClass = nil
-		end
-	end)
-
 	net.Receive("TTTCSyncClass", function(len)
 		local ply = net.ReadEntity()
 		local hr = net.ReadUInt(CLASS_BITS)

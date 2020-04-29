@@ -8,7 +8,7 @@ local math = math
 
 
 -- Fonts
-hook.Add("TTT2Initialize", "TTTCCreateAdvanclassDataFonts", function()
+hook.Add("TTT2Initialize", "TTTCCreateAdvancedFonts", function()
 	surface.CreateAdvancedFont("CurrentClass", {font = "Trebuchet24", size = 28, weight = 1000})
 	surface.CreateAdvancedFont("CurrentClassDesc", {font = "Trebuchet24", size = 52, weight = 1000})
 	surface.CreateAdvancedFont("ClassDesc", {font = "Trebuchet24", size = 14, weight = 1000})

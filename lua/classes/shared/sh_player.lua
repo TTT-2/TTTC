@@ -12,6 +12,8 @@ function plymeta:GetCustomClass()
 end
 
 function plymeta:SetClass(class)
+	print("set class to: " .. tostring(class))
+
 	local old = self:GetCustomClass()
 
 	if class ~= old then
@@ -58,11 +60,11 @@ function plymeta:SetClass(class)
 	if old ~= class then
 		hook.Run("TTTCUpdateClass", self, old, class)
 
-		if not hook.Run("TTTCPreventClassRemovement", self) then
+		if old and hook.Run("TTTCPreventClassRemovement", self) ~= true then
 			self:RemovePassiveClassEquipment(CLASS.GetClassDataByIndex(old))
 		end
 
-		if not hook.Run("TTTCPreventClassEquipment", self) then
+		if class and hook.Run("TTTCPreventClassEquipment", self) ~= true then
 			self:GivePassiveClassEquipment(CLASS.GetClassDataByIndex(class))
 		end
 	end
