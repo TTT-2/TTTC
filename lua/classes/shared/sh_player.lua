@@ -68,6 +68,8 @@ function plymeta:SetClass(class)
 	class.onFinishPreparingActivation = nil
 	class.OnCharge = class.onCharge
 	class.onCharge = nil
+	class.CheckActivation = class.checkActivation
+	class.checkActivation = nil
 	-- END COMPATIBILITY
 
 	self.class = class
@@ -168,7 +170,7 @@ function plymeta:ClassActivate()
 	local classData = self:GetClassData()
 
 	if not classData or not self:IsActive()
-		or isfunction(classData.checkActivation) and not classData.checkActivation(self)
+		or isfunction(classData.CheckActivation) and not classData.CheckActivation(self)
 		or classData.amount and classData.amount <= self.classAmount
 		or self:HasClassActive()
 	then return end
