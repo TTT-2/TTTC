@@ -53,25 +53,6 @@ function plymeta:SetClass(class)
 		self.chargingWaiting = nil
 	end
 
-	-- COMPATIBILITY WITH DEPRECATED NAMES
-	class.OnSet = class.onClassSet
-	class.onClassSet = nil
-	class.OnUnset = class.onClassUnset
-	class.onClassUnset = nil
-	class.OnAbilityActivate = class.onActivate
-	class.onActivate = nil
-	class.OnAbilityDeactivate = class.onDeactivate
-	class.onDeactivate = nil
-	class.OnStartPrepareAbilityActivation = class.onPrepareActivation
-	class.onPrepareActivation = nil
-	class.OnFinishPrepareAbilityActivation = class.onFinishPreparingActivation
-	class.onFinishPreparingActivation = nil
-	class.OnCharge = class.onCharge
-	class.onCharge = nil
-	class.CheckActivation = class.checkActivation
-	class.checkActivation = nil
-	-- END COMPATIBILITY
-
 	self.class = class
 
 	if old ~= class then

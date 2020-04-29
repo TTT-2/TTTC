@@ -45,6 +45,25 @@ function CLASS.AddClass(name, classData, conVarData)
 		end)
 	end
 
+	-- COMPATIBILITY WITH DEPRECATED NAMES
+	classData.OnSet = classData.OnSet or classData.onClassSet
+	classData.onClassSet = nil
+	classData.OnUnset = classData.OnUnset or classData.onClassUnset
+	classData.onClassUnset = nil
+	classData.OnAbilityActivate = classData.OnAbilityActivate or classData.onActivate
+	classData.onActivate = nil
+	classData.OnAbilityDeactivate = classData.OnAbilityDeactivate or classData.onDeactivate
+	classData.onDeactivate = nil
+	classData.OnStartPrepareAbilityActivation = classData.OnStartPrepareAbilityActivation or classData.onPrepareActivation
+	classData.onPrepareActivation = nil
+	classData.OnFinishPrepareAbilityActivation = classData.OnFinishPrepareAbilityActivation or classData.onFinishPreparingActivation
+	classData.onFinishPreparingActivation = nil
+	classData.OnCharge = classData.OnCharge or classData.onCharge
+	classData.onCharge = nil
+	classData.CheckActivation = classData.CheckActivation or classData.checkActivation
+	classData.checkActivation = nil
+	-- END COMPATIBILITY
+
 	CLASS.CLASSES[name] = classData
 
 	-- spend an answer
