@@ -47,9 +47,9 @@ hook.Add("Think", "TTTCThinkCharge", function()
 
 		local classData = ply:GetClassData()
 
-		if not classData or not isfunction(classData.OnClassThink) then continue end
+		if not classData or not isfunction(classData.OnThink) then continue end
 
-		classData.OnClassThink(ply)
+		classData.OnThink(ply)
 	end
 end)
 
@@ -315,7 +315,7 @@ if CLIENT then
 		if abilityKey ~= KEY_NONE then
 			local disabled = false
 
-			if isfunction(classData.onCharge) and not classData.onCharge(ply) then
+			if isfunction(classData.OnCharge) and not classData.OnCharge(ply) then
 				disabled = true
 			else
 				local btnDown = input.IsButtonDown(abilityKey)
@@ -384,8 +384,8 @@ if SERVER then
 		-- handle class abort
 		local classData = ply:GetClassData()
 
-		if ply.prepareActivation and isfunction(classData.onFinishPreparingActivation) then
-			classData.onFinishPreparingActivation(ply)
+		if ply.prepareActivation and isfunction(classData.OnFinishPrepareAbilityActivation) then
+			classData.OnFinishPrepareAbilityActivation(ply)
 
 			ply.prepareActivation = nil
 		end
@@ -473,8 +473,8 @@ net.Receive("TTTCAbortClass", function(len, ply)
 
 	local classData = ply:GetClassData()
 
-	if ply.prepareActivation and isfunction(classData.onFinishPreparingActivation) then
-		classData.onFinishPreparingActivation(ply)
+	if ply.prepareActivation and isfunction(classData.OnFinishPrepareAbilityActivation) then
+		classData.OnFinishPrepareAbilityActivation(ply)
 
 		ply.prepareActivation = nil
 	end

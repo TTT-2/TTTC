@@ -12,15 +12,13 @@ function plymeta:GetCustomClass()
 end
 
 function plymeta:SetClass(class)
-	print("set class to: " .. tostring(class))
-
 	local old = self:GetCustomClass()
 
 	if class ~= old then
 		local classData = self:GetClassData()
 
-		if classData and self.prepareActivation and isfunction(classData.onFinishPreparingActivation) then
-			classData.onFinishPreparingActivation(self)
+		if classData and self.prepareActivation and isfunction(classData.OnFinishPrepareAbilityActivation) then
+			classData.OnFinishPrepareAbilityActivation(self)
 
 			self.prepareActivation = nil
 		end
@@ -54,6 +52,23 @@ function plymeta:SetClass(class)
 		self.prepareActivation = nil
 		self.chargingWaiting = nil
 	end
+
+	-- COMPATIBILITY WITH DEPRECATED NAMES
+	class.OnSet = class.onClassSet
+	class.onClassSet = nil
+	class.OnUnset = class.onClassUnset
+	class.onClassUnset = nil
+	class.OnAbilityActivate = class.onActivate
+	class.onActivate = nil
+	class.OnAbilityDeactivate = class.onDeactivate
+	class.onDeactivate = nil
+	class.OnStartPrepareAbilityActivation = class.onPrepareActivation
+	class.onPrepareActivation = nil
+	class.OnFinishPrepareAbilityActivation = class.onFinishPreparingActivation
+	class.onFinishPreparingActivation = nil
+	class.OnCharge = class.onCharge
+	class.onCharge = nil
+	-- END COMPATIBILITY
 
 	self.class = class
 
@@ -158,15 +173,15 @@ function plymeta:ClassActivate()
 		or self:HasClassActive()
 	then return end
 
-	if isfunction(classData.onPrepareActivation) and not self.prepareActivation then
+	if isfunction(classData.OnStartPrepareAbilityActivation) and not self.prepareActivation then
 		self.prepareActivation = true
 
-		classData.onPrepareActivation(self)
+		classData.OnStartPrepareAbilityActivation(self)
 
 		return
 	else
-		if isfunction(classData.onFinishPreparingActivation) then
-			classData.onFinishPreparingActivation(self)
+		if isfunction(classData.OnFinishPrepareAbilityActivation) then
+			classData.OnFinishPrepareAbilityActivation(self)
 		end
 
 		self.prepareActivation = nil
@@ -200,8 +215,8 @@ function plymeta:ClassActivate()
 			self:GiveAbility()
 		end
 
-		if classData.onActivate and isfunction(classData.onActivate) then
-			classData.onActivate(self)
+		if classData.OnAbilityActivate and isfunction(classData.OnAbilityActivate) then
+			classData.OnAbilityActivate(self)
 		end
 
 		if SERVER and not classData.endless then
@@ -233,8 +248,8 @@ function plymeta:ClassDeactivate()
 
 	if not classData then return end
 
-	if self.prepareActivation and isfunction(classData.onFinishPreparingActivation) then
-		classData.onFinishPreparingActivation(self)
+	if self.prepareActivation and isfunction(classData.OnFinishPrepareAbilityActivation) then
+		classData.OnFinishPrepareAbilityActivation(self)
 
 		self.prepareActivation = nil
 	end
@@ -276,8 +291,8 @@ function plymeta:ClassDeactivate()
 		end
 	end
 
-	if classData.onDeactivate and isfunction(classData.onDeactivate) then
-		cooldown = not classData.onDeactivate(self)
+	if classData.OnAbilityDeactivate and isfunction(classData.OnAbilityDeactivate) then
+		cooldown = not classData.OnAbilityDeactivate(self)
 	end
 
 	self.classTimestamp = nil -- Still used???
@@ -292,8 +307,8 @@ function plymeta:GivePassiveClassEquipment(classData)
 	classData = classData or self:GetClassData()
 	if not classData then return end
 
-	if classData.onClassSet and isfunction(classData.onClassSet) then
-		classData.onClassSet(self)
+	if classData.OnSet and isfunction(classData.OnSet) then
+		classData.OnSet(self)
 	end
 
 	if CLIENT then return end
@@ -336,8 +351,8 @@ end
 function plymeta:RemovePassiveClassEquipment(classData)
 	classData = classData or self:GetClassData()
 
-	if classData and classData.onClassUnset and isfunction(classData.onClassUnset) then
-		classData.onClassUnset(self)
+	if classData and classData.OnUnset and isfunction(classData.OnUnset) then
+		classData.OnUnset(self)
 	end
 
 	if CLIENT then return end
