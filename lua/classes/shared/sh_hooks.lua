@@ -31,6 +31,28 @@ hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
 	end
 end)
 
+hook.Add("Think", "TTTCThinkCharge", function()
+	local plys
+
+	if SERVER then
+		plys = player.GetAll()
+	else
+		plys = {LocalPlayer()}
+	end
+
+	for i = 1, #plys do
+		local ply = plys[i]
+
+		if not ply:IsActive() or not ply:HasClass() then continue end
+
+		local classData = ply:GetClassData()
+
+		if not classData or not isfunction(classData.OnClassThink) then continue end
+
+		classData.OnClassThink(ply)
+	end
+end)
+
 if SERVER then
 	hook.Add("TTTBeginRound", "TTTCSelectClasses", function()
 		table.Empty(CLASS.AVAILABLECLASSES)
@@ -139,9 +161,9 @@ if SERVER then
 
 	hook.Add("PlayerSpawn", "TTTCRemoveClassOnSpawn", function(ply)
 		if GetRoundState() == ROUND_ACTIVE then
-			local cd = ply:GetClassData()
+			local classData = ply:GetClassData()
 
-			if not GetGlobalBool("ttt_classes_keep_on_respawn") or cd and cd.surpressKeepOnRespawn then
+			if not GetGlobalBool("ttt_classes_keep_on_respawn") or classData and classData.surpressKeepOnRespawn then
 				ply:UpdateClass(nil)
 			else
 				ply:GivePassiveClassEquipment()
@@ -246,17 +268,17 @@ if CLIENT then
 
 		pnl:AddColumn("Class", function(ply, label)
 			if ply:HasClass() then
-				local hd = ply:GetClassData()
+				local classData = ply:GetClassData()
 
-				label:SetColor(hd.color or COLOR_CLASS)
+				label:SetColor(classData.color or COLOR_CLASS)
 
-				return CLASS.GetClassTranslation(hd)
+				return CLASS.GetClassTranslation(classData)
 			elseif ply.oldClass then
-				local hd = CLASS.GetClassDataByIndex(ply.oldClass)
-				if hd then
-					label:SetColor(hd.color or COLOR_CLASS)
+				local classData = CLASS.GetClassDataByIndex(ply.oldClass)
+				if classData then
+					label:SetColor(classData.color or COLOR_CLASS)
 
-					return CLASS.GetClassTranslation(hd)
+					return CLASS.GetClassTranslation(classData)
 				end
 			elseif not ply:IsActive() and ply:GetNWBool("body_found") then
 				return "-" -- died without any class
@@ -271,60 +293,60 @@ if CLIENT then
 	local function ThinkCharge()
 		local ply = LocalPlayer()
 
-		if ply:IsActive() and ply:HasClass() then
-			local hd = ply:GetClassData()
+		if not ply:IsActive() or not ply:HasClass() then return end
 
-			if not hd then return end
+		local classData = ply:GetClassData()
 
-			local charging = hd.charging
-			local time = CurTime()
+		if not classData then return end
 
-			if not hd.deactivated
-			and not ply:HasClassActive()
-			and (not ply:GetClassCooldownTS() or ply:GetClassCooldownTS() + ply:GetClassCooldown() <= time)
-			and charging
-			and not ply.chargingWaiting
-			and not hook.Run("TTTCPreventCharging", ply)
-			then
-				local abilityKey = bind.Find("toggleclass")
+		local charging = classData.charging
+		local time = CurTime()
 
-				if abilityKey ~= KEY_NONE then
-					local disabled = false
+		if not classData.deactivated
+			or ply:HasClassActive()
+			or not (not ply:GetClassCooldownTS() or ply:GetClassCooldownTS() + ply:GetClassCooldown() <= time)
+			or not charging
+			or ply.chargingWaiting
+			or hook.Run("TTTCPreventCharging", ply)
+		then return end
 
-					if isfunction(hd.onCharge) and not hd.onCharge(ply) then
-						disabled = true
-					else
-						local btnDown = input.IsButtonDown(abilityKey)
+		local abilityKey = bind.Find("toggleclass")
 
-						if btnDown and not ply.charging then
-							ply.charging = time
+		if abilityKey ~= KEY_NONE then
+			local disabled = false
 
-							if not ply.sendCharge then
-								net.Start("TTTCChangeCharge")
-								net.WriteBool(true)
-								net.SendToServer()
+			if isfunction(classData.onCharge) and not classData.onCharge(ply) then
+				disabled = true
+			else
+				local btnDown = input.IsButtonDown(abilityKey)
 
-								ply.sendCharge = true
-							end
-						elseif not btnDown and ply.charging then
-							disabled = true
-						end
+				if btnDown and not ply.charging then
+					ply.charging = time
+
+					if not ply.sendCharge then
+						net.Start("TTTCChangeCharge")
+						net.WriteBool(true)
+						net.SendToServer()
+
+						ply.sendCharge = true
 					end
-
-					if disabled then
-						ply.charging = nil
-
-						if ply.sendCharge then
-							net.Start("TTTCChangeCharge")
-							net.WriteBool(false)
-							net.SendToServer()
-
-							ply.sendCharge = nil
-						end
-					elseif ply.charging and ply.charging + charging - 1 <= time then
-						CLASS.ClassActivate()
-					end
+				elseif not btnDown and ply.charging then
+					disabled = true
 				end
+			end
+
+			if disabled then
+				ply.charging = nil
+
+				if ply.sendCharge then
+					net.Start("TTTCChangeCharge")
+					net.WriteBool(false)
+					net.SendToServer()
+
+					ply.sendCharge = nil
+				end
+			elseif ply.charging and ply.charging + charging - 1 <= time then
+				CLASS.ClassActivate()
 			end
 		end
 	end
@@ -360,10 +382,10 @@ if SERVER then
 		net.Send(ply)
 
 		-- handle class abort
-		local hd = ply:GetClassData()
+		local classData = ply:GetClassData()
 
-		if ply.prepareActivation and isfunction(hd.onFinishPreparingActivation) then
-			hd.onFinishPreparingActivation(ply)
+		if ply.prepareActivation and isfunction(classData.onFinishPreparingActivation) then
+			classData.onFinishPreparingActivation(ply)
 
 			ply.prepareActivation = nil
 		end
@@ -390,9 +412,9 @@ net.Receive("TTTCActivateClass", function(len, ply)
 		reset = true
 	end
 
-	local hd = ply:GetClassData()
+	local classData = ply:GetClassData()
 
-	if not hd or hd.deactivated or not ply:IsActive() or ply:GetClassCooldownTS() and ply:GetClassCooldownTS() + ply:GetClassCooldown() > CurTime() or hook.Run("TTTCPreventClassActivation", ply) then
+	if not classData or classData.deactivated or not ply:IsActive() or ply:GetClassCooldownTS() and ply:GetClassCooldownTS() + ply:GetClassCooldown() > CurTime() or hook.Run("TTTCPreventClassActivation", ply) then
 		reset = true
 	end
 
@@ -449,10 +471,10 @@ net.Receive("TTTCAbortClass", function(len, ply)
 
 	if not IsValid(ply) then return end
 
-	local hd = ply:GetClassData()
+	local classData = ply:GetClassData()
 
-	if ply.prepareActivation and isfunction(hd.onFinishPreparingActivation) then
-		hd.onFinishPreparingActivation(ply)
+	if ply.prepareActivation and isfunction(classData.onFinishPreparingActivation) then
+		classData.onFinishPreparingActivation(ply)
 
 		ply.prepareActivation = nil
 	end

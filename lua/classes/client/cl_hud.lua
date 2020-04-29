@@ -8,7 +8,7 @@ local math = math
 
 
 -- Fonts
-hook.Add("TTT2Initialize", "TTTCCreateAdvancdFonts", function()
+hook.Add("TTT2Initialize", "TTTCCreateAdvanclassDataFonts", function()
 	surface.CreateAdvancedFont("CurrentClass", {font = "Trebuchet24", size = 28, weight = 1000})
 	surface.CreateAdvancedFont("CurrentClassDesc", {font = "Trebuchet24", size = 52, weight = 1000})
 	surface.CreateAdvancedFont("ClassDesc", {font = "Trebuchet24", size = 14, weight = 1000})
@@ -31,11 +31,11 @@ local function DrawBg(x, y, client, xw)
 	-- Traitor area sizes
 	local tw = 150 + xw
 	local th = 30
-	local hd = client:GetClassData()
+	local classData = client:GetClassData()
 
-	if not hd then return end
+	if not classData then return end
 
-	local col = hd.color or COLOR_CLASS
+	local col = classData.color or COLOR_CLASS
 
 	-- main border, traitor based
 	draw.RoundedBox(8, x, y - th, tw, th, col)
@@ -59,7 +59,7 @@ local function ClassInfo(client)
 	local round_state = GAMEMODE.round_state
 
 	if (round_state == ROUND_PREP or client:IsActive()) and client:HasClass() then
-		local hd = client:GetClassData()
+		local classData = client:GetClassData()
 
 		local x = cv.class_hud_x:GetFloat()
 		local y = cv.class_hud_y:GetFloat()
@@ -71,7 +71,7 @@ local function ClassInfo(client)
 		x = x + margin + 63 + xw * 0.5
 		y = y - 30
 
-		local text = CLASS.GetClassTranslation(hd)
+		local text = CLASS.GetClassTranslation(classData)
 
 		-- Draw current class state
 		ShadowedText(text, "CurrentClass", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)

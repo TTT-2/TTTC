@@ -74,7 +74,7 @@ if CLIENT then
 		local r_optionCircleSize = math.Round(self.optionCircleSize * 0.5) -- radius
 		local r_innerCircleSize = r_w - r_optionCircleSize * 2
 
-		local hd = client:GetClassData() or {}
+		local classData = client:GetClassData() or {}
 		local timeNow = CurTime()
 		local active = client:HasClassActive()
 
@@ -98,7 +98,7 @@ if CLIENT then
 			abilityPercentage = 1 -- set ability circle to zero when cooldown is active
 		end
 
-		if hd.endless then
+		if classData.endless then
 			abilityPercentage = 0
 		end
 
@@ -109,9 +109,9 @@ if CLIENT then
 		if not crystalValid and client:GetNWBool("CanSpawnCrystal") then
 		 	oldTimerVal = nil
 		 	icon = diamondMaterial
-		elseif hd.passive and not ttt2HeroesActive then
+		elseif classData.passive and not ttt2HeroesActive then
 			return
-		elseif hd.passive or hd.deactivated or not crystalValid and not client:GetNWBool("CanSpawnCrystal") or hd.amount and hd.amount <= (client.classAmount or 0) then
+		elseif classData.passive or classData.deactivated or not crystalValid and not client:GetNWBool("CanSpawnCrystal") or classData.amount and classData.amount <= (client.classAmount or 0) then
 			oldTimerVal = nil
 			text = "-"
 		elseif cooldownStartTime and cooldownStartTime + cooldownDuration > timeNow then
@@ -124,7 +124,7 @@ if CLIENT then
 			oldTimerVal = nil
 
 			text = "IN USE!"
-		elseif hd.charging then
+		elseif classData.charging then
 			oldTimerVal = nil
 			text = "CHARGE"
 		else
@@ -143,7 +143,7 @@ if CLIENT then
 
 		if client.charging then
 			local starting = client.charging
-			local duration = hd.charging - 1
+			local duration = classData.charging - 1
 			local timeSince = timeNow - starting -- 0 just to avoid arithmetic with nil exception, this never has a real use case and will never even be used
 
 			if duration and starting and timeSince <= duration then
@@ -154,7 +154,7 @@ if CLIENT then
 		draw.Arc(1, tx, ty, r_innerCircleSize, r_innerCircleSize, 0, 360, 10, Color(0, 0, 0, 240))
 		draw.Arc(2, tx, ty, 0, r_innerCircleSize, 0, circle, 10, Color(0, 0, 0, 230))
 		draw.Arc(3, tx, ty, r_w, r_optionCircleSize, 0, outer, 2, Color(0, 0, 0, 200))
-		draw.Arc(4, tx, ty, r_w - r_optionCircleSize, r_optionCircleSize, 0, inner * ((hd.charging and not active) and (client.charging and val or 0) or 1), 5, ColorAlpha(hd.color or Color(255,155,55), 170))
+		draw.Arc(4, tx, ty, r_w - r_optionCircleSize, r_optionCircleSize, 0, inner * ((classData.charging and not active) and (client.charging and val or 0) or 1), 5, ColorAlpha(classData.color or Color(255,155,55), 170))
 		--draw.Arc(id, cx, cy, radius, thickness, startang, endang, roughness, color)
 
 		if icon then

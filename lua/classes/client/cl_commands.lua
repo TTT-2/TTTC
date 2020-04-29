@@ -14,12 +14,12 @@ local function force_class(ply, cmd, args, argStr)
 		i = i + 1
 	end
 
-	local hd = CLASS.GetClassDataByIndex(class)
+	local classData = CLASS.GetClassDataByIndex(class)
 
-	if hd and class and class <= i then
+	if classData and class and class <= i then
 		ply:ServerUpdateClasses(class)
 
-		ply:ChatPrint("You changed to '" .. hd.name .. "' (class: " .. class .. ")")
+		ply:ChatPrint("You changed to '" .. classData.name .. "' (class: " .. class .. ")")
 	end
 end
 concommand.Add("ttt_force_class", force_class, nil, nil, FCVAR_CHEAT)
@@ -61,16 +61,16 @@ function CLASS.ClassActivate()
 	if not ply:HasClass() or hook.Run("TTTCPreventClassActivation", ply) then return end
 
 	if GetRoundState() ~= ROUND_WAIT and ply:IsTerror() then
-		local hd = ply:GetClassData()
+		local classData = ply:GetClassData()
 
-		if not hd or hd.deactivated then return end
+		if not classData or classData.deactivated then return end
 
 		local time = CurTime()
 
 		if ply:GetClassCooldownTS() and ply:GetClassCooldownTS() + ply:GetClassCooldown() > time then return end
 
 		if not ply:HasClassActive() then
-			local charging = hd.charging
+			local charging = classData.charging
 
 			-- TODO ability preview?
 			if charging then
@@ -93,7 +93,7 @@ function CLASS.ClassActivate()
 
 			net.Start("TTTCActivateClass")
 			net.SendToServer()
-		elseif not hd.unstoppable then
+		elseif not classData.unstoppable then
 			net.Start("TTTCDeactivateClass")
 			net.SendToServer()
 		end
@@ -121,9 +121,9 @@ function CLASS.AbortClass()
 	if not ply:HasClass() or hook.Run("TTTCPreventClassAbortion", ply) then return end
 
 	if GetRoundState() ~= ROUND_WAIT and ply:IsTerror() then
-		local hd = ply:GetClassData()
+		local classData = ply:GetClassData()
 
-		if not hd or hd.deactivated then return end
+		if not classData or classData.deactivated then return end
 
 		net.Start("TTTCAbortClass")
 		net.SendToServer()

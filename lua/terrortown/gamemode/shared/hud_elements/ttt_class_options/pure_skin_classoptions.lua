@@ -102,15 +102,15 @@ if CLIENT then
 
 		local y_temp = y
 
-		local hd1 = CLASS.GetClassDataByIndex(client.classOpt1)
-		local hd2 = CLASS.GetClassDataByIndex(client.classOpt2)
+		local classData1 = CLASS.GetClassDataByIndex(client.classOpt1)
+		local classData2 = CLASS.GetClassDataByIndex(client.classOpt2)
 
-		-- make sure hd1 and hd2 are always defined to make sure the HUD editor is working
-		if not hd1 then
-			hd1 = {name = "Placeholder Class 1", color = Color(255, 100, 120)}
+		-- make sure classData1 and classData2 are always defined to make sure the HUD editor is working
+		if not classData1 then
+			classData1 = {name = "Placeholder Class 1", color = Color(255, 100, 120)}
 		end
-		if not hd2 then
-			hd2 = {name = "Placeholder Class 2", color = Color(70, 120, 180)}
+		if not classData2 then
+			classData2 = {name = "Placeholder Class 2", color = Color(70, 120, 180)}
 		end
 
 		-- get keysize of both bound keys and use the bigger one
@@ -118,11 +118,11 @@ if CLIENT then
 		local key_width = surface.GetTextSize(string.upper(key1))
 		key_width = math.max(key_width, surface.GetTextSize(string.upper(key2)))
 
-		self:DrawClassOption(y_temp, key1, CLASS.GetClassTranslation(hd1), hd1.color, key_width)
+		self:DrawClassOption(y_temp, key1, CLASS.GetClassTranslation(classData1), classData1.color, key_width)
 
 		y_temp = y_temp + self.optionHeight + 5
 
-		self:DrawClassOption(y_temp, key2, CLASS.GetClassTranslation(hd2), hd2.color, key_width)
+		self:DrawClassOption(y_temp, key2, CLASS.GetClassTranslation(classData2), classData2.color, key_width)
 	end
 
 	function HUDELEMENT:ShouldDraw()

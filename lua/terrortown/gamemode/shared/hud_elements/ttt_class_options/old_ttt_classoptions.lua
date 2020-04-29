@@ -70,19 +70,19 @@ if CLIENT then
 
 			local y = optionMargin + 80
 
-			local hd1 = CLASS.GetClassDataByIndex(client.classOpt1)
-			local hd2 = CLASS.GetClassDataByIndex(client.classOpt2)
+			local classData1 = CLASS.GetClassDataByIndex(client.classOpt1)
+			local classData2 = CLASS.GetClassDataByIndex(client.classOpt2)
 
 			-- get keysize of both bound keys and use the bigger one
 			surface.SetFont("ClassDescOptions")
 			local key_width = surface.GetTextSize(string.upper(key1))
 			key_width = math.max(key_width, surface.GetTextSize(string.upper(key2)))
 
-			self:DrawClassOption(y, key1,  CLASS.GetClassTranslation(hd1), hd1.color, key_width)
+			self:DrawClassOption(y, key1,  CLASS.GetClassTranslation(classData1), classData1.color, key_width)
 
 			y = y + optionHeight + 5
 
-			self:DrawClassOption(y, key2,  CLASS.GetClassTranslation(hd2), hd2.color, key_width)
+			self:DrawClassOption(y, key2,  CLASS.GetClassTranslation(classData2), classData2.color, key_width)
 		end
 	end
 end

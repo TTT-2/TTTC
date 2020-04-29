@@ -15,10 +15,10 @@ function plymeta:SetClass(class)
 	local old = self:GetCustomClass()
 
 	if class ~= old then
-		local hd = self:GetClassData()
+		local classData = self:GetClassData()
 
-		if hd and self.prepareActivation and isfunction(hd.onFinishPreparingActivation) then
-			hd.onFinishPreparingActivation(self)
+		if classData and self.prepareActivation and isfunction(classData.onFinishPreparingActivation) then
+			classData.onFinishPreparingActivation(self)
 
 			self.prepareActivation = nil
 		end
@@ -69,23 +69,23 @@ function plymeta:SetClass(class)
 
 	-- show popup if new class is set
 	if CLIENT and class and old ~= class and self == LocalPlayer() and GetGlobalBool("ttt_classes_show_popup", false) then
-		local hd = self:GetClassData()
+		local classData = self:GetClassData()
 
-		if hd.lang then
+		if classData.lang then
 			EPOP:AddMessage(
 				{
-					text = LANG.TryTranslation("tttc_class_" .. hd.name .. "_name"),
-					color = hd.color
+					text = LANG.TryTranslation("tttc_class_" .. classData.name .. "_name"),
+					color = classData.color
 				},
-				hd.lang.desc and LANG.TryTranslation("tttc_class_" .. hd.name .. "_desc") or nil,
+				classData.lang.desc and LANG.TryTranslation("tttc_class_" .. classData.name .. "_desc") or nil,
 				12
 			)
 		else
 			-- fallback popup for legacy classes
 			EPOP:AddMessage(
 				{
-					text = LANG.TryTranslation(hd.name),
-					color = hd.color
+					text = LANG.TryTranslation(classData.name),
+					color = classData.color
 				},
 				LANG.TryTranslation("ttt2_tttc_class_desc_not_provided"),
 				12
@@ -148,37 +148,37 @@ function plymeta:ClassActivate()
 
 	self.classAmount = self.classAmount or 0
 
-	local hd = self:GetClassData()
+	local classData = self:GetClassData()
 
-	if not hd or not self:IsActive()
-		or isfunction(hd.checkActivation) and not hd.checkActivation(self)
-		or hd.amount and hd.amount <= self.classAmount
+	if not classData or not self:IsActive()
+		or isfunction(classData.checkActivation) and not classData.checkActivation(self)
+		or classData.amount and classData.amount <= self.classAmount
 		or self:HasClassActive()
 	then return end
 
-	if isfunction(hd.onPrepareActivation) and not self.prepareActivation then
+	if isfunction(classData.onPrepareActivation) and not self.prepareActivation then
 		self.prepareActivation = true
 
-		hd.onPrepareActivation(self)
+		classData.onPrepareActivation(self)
 
 		return
 	else
-		if isfunction(hd.onFinishPreparingActivation) then
-			hd.onFinishPreparingActivation(self)
+		if isfunction(classData.onFinishPreparingActivation) then
+			classData.onFinishPreparingActivation(self)
 		end
 
 		self.prepareActivation = nil
 	end
 
-	if hd.time ~= 0 then
-		self:SetClassTime(hd.time)
-		self:SetClassEndless(hd.endless)
+	if classData.time ~= 0 then
+		self:SetClassTime(classData.time)
+		self:SetClassEndless(classData.endless)
 		self:SetClassTimestamp(CurTime())
 
 		if SERVER then
 			self.savedClassInventoryItems = table.Copy(self:GetEquipmentItems())
 
-			if not hd.avoidWeaponReset then
+			if not classData.avoidWeaponReset then
 
 				-- reset inventory
 				self.savedClassInventory = {}
@@ -198,14 +198,14 @@ function plymeta:ClassActivate()
 			self:GiveAbility()
 		end
 
-		if hd.onActivate and isfunction(hd.onActivate) then
-			hd.onActivate(self)
+		if classData.onActivate and isfunction(classData.onActivate) then
+			classData.onActivate(self)
 		end
 
-		if SERVER and not hd.endless then
+		if SERVER and not classData.endless then
 			local ply = self
 
-			timer.Create("tttc_deactivation_" .. self:UniqueID(), hd.time, 1, function()
+			timer.Create("tttc_deactivation_" .. self:UniqueID(), classData.time, 1, function()
 				if IsValid(ply) then
 					net.Start("TTTCDeactivateClass")
 					net.Send(ply)
@@ -227,12 +227,12 @@ function plymeta:ClassActivate()
 end
 
 function plymeta:ClassDeactivate()
-	local hd = self:GetClassData()
+	local classData = self:GetClassData()
 
-	if not hd then return end
+	if not classData then return end
 
-	if self.prepareActivation and isfunction(hd.onFinishPreparingActivation) then
-		hd.onFinishPreparingActivation(self)
+	if self.prepareActivation and isfunction(classData.onFinishPreparingActivation) then
+		classData.onFinishPreparingActivation(self)
 
 		self.prepareActivation = nil
 	end
@@ -246,7 +246,7 @@ function plymeta:ClassDeactivate()
 			timer.Remove("tttc_deactivation_" .. self:UniqueID())
 		end
 
-		if self:Alive() and hd.time ~= 0 then
+		if self:Alive() and classData.time ~= 0 then
 			-- take ability
 			self:RemoveAbility()
 
@@ -274,14 +274,14 @@ function plymeta:ClassDeactivate()
 		end
 	end
 
-	if hd.onDeactivate and isfunction(hd.onDeactivate) then
-		cooldown = not hd.onDeactivate(self)
+	if classData.onDeactivate and isfunction(classData.onDeactivate) then
+		cooldown = not classData.onDeactivate(self)
 	end
 
 	self.classTimestamp = nil -- Still used???
 
-	if cooldown and hd.cooldown ~= 0 then
-		self:SetClassCooldown(hd.cooldown)
+	if cooldown and classData.cooldown ~= 0 then
+		self:SetClassCooldown(classData.cooldown)
 		self:SetClassCooldownTS(CurTime())
 	end
 end
@@ -459,12 +459,12 @@ if SERVER then
 	end
 
 	function plymeta:GiveAbility()
-		local hd = self:GetClassData()
+		local classData = self:GetClassData()
 
-		if not hd then return end
+		if not classData then return end
 
-		local weaps = hd.weapons
-		local itms = hd.items
+		local weaps = classData.weapons
+		local itms = classData.items
 
 		if weaps and #weaps > 0 then
 			for _, v in ipairs(weaps) do

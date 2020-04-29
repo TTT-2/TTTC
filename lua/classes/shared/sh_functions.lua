@@ -82,17 +82,17 @@ end
 if CLIENT then
 	local TryT
 
-	function CLASS.GetClassTranslation(hd)
+	function CLASS.GetClassTranslation(classData)
 		TryT = TryT or LANG.TryTranslation
 
-		if not hd then
+		if not classData then
 			return "- " .. TryT("ttt2_tttc_class_unknown") .. " -"
 		end
 
-		if hd.lang then
-			return TryT("tttc_class_" .. hd.name .. "_name")
+		if classData.lang then
+			return TryT("tttc_class_" .. classData.name .. "_name")
 		end
 
-		return TryT(hd.name)
+		return TryT(classData.name)
 	end
 end
