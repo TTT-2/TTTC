@@ -302,7 +302,7 @@ if CLIENT then
 		local charging = classData.charging
 		local time = CurTime()
 
-		if not classData.deactivated
+		if classData.deactivated
 			or ply:HasClassActive()
 			or not (not ply:GetClassCooldownTS() or ply:GetClassCooldownTS() + ply:GetClassCooldown() <= time)
 			or not charging
