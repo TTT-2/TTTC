@@ -28,6 +28,10 @@ hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
 
 		ply.classOpt1 = nil
 		ply.classOpt2 = nil
+
+		for _, v in ipairs(player.GetAll()) do
+			v:SetClass(nil)
+		end
 	end
 end)
 
