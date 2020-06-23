@@ -376,6 +376,7 @@ if SERVER then
 
 		self:RemoveAbility()
 		self:SetClass(index)
+		self.charging = nil
 
 		net.Start("TTTCSendClass")
 		net.WriteUInt(index or 0, CLASS_BITS)
