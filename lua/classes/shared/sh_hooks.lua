@@ -17,21 +17,21 @@ end)
 
 -- reset (TTTPrepareRound not triggerd bcus of buggy force restart)
 hook.Add("TTTPrepareRound", "TTTCResetClasses", function()
-	if SERVER then
-		for _, v in ipairs(player.GetAll()) do
-			v:UpdateClass(nil)
-
-			v.oldClass = nil
-		end
-	else
+	if CLIENT then
 		local ply = LocalPlayer()
 
 		ply.classOpt1 = nil
 		ply.classOpt2 = nil
+	end
 
-		for _, v in ipairs(player.GetAll()) do
+	for _, v in ipairs(player.GetAll()) do
+		if SERVER then
+			v:UpdateClass(nil)
+		else
 			v:SetClass(nil)
 		end
+
+		v.oldClass = nil
 	end
 end)
 
