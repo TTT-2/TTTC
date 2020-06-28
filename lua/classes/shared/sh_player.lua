@@ -273,7 +273,7 @@ function plymeta:ClassDeactivate()
 
 		local cooldown = true
 
-		if classData.OnAbilityDeactivate and isfunction(classData.OnAbilityDeactivate) then
+		if isfunction(classData.OnAbilityDeactivate) then
 			cooldown = not classData.OnAbilityDeactivate(self)
 		end
 
@@ -286,9 +286,9 @@ function plymeta:ClassDeactivate()
 		end
 	end
 
-	if not CLIENT then return end
+	if SERVER then return end
 
-	if classData.OnAbilityDeactivate and isfunction(classData.OnAbilityDeactivate) then
+	if isfunction(classData.OnAbilityDeactivate) then
 		classData.OnAbilityDeactivate(self)
 	end
 end
