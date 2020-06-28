@@ -284,9 +284,9 @@ function plymeta:ClassDeactivate()
 			self:SetClassCooldownTS(CurTime())
 			self:SyncClassState()
 		end
-	end
 
-	if SERVER then return end
+		if SERVER then return end
+	end
 
 	if isfunction(classData.OnAbilityDeactivate) then
 		classData.OnAbilityDeactivate(self)
