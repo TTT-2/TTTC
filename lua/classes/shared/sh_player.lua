@@ -285,7 +285,7 @@ function plymeta:ClassDeactivate()
 			self:SyncClassState()
 		end
 
-		if SERVER then return end
+		return
 	end
 
 	if isfunction(classData.OnAbilityDeactivate) then
