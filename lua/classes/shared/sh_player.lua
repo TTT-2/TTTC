@@ -277,7 +277,7 @@ function plymeta:ClassDeactivate()
 			cooldown = not classData.OnAbilityDeactivate(self)
 		end
 
-		self.classTimestamp = nil -- Still used???
+		self.classTimestamp = nil
 
 		if cooldown and classData.cooldown ~= 0 then
 			self:SetClassCooldown(classData.cooldown)
