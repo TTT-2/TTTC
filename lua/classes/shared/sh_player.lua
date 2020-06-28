@@ -239,8 +239,6 @@ function plymeta:ClassDeactivate()
 
 	self:SetClassActive(false)
 
-	local cooldown = true
-
 	if SERVER then
 		if timer.Exists("tttc_deactivation_" .. self:UniqueID()) then
 			timer.Remove("tttc_deactivation_" .. self:UniqueID())
@@ -272,17 +270,26 @@ function plymeta:ClassDeactivate()
 			self.savedClassInventory = nil
 			self.savedClassInventoryItems = nil
 		end
+
+		local cooldown = true
+
+		if isfunction(classData.OnAbilityDeactivate) then
+			cooldown = not classData.OnAbilityDeactivate(self)
+		end
+
+		self.classTimestamp = nil
+
+		if cooldown and classData.cooldown ~= 0 then
+			self:SetClassCooldown(classData.cooldown)
+			self:SetClassCooldownTS(CurTime())
+			self:SyncClassState()
+		end
+
+		return
 	end
 
-	if classData.OnAbilityDeactivate and isfunction(classData.OnAbilityDeactivate) then
-		cooldown = not classData.OnAbilityDeactivate(self)
-	end
-
-	self.classTimestamp = nil -- Still used???
-
-	if cooldown and classData.cooldown ~= 0 then
-		self:SetClassCooldown(classData.cooldown)
-		self:SetClassCooldownTS(CurTime())
+	if isfunction(classData.OnAbilityDeactivate) then
+		classData.OnAbilityDeactivate(self)
 	end
 end
 
