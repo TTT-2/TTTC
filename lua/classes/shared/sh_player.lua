@@ -528,7 +528,7 @@ if SERVER then
 		local tbl = {}
 
 		for _, v in ipairs(player.GetAll()) do
-			if not self:IsInTeam(v) or self == v or self:GetTeam() == TEAM_INNOCENT or self:GetSubRoleData().unkownTeam or v:GetSubRoleData().unkownTeam then continue end
+			if not self:IsInTeam(v) or self == v or self:GetTeam() == TEAM_INNOCENT or self:GetSubRoleData().unknownTeam or v:GetSubRoleData().unknownTeam then continue end
 
 			table.insert(tbl, v)
 		end
