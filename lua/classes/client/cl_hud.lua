@@ -100,6 +100,10 @@ hook.Add("TTTRenderEntityInfo", "tttc_add_class_info", function(tData)
 
 	local class_data = ent:GetClassData()
 
+	if tData:GetAmountDescriptionLines() > 0 then
+		tData:AddDescriptionLine()
+	end
+
 	tData:AddDescriptionLine(
 		GetLang("ttt2_tttc_class") .. ": " .. CLASS.GetClassTranslation(class_data),
 		class_data and class_data.color or COLOR_LGRAY
