@@ -388,6 +388,10 @@ if SERVER then
 		net.Start("TTTCSendClass")
 		net.WriteUInt(index or 0, CLASS_BITS)
 		net.Send(self)
+
+		if GetGlobalBool("ttt_classes_sync_team", false) then
+			self:SyncClassToTeam()
+		end
 	end
 
 	function plymeta:UpdateClassOptions(opt1, opt2)
@@ -518,6 +522,23 @@ if SERVER then
 		net.WriteFloat(self.classCooldown or 0)
 		net.WriteFloat(self.classCooldownTS or 0)
 		net.Send(self)
+	end
+
+	function plymeta:SyncClassToTeam()
+		local tbl = {}
+
+		for _, v in ipairs(player.GetAll()) do
+			if not self:IsInTeam(v) or self == v or self:GetTeam() == TEAM_INNOCENT or self:GetSubRoleData().unknownTeam or v:GetSubRoleData().unknownTeam then continue end
+
+			table.insert(tbl, v)
+		end
+
+		hook.Run("TTTCOverrideTeamSync", self, tbl) --Needed to override who should get this sync, useful for spy
+
+		net.Start("TTTCSyncClass")
+		net.WriteEntity(self)
+		net.WriteUInt(self:GetCustomClass() or 0, CLASS_BITS)
+		net.Send(tbl)
 	end
 
 	net.Receive("TTTCClientSendClasses", function(len, ply)
