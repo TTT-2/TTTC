@@ -131,34 +131,7 @@ function CLASS.AbortClass()
 end
 concommand.Add("abortclass", CLASS.AbortClass, nil, "Abort ability preview", {FCVAR_DONTRECORD})
 
-hook.Add("Initialize", "TTTCLanguage", function()
-	LANG.AddToLanguage("English", "ttt2_tttc_abort_ability", "Abort Ability Preview")
-	LANG.AddToLanguage("Deutsch", "ttt2_tttc_abort_ability", "Abbruch Klassen Fähigkeit")
-	LANG.AddToLanguage("Русский", "ttt2_tttc_abort_ability", "Отменить предпросмотр способностей")
-
-	LANG.AddToLanguage("English", "ttt2_tttc_class_ability", "Class Ability")
-	LANG.AddToLanguage("Deutsch", "ttt2_tttc_class_ability", "Klassen Fähigkeit")
-	LANG.AddToLanguage("Русский", "ttt2_tttc_class_ability", "Способность класса")
-
-	LANG.AddToLanguage("English", "ttt2_tttc_drop_class", "Drop Class")
-	LANG.AddToLanguage("Deutsch", "ttt2_tttc_drop_class", "Klasse Verlieren")
-	LANG.AddToLanguage("Русский", "ttt2_tttc_drop_class", "Оставить класс")
-
-	LANG.AddToLanguage("English", "ttt2_tttc_class", "CLASS")
-	LANG.AddToLanguage("Deutsch", "ttt2_tttc_class", "KLASSE")
-	LANG.AddToLanguage("Русский", "ttt2_tttc_class", "КЛАСС")
-
-	LANG.AddToLanguage("English", "ttt2_tttc_class_unknown", "UNKNOWN")
-	LANG.AddToLanguage("Deutsch", "ttt2_tttc_class_unknown", "UNBEKANNT")
-	LANG.AddToLanguage("Русский", "ttt2_tttc_class_unknown", "НЕИЗВЕСТНО")
-
-	LANG.AddToLanguage("English", "ttt2_tttc_class_desc_not_provided", "No class description provided, please switch to the new class format.")
-	LANG.AddToLanguage("Deutsch", "ttt2_tttc_class_desc_not_provided", "Keine Klassenbeschreibung verfügbar, bitte wechsel zum neuen Klassensystem.")
-	LANG.AddToLanguage("Русский", "ttt2_tttc_class_desc_not_provided", "Описание класса не предоставлено, перейдите на новый формат класса.")
-end)
-
 hook.Add("Initialize", "TTTCKeyBinds", function()
-	-- Register binding functions
 	bind.Register("toggleclass", function()
 		CLASS.ClassActivate()
 	end, nil, "TTT2 Classes", "ttt2_tttc_class_ability", KEY_X)
