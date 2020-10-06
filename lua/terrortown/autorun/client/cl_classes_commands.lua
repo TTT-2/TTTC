@@ -1,3 +1,5 @@
+CLASS = CLASS or {}
+
 function DropClass(ply)
 	if LocalPlayer():HasClass() then
 		net.Start("TTTCDropClass")
@@ -23,8 +25,6 @@ local function force_class(ply, cmd, args, argStr)
 	end
 end
 concommand.Add("ttt_force_class", force_class, nil, nil, FCVAR_CHEAT)
-
-------------------
 
 local function classes_index(ply)
 	if ply:IsAdmin() then

@@ -1,3 +1,16 @@
+CLASS = CLASS or {}
+CLASS.CLASSES = CLASS.CLASSES or {}
+CLASS.AVAILABLECLASSES = CLASS.AVAILABLECLASSES or {}
+CLASS.FREECLASSES = CLASS.FREECLASSES or {}
+
+CLASS_BITS = 10
+
+COLOR_CLASS = Color(255, 155, 0, 255)
+CLASS_TIME = 60
+CLASS_COOLDOWN = 60
+
+TTTC = true
+
 function CLASS.AddClass(name, classData, conVarData)
 	conVarData = conVarData or {}
 

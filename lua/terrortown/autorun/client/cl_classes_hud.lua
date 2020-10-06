@@ -1,4 +1,3 @@
--- caching
 local GetLang
 local cached_arcs = {}
 
@@ -6,22 +5,11 @@ local surface = surface
 local draw = draw
 local math = math
 
-
--- Fonts
-hook.Add("TTT2Initialize", "TTTCCreateAdvancedFonts", function()
-	surface.CreateAdvancedFont("CurrentClass", {font = "Trebuchet24", size = 28, weight = 1000})
-	surface.CreateAdvancedFont("CurrentClassDesc", {font = "Trebuchet24", size = 52, weight = 1000})
-	surface.CreateAdvancedFont("ClassDesc", {font = "Trebuchet24", size = 14, weight = 1000})
-	surface.CreateAdvancedFont("ClassDescOptions", {font = "Trebuchet24", size = 28, weight = 1000})
-end)
-
 local margin = 10
 local default_hud_x = margin
 local default_hud_y = ScrH() - margin - 120 * 2 -- add a padding between role and class for other addons, so multiply 120 with 2 (otherwise without 2)
 
--- ConVars
 local cv = {}
-
 cv.class_notification = CreateClientConVar("tttc_class_notification", "1", true, false, "Toggle the notification on receiving a class class.")
 cv.class_hud_width = CreateClientConVar("tttc_hud_width", "20", true, false, "The relative x-coordinate (position) of the HUD. (0-100) Def: 20")
 cv.class_hud_y = CreateClientConVar("tttc_hud_y", tostring(default_hud_y), true, false, "The relative y-coordinate (position) of the HUD. (0-100) Def: " .. tostring(default_hud_y))
@@ -78,6 +66,38 @@ local function ClassInfo(client)
 	end
 end
 
+hook.Add("TTT2HUDUpdated", "TTTCUpdateClassesInfo", function()
+	if not hudelements then
+		Msg("Warning: New HUD module does not seem to be loaded in TTT2Initialize, so we cannot register to custom huds.\n")
+
+		return
+	end
+
+	local hudInfoElements = hudelements.GetAllTypeElements("tttinfopanel")
+
+	for _, v in ipairs(hudInfoElements) do
+		if v.SetSecondaryRoleInfoFunction then
+			v:SetSecondaryRoleInfoFunction(function()
+				local classData = LocalPlayer():GetClassData()
+
+				if not classData then return end
+
+				return {
+					color = classData.color or COLOR_CLASS,
+					text = CLASS.GetClassTranslation(classData)
+				}
+			end)
+		end
+	end
+end)
+
+hook.Add("TTT2Initialize", "TTTCCreateAdvancedFonts", function()
+	surface.CreateAdvancedFont("CurrentClass", {font = "Trebuchet24", size = 28, weight = 1000})
+	surface.CreateAdvancedFont("CurrentClassDesc", {font = "Trebuchet24", size = 52, weight = 1000})
+	surface.CreateAdvancedFont("ClassDesc", {font = "Trebuchet24", size = 14, weight = 1000})
+	surface.CreateAdvancedFont("ClassDescOptions", {font = "Trebuchet24", size = 28, weight = 1000})
+end)
+
 hook.Add("HUDPaint", "TTTCClassHudPaint", function()
 	local client = LocalPlayer()
 
@@ -86,7 +106,6 @@ hook.Add("HUDPaint", "TTTCClassHudPaint", function()
 	end
 end)
 
------ target ID
 hook.Add("TTTRenderEntityInfo", "tttc_add_class_info", function(tData)
 	local ent = tData:GetEntity()
 
@@ -109,8 +128,6 @@ hook.Add("TTTRenderEntityInfo", "tttc_add_class_info", function(tData)
 		class_data and class_data.color or COLOR_LGRAY
 	)
 end)
-
------------------------- Experimental -------------------------
 
 function draw.Arc(id, cx, cy, radius, thickness, startang, endang, roughness, color)
 	surface.SetDrawColor(color)
@@ -209,9 +226,8 @@ function surface.PrecacheArc(id, cx, cy, radius, thickness, startang, endang, ro
 	return triarc
 end
 
--- Draw a premade arc
 function surface.DrawArc(arc)
-	for _, v in ipairs(arc) do
-		surface.DrawPoly(v)
+	for i = 1, #arc do
+		surface.DrawPoly(arc[i])
 	end
 end
