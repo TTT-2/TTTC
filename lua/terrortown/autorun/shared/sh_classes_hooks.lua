@@ -63,72 +63,19 @@ if SERVER then
 
 		if not GetGlobalBool("ttt2_classes") then return end
 
-		local maxEntries = GetGlobalInt("ttt_classes_different")
-		local classAmount = table.Count(CLASS.CLASSES)
-
-		local classes = {}
-
-		-- if the amount of available classes is smaller than the amount of classes to
-		-- be selected, the class array should be shuffled
-		if maxEntries > 0 and classAmount >= maxEntries then
-			local num_index = 1
-			for _, v in pairs(CLASS.CLASSES) do
-				classes[num_index] = v
-
-				num_index = num_index + 1
-			end
-
-			table.Shuffle(classes)
-		else
-			classes = CLASS.CLASSES
-		end
-
-		for _, v in pairs(classes) do
-			if not GetConVar("tttc_class_" .. v.name .. "_enabled"):GetBool() then continue end
-
-			local b = true
-			local r = GetConVar("tttc_class_" .. v.name .. "_random"):GetInt()
-
-			if r > 0 and r < 100 then
-				b = math.random(100) <= r
-			elseif r <= 0 then
-				b = false
-			end
-
-			if b then
-				local nextEntry = #CLASS.AVAILABLECLASSES + 1
-
-				CLASS.AVAILABLECLASSES[nextEntry] = v
-
-				if maxEntries > 0 and nextEntry >= maxEntries then break end
-			end
-		end
-
-		if #CLASS.AVAILABLECLASSES == 0 then return end
-
-		table.Empty(CLASS.FREECLASSES)
-
-		if GetGlobalBool("ttt_classes_limited") then
-			for _, v in ipairs(CLASS.AVAILABLECLASSES) do
-				table.insert(CLASS.FREECLASSES, v)
-			end
-		end
+		CLASS.generateClassPool()
 
 		for _, v in ipairs(player.GetAll()) do
 			if v:IsActive() then
 				local hr
 
 				if #CLASS.FREECLASSES == 0 then
-					local rand = math.random(#CLASS.AVAILABLECLASSES)
-
-					hr = CLASS.AVAILABLECLASSES[rand].index
-				else
-					local rand = math.random(#CLASS.FREECLASSES)
-
-					hr = CLASS.FREECLASSES[rand].index
-
-					table.remove(CLASS.FREECLASSES, rand)
+					CLASS.generateClassPool()
 				end
+				local rand = math.random(#CLASS.FREECLASSES)
+				hr = CLASS.FREECLASSES[rand].index
+				table.remove(CLASS.FREECLASSES, rand)
+				
 
 				if not GetGlobalBool("ttt_classes_option") then
 					v:UpdateClass(hr)
@@ -136,16 +83,11 @@ if SERVER then
 					local opt = hr
 
 					if #CLASS.FREECLASSES == 0 then
-						local rand = math.random(#CLASS.AVAILABLECLASSES)
-
-						hr = CLASS.AVAILABLECLASSES[rand].index
-					else
-						local rand = math.random(#CLASS.FREECLASSES)
-
-						hr = CLASS.FREECLASSES[rand].index
-
-						table.remove(CLASS.FREECLASSES, rand)
+						CLASS.generateClassPool()
 					end
+					local rand = math.random(#CLASS.FREECLASSES)
+					hr = CLASS.FREECLASSES[rand].index
+					table.remove(CLASS.FREECLASSES, rand)
 
 					v:UpdateClassOptions(opt, hr)
 				end
