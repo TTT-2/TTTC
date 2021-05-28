@@ -1,4 +1,4 @@
-local L = LANG.GetLanguageTableReference("english")
+local L = LANG.GetLanguageTableReference("en")
 
 L["ttt2_tttc_abort_ability"] = "Abort Ability Preview"
 L["ttt2_tttc_class_ability"] = "Class Ability"

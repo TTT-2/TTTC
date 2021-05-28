@@ -1,4 +1,4 @@
-local L = LANG.GetLanguageTableReference("Русский")
+local L = LANG.GetLanguageTableReference("ru")
 
 L["ttt2_tttc_abort_ability"] = "Отменить предпросмотр способностей"
 L["ttt2_tttc_class_ability"] = "Способность класса"
