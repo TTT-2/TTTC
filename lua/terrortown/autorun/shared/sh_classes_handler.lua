@@ -164,6 +164,18 @@ function CLASS.generateClassPool()
 	end
 end
 
+function CLASS.selectClassFromPool()
+	if #CLASS.FREECLASSES == 0 then
+		CLASS.generateClassPool()
+	end
+
+	local rand = math.random(#CLASS.FREECLASSES)
+	local selection = CLASS.FREECLASSES[rand].index
+	table.remove(CLASS.FREECLASSES, rand)
+
+	return selection
+end
+
 if CLIENT then
 	local TryT
 

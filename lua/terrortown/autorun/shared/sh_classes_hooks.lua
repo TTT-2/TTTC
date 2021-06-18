@@ -65,32 +65,21 @@ if SERVER then
 
 		CLASS.generateClassPool()
 
+		if #CLASS.AVAILABLECLASSES == 0 then return end
+
 		for _, v in ipairs(player.GetAll()) do
-			if v:IsActive() then
-				local hr
+			if not v:IsActive() then continue end
 
-				if #CLASS.FREECLASSES == 0 then
-					CLASS.generateClassPool()
-				end
-				local rand = math.random(#CLASS.FREECLASSES)
-				hr = CLASS.FREECLASSES[rand].index
-				table.remove(CLASS.FREECLASSES, rand)
-				
+			local hr = CLASS.selectClassFromPool()
+			
+			if not GetGlobalBool("ttt_classes_option") then
+				v:UpdateClass(hr)
+			else
+				local opt = hr
 
-				if not GetGlobalBool("ttt_classes_option") then
-					v:UpdateClass(hr)
-				else
-					local opt = hr
+				hr = CLASS.selectClassFromPool()
 
-					if #CLASS.FREECLASSES == 0 then
-						CLASS.generateClassPool()
-					end
-					local rand = math.random(#CLASS.FREECLASSES)
-					hr = CLASS.FREECLASSES[rand].index
-					table.remove(CLASS.FREECLASSES, rand)
-
-					v:UpdateClassOptions(opt, hr)
-				end
+				v:UpdateClassOptions(opt, hr)
 			end
 		end
 
