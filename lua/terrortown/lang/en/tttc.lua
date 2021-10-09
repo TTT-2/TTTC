@@ -21,6 +21,7 @@ L["label_tttc_classes_option"] = "Can Players choose between 2 Classes?"
 L["label_tttc_classes_extraslot"] = "Should Class Weapons be put on an extra slot?"
 L["label_tttc_classes_respawn_keep"] = "Should Players keep their Classes on respawn?"
 L["label_tttc_classes_popup"] = "Enable Class Popup"
+L["label_tttc_classes_teamsync"] = "Should Classes be synced to Teammates?"
 L["label_tttc_classes_different"] = "How many different classes should be available?"
 
 L["help_addons_tttc"] = "Settings for TTTC"

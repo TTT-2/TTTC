@@ -21,6 +21,7 @@ L["ttt2_tttc_class_desc_not_provided"] = "Описание класса не п�
 --L["label_tttc_classes_extraslot"] = "Should Class Weapons be put on an extra slot?"
 --L["label_tttc_classes_respawn_keep"] = "Should Players keep their Classes on respawn?"
 --L["label_tttc_classes_popup"] = "Enable Class Popup"
+--L["label_tttc_classes_teamsync"] = "Should classes be synced to Teammates?"
 --L["label_tttc_classes_different"] = "How many different classes should be available?"
 
 --L["help_addons_tttc"] = "Settings for TTTC"

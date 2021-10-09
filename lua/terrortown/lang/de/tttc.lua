@@ -21,6 +21,7 @@ L["label_tttc_classes_option"] = "Können Spieler zwischen 2 Klassen wählen?"
 L["label_tttc_classes_extraslot"] = "Sollen Klassen Waffen auf einen Extra Waffenplatz kommen?"
 L["label_tttc_classes_respawn_keep"] = "Sollen Spieler ihre Klassen beim neu spawnen behalten?"
 L["label_tttc_classes_popup"] = "Aktiviere Klassen Popup"
+L["label_tttc_classes_teamsync"] = "Sollen Klassen zu Teammates synchronisiert werden?"
 L["label_tttc_classes_different"] = "Wie viele verschiedene Klassen sollen aktiviert sein?"
 
 L["help_addons_tttc"] = "Einstellungen für TTTC"

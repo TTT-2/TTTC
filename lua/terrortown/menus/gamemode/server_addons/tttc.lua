@@ -38,6 +38,11 @@ function CLGAMEMODESUBMENU:Populate(parent)
 		serverConvar = "ttt_classes_show_popup"
 	})
 
+	form:MakeCheckBox({
+		label = "label_tttc_classes_teamsync",
+		serverConvar = "ttt_classes_sync_team"
+	})
+
 	form:MakeSlider({
 		label = "label_tttc_classes_different",
 		serverConvar = "ttt_classes_different",
