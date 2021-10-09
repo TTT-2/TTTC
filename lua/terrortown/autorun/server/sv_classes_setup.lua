@@ -1,4 +1,5 @@
 resource.AddFile("materials/vgui/ttt/score_logo_heroes.vmt")
+resource.AddFile("materials/vgui/ttt/vskin/helpscreen/tttc.vmt")
 
 util.AddNetworkString("TTTCDropClass")
 util.AddNetworkString("TTTCSendClass")
