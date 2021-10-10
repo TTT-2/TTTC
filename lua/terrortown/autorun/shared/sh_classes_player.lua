@@ -319,15 +319,16 @@ function plymeta:GivePassiveClassEquipment(classData)
 		end
 	end
 
-	if passiveWeapons and #passiveWeapons > 0 then
-		for _, v in ipairs(passiveWeapons) do
-			if not self:HasWeapon(v) then
-				self:GiveClassWeapon(v, true)
+	timer.Simple(0, function()
+		if not passiveWeapons or #passiveWeapons == 0 then return end
 
-				self.passiveNewWeps[#self.passiveNewWeps + 1] = v
-			end
+		for _, v in ipairs(passiveWeapons) do
+			if self:HasWeapon(v) then continue end
+
+			self:GiveClassWeapon(v, true)
+			self.passiveNewWeps[#self.passiveNewWeps + 1] = v
 		end
-	end
+	end)
 
 	if GetGlobalBool("ttt_classes_extraslot") then
 		self:ManipulateClassWeapons()
