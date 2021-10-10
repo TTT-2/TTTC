@@ -1,12 +1,11 @@
 local tableCopy = table.Copy
-local classes = classes
 
 local virtualSubmenus = {}
 
 CLGAMEMODEMENU.base = "base_gamemodemenu"
 
 CLGAMEMODEMENU.icon = Material("vgui/ttt/vskin/helpscreen/tttc")
-CLGAMEMODEMENU.title = "TTTC Class settings"
+CLGAMEMODEMENU.title = "menu_tttc_title"
 CLGAMEMODEMENU.description = "menu_tttc_description"
 CLGAMEMODEMENU.priority = 40
 
@@ -50,4 +49,8 @@ end
 -- overwrite and return true to enable a searchbar
 function CLGAMEMODEMENU:HasSearchbar()
 	return true
+end
+
+function CLGAMEMODEMENU:ShouldShow()
+	return GetGlobalBool("ttt2_classes") and self.BaseClass.ShouldShow(self)
 end
