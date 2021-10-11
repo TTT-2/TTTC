@@ -25,4 +25,4 @@ L["ttt2_tttc_class_desc_not_provided"] = "Описание класса не п�
 --L["label_tttc_classes_teamsync"] = "Should classes be synced to team mates?"
 --L["label_tttc_classes_different"] = "The upper limit of available classes (0: unlimited)"
 
---L["help_tttc_calsses_limited"] = "If enabled the game tries to assign each class only once. The same class pool is used again if there are more players than classes."
+--L["help_tttc_classes_limited"] = "If enabled the game tries to assign each class only once. The same class pool is used again if there are more players than classes."

@@ -10,7 +10,7 @@ function CLGAMEMODESUBMENU:Populate(parent)
 	})
 
 	form:MakeHelp({
-		label = "help_tttc_calsses_limited"
+		label = "help_tttc_classes_limited"
 	})
 
 	form:MakeCheckBox({
