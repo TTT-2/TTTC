@@ -25,4 +25,4 @@ L["label_tttc_classes_popup"] = "Aktiviere Klasseninfo Popup"
 L["label_tttc_classes_teamsync"] = "Sollen Klassen zu Teammates synchronisiert werden?"
 L["label_tttc_classes_different"] = "Die obere Grenze für Klassen (0: unbegrenzt)"
 
-L["help_tttc_calsses_limited"] = "Wenn aktivert, dann versucht das Spiel jede Klasse nur einmal zuzuweisen. Der selbe Klassenpool wird jedoch erneut verwendet, wenn es mehr Spieler als Klassen gibt."
+L["help_tttc_classes_limited"] = "Wenn aktivert, dann versucht das Spiel jede Klasse nur einmal zuzuweisen. Der selbe Klassenpool wird jedoch erneut verwendet, wenn es mehr Spieler als Klassen gibt."
