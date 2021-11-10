@@ -15,6 +15,7 @@ L["menu_tttc_description"] = "Settings for TTTC Classes"
 L["submenu_addons_tttc_title"] = "TTTC"
 
 L["label_tttc_class_enabled"] = "Enable class"
+L["label_tttc_classes_random"] = "Chance that classes are assigned at the start of a round"
 L["label_tttc_class_spawn_chance"] = "Chance for class to be added to class pool"
 L["label_tttc_classes_enable"] = "Enable TTTC classes?"
 L["label_tttc_classes_limited"] = "Limit classes to one player only?"
