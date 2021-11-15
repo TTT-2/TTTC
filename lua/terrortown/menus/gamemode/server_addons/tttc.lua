@@ -9,6 +9,15 @@ function CLGAMEMODESUBMENU:Populate(parent)
 		serverConvar = "ttt2_classes"
 	})
 
+	form:MakeSlider({
+		label = "label_tttc_classes_random",
+		serverConvar = "ttt_classes_random",
+		min = 0,
+		max = 100,
+		decimal = 0,
+		master = masterEnb
+	})
+
 	form:MakeHelp({
 		label = "help_tttc_classes_limited"
 	})

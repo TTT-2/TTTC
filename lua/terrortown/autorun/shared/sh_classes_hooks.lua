@@ -62,6 +62,7 @@ if SERVER then
 		table.Empty(CLASS.AVAILABLECLASSES)
 
 		if not GetGlobalBool("ttt2_classes") then return end
+		if GetGlobalInt("ttt_classes_random") < math.random(100) then return end
 
 		CLASS.generateClassPool()
 

@@ -15,6 +15,7 @@ L["menu_tttc_description"] = "Einstellungen für TTTC Klassen"
 L["submenu_addons_tttc_title"] = "TTTC"
 
 L["label_tttc_class_enabled"] = "Aktiviere Klasse"
+L["label_tttc_class_random"] = "Chance das Klassen beim Start einer Runde vergeben werden"
 L["label_tttc_class_spawn_chance"] = "Chance, dass die Klasse in den Klassenpool kommt"
 L["label_tttc_classes_enable"] = "Aktiviere TTTC Klassen?"
 L["label_tttc_classes_limited"] = "Limitiere Klassen auf 1 Spieler?"
