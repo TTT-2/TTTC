@@ -72,7 +72,7 @@ if SERVER then
 			if not v:IsActive() then continue end
 
 			local hr = CLASS.selectClassFromPool()
-			
+
 			if not GetGlobalBool("ttt_classes_option") then
 				v:UpdateClass(hr)
 			else
@@ -194,7 +194,7 @@ if CLIENT then
 	hook.Add("TTTScoreboardColumns", "TTTCScoreboardClass", function(pnl)
 		if not GetGlobalBool("ttt2_classes") then return end
 
-		pnl:AddColumn("Class", function(ply, label)
+		pnl:AddColumn(LANG.GetTranslation("ttt2_tttc_class_sb"), function(ply, label)
 			if ply:HasClass() then
 				local classData = ply:GetClassData()
 
