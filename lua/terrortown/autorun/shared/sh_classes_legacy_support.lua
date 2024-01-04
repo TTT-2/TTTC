@@ -1,9 +1,5 @@
 CLASSES = {}
 
-if SERVER then
-	util.AddNetworkString("TTTCSyncLegacyClasses")
-end
-
 function AddCustomClass(name, classData, conVarData)
 	if not CLASSES[name] and SERVER then
 		local i = 1 -- start at 1 to directly get free slot
@@ -29,7 +25,8 @@ local function ConvertLegacyClasses()
 			passiveWeapons = table.Copy(class.weapons),
 			passiveItems = table.Copy(class.items),
 			passive = true,
-			deactivated = true
+			deactivated = true,
+			isLegacyClass = true
 		})
 
 		class.index = CLASS.CLASSES[name].index
@@ -48,101 +45,38 @@ if SERVER then
 		hook.Run("TTTCPostClassesInit")
 	end)
 
-	local function EncodeForStream(tbl)
-		-- may want to filter out data later
-		-- just serialize for now
-
-		local result = util.TableToJSON(tbl)
-		if not result then
-			ErrorNoHalt("Round report event encoding failed!\n")
-
-			return false
-		else
-			return result
-		end
-	end
-
-	hook.Add("PlayerAuthed", "TTTCLegacyClassesSync", function(ply, steamid, uniqueid)
+	hook.Add("PlayerAuthed", "TTTCLegacyClassesSync", function(ply)
 		print("[TTTC] Sending LEGACY CLASSES list to " .. ply:Nick() .. "...")
 
-		local s = EncodeForStream(CLASSES)
+		net.SendStream("TTTCSyncLegacyClasses", CLASSES, ply)
+	end)
 
-		if not s then
-			return -- error occurred
-		end
+	hook.Add("OnReloaded", "TTTCLegacyClassesSyncOnReload", function()
+		local plys = player.GetAll()
 
-		-- divide into happy lil bits.
-		-- this was necessary with user messages, now it's
-		-- a just-in-case thing if a round somehow manages to be > 64K
-		local cut = {}
-		local max = 65499
+		for i = 1, #plys do
+			local ply = plys[i]
 
-		while #s ~= 0 do
-			local bit = string.sub(s, 1, max - 1)
+			print("[TTTC] Sending LEGACY CLASSES list to " .. ply:Nick() .. "...")
 
-			table.insert(cut, bit)
-
-			s = string.sub(s, max, -1)
-		end
-
-		local parts = #cut
-
-		for k, bit in ipairs(cut) do
-			net.Start("TTTCSyncLegacyClasses")
-			net.WriteBool(true)
-			net.WriteBit(k ~= parts) -- continuation bit, 1 if there's more coming
-			net.WriteString(bit)
-
-			if ply then
-				net.Send(ply)
-			else
-				net.Broadcast()
-			end
+			net.SendStream("TTTCSyncLegacyClasses", CLASSES, ply)
 		end
 	end)
 
 else
-	local buff = ""
-
-	net.Receive("TTTCSyncLegacyClasses", function(len)
+	net.ReceiveStream("TTTCSyncLegacyClasses", function(streamData)
 		print("[TTTC] Received LEGACY CLASSES list from server! Updating...")
 
-		local first = net.ReadBool()
-		local cont = net.ReadBit() == 1
+		CLASSES = streamData
 
-		buff = buff .. net.ReadString()
+		-- run client side
+		local client = LocalPlayer()
 
-		if cont then
-			return
-		else
-			-- do stuff with buffer contents
-			local json_roles = buff -- util.Decompress(buff)
+		hook.Run("TTTCPreFinishedClassesSync", client, first)
+		hook.Run("TTTCFinishedClassesSync", client, first)
+		hook.Run("TTTCPostFinishedClassesSync", client, first)
 
-			if not json_roles then
-				ErrorNoHalt("[TTTC] LEGACY CLASSES decompression failed!\n")
-			else
-				-- convert the json string back to a table
-				local tmp = util.JSONToTable(json_roles)
-
-				if istable(tmp) then
-					CLASSES = tmp
-				else
-					ErrorNoHalt("[TTTC] LEGACY CLASSES decoding failed!\n")
-				end
-
-				-- run client side
-				local client = LocalPlayer()
-
-				hook.Run("TTTCPreFinishedClassesSync", client, first)
-				hook.Run("TTTCFinishedClassesSync", client, first)
-				hook.Run("TTTCPostFinishedClassesSync", client, first)
-
-				ConvertLegacyClasses()
-			end
-
-			-- flush
-			buff = ""
-		end
+		ConvertLegacyClasses()
 	end)
 end
 

@@ -110,6 +110,17 @@ function plymeta:HasClass(class)
 	return self:GetCustomClass() and (not class or class and self:GetCustomClass() == class)
 end
 
+function plymeta:HasClassCooldown()
+	local cooldown = self:GetClassCooldown()
+	local timeStart = self:GetClassCooldownTS()
+
+	if cooldown == 0 then return false end
+
+	if CurTime() >= timeStart + cooldown then return false end
+
+	return true
+end
+
 function plymeta:SetClassOptions(opt1, opt2)
 	self.classOpt1 = opt1
 	self.classOpt2 = opt2
