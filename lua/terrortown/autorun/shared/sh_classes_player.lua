@@ -190,19 +190,20 @@ function plymeta:ClassActivate()
 			self.savedClassInventoryItems = table.Copy(self:GetEquipmentItems())
 
 			if not classData.avoidWeaponReset then
+					self:CacheAndStripWeapons()
 
-				-- reset inventory
-				self.savedClassInventory = {}
+					-- reset inventory
+					self.savedClassInventory = {}
 
-				-- save inventory
-				for _, v in pairs(self:GetWeapons()) do
-					self.savedClassInventory[#self.savedClassInventory + 1] = {cls = WEPS.GetClass(v), clip1 = v:Clip1(), clip2 = v:Clip2()}
-				end
+					-- save inventory
+					for _, v in pairs(self:GetWeapons()) do
+						self.savedClassInventory[#self.savedClassInventory + 1] = {cls = WEPS.GetClass(v), clip1 = v:Clip1(), clip2 = v:Clip2()}
+					end
 
-				self.savedClassInventoryWeapon = WEPS.GetClass(self:GetActiveWeapon())
+					self.savedClassInventoryWeapon = WEPS.GetClass(self:GetActiveWeapon())
 
-				-- take inventory
-				self:StripWeapons()
+					-- take inventory
+					self:StripWeapons()
 			end
 
 			-- give ability
@@ -259,27 +260,7 @@ function plymeta:ClassDeactivate()
 			-- take ability
 			self:RemoveAbility()
 
-			-- give inventory
-			if self.savedClassInventory then
-				for _, tbl in ipairs(self.savedClassInventory) do
-					if not tbl.cls then continue end
-
-					local wep = self:Give(tbl.cls)
-
-					if IsValid(wep) then
-						wep:SetClip1(tbl.clip1 or 0)
-						wep:SetClip2(tbl.clip2 or 0)
-					end
-				end
-			end
-
-			if self.savedClassInventoryWeapon then
-				self:SelectWeapon(self.savedClassInventoryWeapon)
-			end
-
-			-- reset inventory
-			self.savedClassInventory = nil
-			self.savedClassInventoryItems = nil
+			self:RestoreCachedWeapons()
 		end
 
 		local cooldown = true
