@@ -187,13 +187,11 @@ function plymeta:ClassActivate()
 		self:SetClassTimestamp(CurTime())
 
 		if SERVER then
-			self.savedClassInventoryItems = table.Copy(self:GetEquipmentItems())
-
 			if not classData.avoidWeaponReset then
 				self:CacheAndStripWeapons()
+				self:CacheAndStripItems()
 			end
 
-			-- give ability
 			self:GiveAbility()
 		end
 
@@ -202,15 +200,13 @@ function plymeta:ClassActivate()
 		end
 
 		if SERVER and not classData.endless then
-			local ply = self
-
 			timer.Create("tttc_deactivation_" .. self:UniqueID(), classData.time, 1, function()
-				if IsValid(ply) then
-					net.Start("TTTCDeactivateClass")
-					net.Send(ply)
+				if not IsValid(self) then return end
 
-					ply:ClassDeactivate()
-				end
+				net.Start("TTTCDeactivateClass")
+				net.Send(self)
+
+				self:ClassDeactivate()
 			end)
 		end
 
@@ -248,6 +244,7 @@ function plymeta:ClassDeactivate()
 			self:RemoveAbility()
 
 			self:RestoreCachedWeapons()
+			self:RestoreCachedItems()
 		end
 
 		local cooldown = true
@@ -345,7 +342,7 @@ function plymeta:RemovePassiveClassEquipment(classData)
 			self:RemoveItem(equip)
 		end
 
-		self:SendEquipment()
+		self:SendEquipment(EQUIPITEMS_RESET)
 	end
 
 	self.passiveNewItems = nil
@@ -474,21 +471,27 @@ if SERVER then
 
 	function plymeta:RemoveAbility()
 		if self.classWeapons then
-			for _, wep in ipairs(self.classWeapons) do
-				if self:HasWeapon(wep) then
-					self:StripWeapon(wep)
+			for i = 1, #self.classWeapons do
+				local classWeapon = self.classWeapons[i]
+
+				if self:HasCachedWeapons() then
+					self:RemoveCachedWeapon(classWeapon)
+				else
+					self:StripWeapon(classWeapon)
 				end
 			end
 		end
 
 		if self.classItems then
-			for _, equip in ipairs(self.classItems) do
-				if not self.savedClassInventoryItems or not table.HasValue(self.savedClassInventoryItems, equip) then -- not had this item
-					self:RemoveItem(equip)
+			for i = 1, #self.classItems do
+				local classItem = self.classItems[i]
+
+				if self:HasCachedItems() then
+					self:RemoveCachedItem(classItem)
+				else
+					self:RemoveItem(classItem)
 				end
 			end
-
-			self:SendEquipment()
 		end
 
 		self.classWeapons = nil
