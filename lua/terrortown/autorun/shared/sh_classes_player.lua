@@ -190,20 +190,7 @@ function plymeta:ClassActivate()
 			self.savedClassInventoryItems = table.Copy(self:GetEquipmentItems())
 
 			if not classData.avoidWeaponReset then
-					self:CacheAndStripWeapons()
-
-					-- reset inventory
-					self.savedClassInventory = {}
-
-					-- save inventory
-					for _, v in pairs(self:GetWeapons()) do
-						self.savedClassInventory[#self.savedClassInventory + 1] = {cls = WEPS.GetClass(v), clip1 = v:Clip1(), clip2 = v:Clip2()}
-					end
-
-					self.savedClassInventoryWeapon = WEPS.GetClass(self:GetActiveWeapon())
-
-					-- take inventory
-					self:StripWeapons()
+				self:CacheAndStripWeapons()
 			end
 
 			-- give ability
