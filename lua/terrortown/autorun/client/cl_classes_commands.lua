@@ -1,4 +1,4 @@
-local materialIconClassToggle = Material("vgui/ttt/hudhelp/class_activate")
+local materialIconClassActivate = Material("vgui/ttt/hudhelp/class_activate")
 local materialIconClassAbort = Material("vgui/ttt/hudhelp/class_abort")
 
 CLASS = CLASS or {}
@@ -147,7 +147,7 @@ hook.Add("TTT2FinishedLoading", "TTTCSetupBindings", function()
 		DropClass()
 	end, nil, "header_bindings_classes", "ttt2_tttc_drop_class")
 
-	keyhelp.RegisterKeyHelper("toggleclass", materialIconClassToggle, KEYHELP_EQUIPMENT, "label_keyhelper_class_toggle", function(client)
+	keyhelp.RegisterKeyHelper("toggleclass", materialIconClassActivate, KEYHELP_EQUIPMENT, "label_keyhelper_class_activate", function(client)
 		if client:IsSpec() or not client:HasClass() or client:HasClassActive() or client:HasClassCooldown() then return end
 
 		if client:GetClassData().passive then return end
@@ -155,7 +155,15 @@ hook.Add("TTT2FinishedLoading", "TTTCSetupBindings", function()
 		return true
 	end)
 
-	keyhelp.RegisterKeyHelper("abortclass", materialIconClassAbort, KEYHELP_EQUIPMENT, "label_keyhelper_class_abort", function(client)
+	keyhelp.RegisterKeyHelper("toggleclass", materialIconClassAbort, KEYHELP_EQUIPMENT, "label_keyhelper_class_abort", function(client)
+		if client:IsSpec() or not client:HasClass() or not client:HasClassActive() or client:HasClassCooldown() then return end
+
+		if client:GetClassData().passive then return end
+
+		return true
+	end)
+
+	keyhelp.RegisterKeyHelper("abortclass", materialIconClassAbort, KEYHELP_EQUIPMENT, "label_keyhelper_class_abort_preview", function(client)
 		if client:IsSpec() or not client:HasClass() then return end
 
 		if client:GetClassData().passive then return end

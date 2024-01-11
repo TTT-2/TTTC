@@ -28,3 +28,7 @@ L["label_tttc_classes_teamsync"] = "Should classes be synced to team mates?"
 L["label_tttc_classes_different"] = "The upper limit of available classes (0: unlimited)"
 
 L["help_tttc_classes_limited"] = "If enabled the game tries to assign each class only once. The same class pool is used again if there are more players than classes."
+
+L["label_keyhelper_class_activate"] = "enable class ability"
+L["label_keyhelper_class_abort"] = "abort class ability"
+L["label_keyhelper_class_abort_preview"] = "abort class ability preview"
