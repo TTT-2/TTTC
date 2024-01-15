@@ -16,6 +16,8 @@ if CLIENT then
 	local oldTimerVal, timerVal, outer
 	local diamondMaterial = Material("vgui/ttt/icon_diamond")
 
+	local arcID1, arcID2, arcID3, arcID4, arcID5
+
 	local const_defaults = {
 		basepos = {x = 0, y = 0},
 		size = {w = optionSize, h = optionSize},
@@ -119,7 +121,7 @@ if CLIENT then
 			oldTimerVal = oldTimerVal or timerVal
 			text = timerVal
 
-			draw.Arc(4, tx, ty, r_w - r_optionCircleSize, r_optionCircleSize, 0, circle, 10, Color(0, 0, 0, 150))
+			arcID1 = draw.Arc(arcID1, tx, ty, r_w - r_optionCircleSize, r_optionCircleSize, 0, circle, 10, Color(0, 0, 0, 150))
 		elseif active then
 			oldTimerVal = nil
 
@@ -151,11 +153,10 @@ if CLIENT then
 			end
 		end
 
-		draw.Arc(1, tx, ty, r_innerCircleSize, r_innerCircleSize, 0, 360, 10, Color(0, 0, 0, 240))
-		draw.Arc(2, tx, ty, 0, r_innerCircleSize, 0, circle, 10, Color(0, 0, 0, 230))
-		draw.Arc(3, tx, ty, r_w, r_optionCircleSize, 0, outer, 2, Color(0, 0, 0, 200))
-		draw.Arc(4, tx, ty, r_w - r_optionCircleSize, r_optionCircleSize, 0, inner * ((classData.charging and not active) and (client.charging and val or 0) or 1), 5, ColorAlpha(classData.color or Color(255,155,55), 170))
-		--draw.Arc(id, cx, cy, radius, thickness, startang, endang, roughness, color)
+		arcID2 = draw.Arc(arcID2, tx, ty, r_innerCircleSize, r_innerCircleSize, 0, 360, 10, Color(0, 0, 0, 240))
+		arcID3 = draw.Arc(arcID3, tx, ty, 0, r_innerCircleSize, 0, circle, 10, Color(0, 0, 0, 230))
+		arcID4 = draw.Arc(arcID4, tx, ty, r_w, r_optionCircleSize, 0, outer, 2, Color(0, 0, 0, 200))
+		arcID5 = draw.Arc(arcID5, tx, ty, r_w - r_optionCircleSize, r_optionCircleSize, 0, inner * ((classData.charging and not active) and (client.charging and val or 0) or 1), 5, ColorAlpha(classData.color or Color(255,155,55), 170))
 
 		if icon then
 			local iSize = w - (self.optionSize - self.iconSize)
