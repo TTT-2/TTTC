@@ -4,172 +4,241 @@ local materialIconClassAbort = Material("vgui/ttt/hudhelp/class_abort")
 CLASS = CLASS or {}
 
 function DropClass(ply)
-	if LocalPlayer():HasClass() then
-		net.Start("TTTCDropClass")
-		net.SendToServer()
-	end
+    if LocalPlayer():HasClass() then
+        net.Start("TTTCDropClass")
+        net.SendToServer()
+    end
 end
 concommand.Add("dropclass", DropClass)
 
 local function force_class(ply, cmd, args, argStr)
-	local class = tonumber(args[1])
-	local i = 0
+    local class = tonumber(args[1])
+    local i = 0
 
-	for _, v in pairs(CLASS.CLASSES) do
-		i = i + 1
-	end
+    for _, v in pairs(CLASS.CLASSES) do
+        i = i + 1
+    end
 
-	local classData = CLASS.GetClassDataByIndex(class)
+    local classData = CLASS.GetClassDataByIndex(class)
 
-	if classData and class and class <= i then
-		ply:ServerUpdateClasses(class)
+    if classData and class and class <= i then
+        ply:ServerUpdateClasses(class)
 
-		ply:ChatPrint("You changed to '" .. classData.name .. "' (class: " .. class .. ")")
-	end
+        ply:ChatPrint("You changed to '" .. classData.name .. "' (class: " .. class .. ")")
+    end
 end
 concommand.Add("ttt_force_class", force_class, nil, nil, FCVAR_CHEAT)
 
 local function classes_index(ply)
-	if ply:IsAdmin() then
-		ply:ChatPrint("[TTTC] classes_index...")
-		ply:ChatPrint("-----------------")
-		ply:ChatPrint("[Class] | [Index]")
+    if ply:IsAdmin() then
+        ply:ChatPrint("[TTTC] classes_index...")
+        ply:ChatPrint("-----------------")
+        ply:ChatPrint("[Class] | [Index]")
 
-		for _, v in pairs(CLASS.GetSortedClasses()) do
-			ply:ChatPrint(v.name .. " | " .. v.index)
-		end
+        for _, v in pairs(CLASS.GetSortedClasses()) do
+            ply:ChatPrint(v.name .. " | " .. v.index)
+        end
 
-		ply:ChatPrint("----------------")
-	end
+        ply:ChatPrint("----------------")
+    end
 end
 concommand.Add("ttt_classes_index", classes_index)
 
 function CLASS.ClassActivate()
-	if not GetGlobalBool("ttt2_classes") then return end
+    if not GetGlobalBool("ttt2_classes") then
+        return
+    end
 
-	local ply = LocalPlayer()
+    local ply = LocalPlayer()
 
-	if not ply:IsActive() then return end
+    if not ply:IsActive() then
+        return
+    end
 
-	if ply.classOpt1 and GetGlobalBool("ttt_classes_option") then
-		net.Start("TTTCChooseClassOption")
-		net.WriteBool(false)
-		net.SendToServer()
+    if ply.classOpt1 and GetGlobalBool("ttt_classes_option") then
+        net.Start("TTTCChooseClassOption")
+        net.WriteBool(false)
+        net.SendToServer()
 
-		ply:SetClassOptions() -- reset class options
+        ply:SetClassOptions() -- reset class options
 
-		return
-	end
+        return
+    end
 
-	if not ply:HasClass() or hook.Run("TTTCPreventClassActivation", ply) then return end
+    if not ply:HasClass() or hook.Run("TTTCPreventClassActivation", ply) then
+        return
+    end
 
-	if GetRoundState() ~= ROUND_WAIT and ply:IsTerror() then
-		local classData = ply:GetClassData()
+    if GetRoundState() ~= ROUND_WAIT and ply:IsTerror() then
+        local classData = ply:GetClassData()
 
-		if not classData or classData.deactivated then return end
+        if not classData or classData.deactivated then
+            return
+        end
 
-		local time = CurTime()
+        local time = CurTime()
 
-		if ply:GetClassCooldownTS() and ply:GetClassCooldownTS() + ply:GetClassCooldown() > time then return end
+        if
+            ply:GetClassCooldownTS()
+            and ply:GetClassCooldownTS() + ply:GetClassCooldown() > time
+        then
+            return
+        end
 
-		if not ply:HasClassActive() then
-			local charging = classData.charging
+        if not ply:HasClassActive() then
+            local charging = classData.charging
 
-			-- TODO ability preview?
-			if charging then
-				if ply.charging and ply.charging + charging - 1 <= time then
-					if ply.sendCharge then
-						net.Start("TTTCChangeCharge")
-						net.WriteBool(false)
-						net.SendToServer()
+            -- TODO ability preview?
+            if charging then
+                if ply.charging and ply.charging + charging - 1 <= time then
+                    if ply.sendCharge then
+                        net.Start("TTTCChangeCharge")
+                        net.WriteBool(false)
+                        net.SendToServer()
 
-						ply.sendCharge = nil
-					end
+                        ply.sendCharge = nil
+                    end
 
-					ply.charging = nil
-				else
-					return
-				end
-			end
+                    ply.charging = nil
+                else
+                    return
+                end
+            end
 
-			ply.chargingWaiting = true
+            ply.chargingWaiting = true
 
-			net.Start("TTTCActivateClass")
-			net.SendToServer()
-		elseif not classData.unstoppable then
-			net.Start("TTTCDeactivateClass")
-			net.SendToServer()
-		end
-	end
+            net.Start("TTTCActivateClass")
+            net.SendToServer()
+        elseif not classData.unstoppable then
+            net.Start("TTTCDeactivateClass")
+            net.SendToServer()
+        end
+    end
 end
-concommand.Add("toggleclass", CLASS.ClassActivate, nil, "Activates class ability", {FCVAR_DONTRECORD})
+concommand.Add(
+    "toggleclass",
+    CLASS.ClassActivate,
+    nil,
+    "Activates class ability",
+    { FCVAR_DONTRECORD }
+)
 
 function CLASS.AbortClass()
-	if not GetGlobalBool("ttt2_classes") then return end
+    if not GetGlobalBool("ttt2_classes") then
+        return
+    end
 
-	local ply = LocalPlayer()
+    local ply = LocalPlayer()
 
-	if not ply:IsActive() then return end
+    if not ply:IsActive() then
+        return
+    end
 
-	if ply.classOpt2 and GetGlobalBool("ttt_classes_option") then
-		net.Start("TTTCChooseClassOption")
-		net.WriteBool(true)
-		net.SendToServer()
+    if ply.classOpt2 and GetGlobalBool("ttt_classes_option") then
+        net.Start("TTTCChooseClassOption")
+        net.WriteBool(true)
+        net.SendToServer()
 
-		ply:SetClassOptions() -- reset class options
+        ply:SetClassOptions() -- reset class options
 
-		return
-	end
+        return
+    end
 
-	if not ply:HasClass() or hook.Run("TTTCPreventClassAbortion", ply) then return end
+    if not ply:HasClass() or hook.Run("TTTCPreventClassAbortion", ply) then
+        return
+    end
 
-	if GetRoundState() ~= ROUND_WAIT and ply:IsTerror() then
-		local classData = ply:GetClassData()
+    if GetRoundState() ~= ROUND_WAIT and ply:IsTerror() then
+        local classData = ply:GetClassData()
 
-		if not classData or classData.deactivated then return end
+        if not classData or classData.deactivated then
+            return
+        end
 
-		net.Start("TTTCAbortClass")
-		net.SendToServer()
-	end
+        net.Start("TTTCAbortClass")
+        net.SendToServer()
+    end
 end
-concommand.Add("abortclass", CLASS.AbortClass, nil, "Abort ability preview", {FCVAR_DONTRECORD})
+concommand.Add("abortclass", CLASS.AbortClass, nil, "Abort ability preview", { FCVAR_DONTRECORD })
 
 hook.Add("TTT2FinishedLoading", "TTTCSetupBindings", function()
-	bind.Register("toggleclass", function()
-		CLASS.ClassActivate()
-	end, nil, "header_bindings_classes", "ttt2_tttc_class_ability", KEY_X)
+    bind.Register("toggleclass", function()
+        CLASS.ClassActivate()
+    end, nil, "header_bindings_classes", "ttt2_tttc_class_ability", KEY_X)
 
-	bind.Register("abortclass", function()
-		CLASS.AbortClass()
-	end, nil, "header_bindings_classes", "ttt2_tttc_abort_ability", KEY_N)
+    bind.Register("abortclass", function()
+        CLASS.AbortClass()
+    end, nil, "header_bindings_classes", "ttt2_tttc_abort_ability", KEY_N)
 
-	bind.Register("dropclass", function()
-		DropClass()
-	end, nil, "header_bindings_classes", "ttt2_tttc_drop_class")
+    bind.Register("dropclass", function()
+        DropClass()
+    end, nil, "header_bindings_classes", "ttt2_tttc_drop_class")
 
-	keyhelp.RegisterKeyHelper("toggleclass", materialIconClassActivate, KEYHELP_EQUIPMENT, "label_keyhelper_class_activate", function(client)
-		if client:IsSpec() or not client:HasClass() or client:HasClassActive() or client:HasClassCooldown() then return end
+    keyhelp.RegisterKeyHelper(
+        "toggleclass",
+        materialIconClassActivate,
+        KEYHELP_EQUIPMENT,
+        "label_keyhelper_class_activate",
+        function(client)
+            if
+                client:IsSpec()
+                or not client:HasClass()
+                or client:HasClassActive()
+                or client:HasClassCooldown()
+            then
+                return
+            end
 
-		if client:GetClassData().passive then return end
+            if client:GetClassData().passive then
+                return
+            end
 
-		return true
-	end)
+            return true
+        end
+    )
 
-	keyhelp.RegisterKeyHelper("toggleclass", materialIconClassAbort, KEYHELP_EQUIPMENT, "label_keyhelper_class_abort", function(client)
-		if client:IsSpec() or not client:HasClass() or not client:HasClassActive() or client:HasClassCooldown() then return end
+    keyhelp.RegisterKeyHelper(
+        "toggleclass",
+        materialIconClassAbort,
+        KEYHELP_EQUIPMENT,
+        "label_keyhelper_class_abort",
+        function(client)
+            if
+                client:IsSpec()
+                or not client:HasClass()
+                or not client:HasClassActive()
+                or client:HasClassCooldown()
+            then
+                return
+            end
 
-		if client:GetClassData().passive then return end
+            if client:GetClassData().passive then
+                return
+            end
 
-		return true
-	end)
+            return true
+        end
+    )
 
-	keyhelp.RegisterKeyHelper("abortclass", materialIconClassAbort, KEYHELP_EQUIPMENT, "label_keyhelper_class_abort_preview", function(client)
-		if client:IsSpec() or not client:HasClass() then return end
+    keyhelp.RegisterKeyHelper(
+        "abortclass",
+        materialIconClassAbort,
+        KEYHELP_EQUIPMENT,
+        "label_keyhelper_class_abort_preview",
+        function(client)
+            if client:IsSpec() or not client:HasClass() then
+                return
+            end
 
-		if client:GetClassData().passive then return end
+            if client:GetClassData().passive then
+                return
+            end
 
-		if client:HasClassActive() or not client.prepareActivation then return end
+            if client:HasClassActive() or not client.prepareActivation then
+                return
+            end
 
-		return true
-	end)
+            return true
+        end
+    )
 end)
