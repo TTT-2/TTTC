@@ -29,6 +29,6 @@ L["label_tttc_classes_different"] = "Die obere Grenze für Klassen (0: unbegrenz
 
 L["help_tttc_classes_limited"] = "Wenn aktivert, dann versucht das Spiel jede Klasse nur einmal zuzuweisen. Der selbe Klassenpool wird jedoch erneut verwendet, wenn es mehr Spieler als Klassen gibt."
 
---L["label_keyhelper_class_activate"] = "enable class ability"
---L["label_keyhelper_class_abort"] = "abort class ability"
---L["label_keyhelper_class_abort_preview"] = "abort class ability preview"
+L["label_keyhelper_class_activate"] = "Klassen Fähigkeit aktivieren"
+L["label_keyhelper_class_abort"] = "Klassen Fähigkeit abbrechen"
+L["label_keyhelper_class_abort_preview"] = "Klassen Fähigkeit Vorschau abbrechen"
