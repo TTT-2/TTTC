@@ -211,3 +211,84 @@ if CLIENT then
         return TryT(classData.name)
     end
 end
+
+local networkRequestID = 0
+local networkReceiveFuncs = {}
+
+if SERVER then
+    util.AddNetworkString("TTT2RequestEnabledClasses")
+
+    ---
+    -- Answers the request for all classes that are currently enabled. The enabled convars are
+    -- server-only and can only be read by admins, which is why this request exists. A request
+    -- from any player is answered.
+    -- @note When classes are globally disabled with the `ttt2_classes` convar, an empty list
+    -- is returned.
+    -- @param net.Message msg (unused)
+    -- @param Player ply The player that requested the enabled classes
+    -- @realm server
+    net.Receive("TTT2RequestEnabledClasses", function(_, ply)
+        local requestID = net.ReadUInt(8)
+        local classesEnabled = GetConVar("ttt2_classes")
+        local enabledClasses = {}
+
+        -- classes are globally disabled, there is nothing to show
+        if classesEnabled and classesEnabled:GetBool() then
+            for _, classData in pairs(CLASS.CLASSES) do
+                if not classData.name then
+                    continue
+                end
+
+                local enabledConVar = GetConVar("tttc_class_" .. classData.name .. "_enabled")
+
+                if enabledConVar and enabledConVar:GetBool() then
+                    enabledClasses[#enabledClasses + 1] = classData.name
+                end
+            end
+        end
+
+        net.Start("TTT2RequestEnabledClasses")
+        net.WriteUInt(requestID, 8)
+        net.WriteUInt(#enabledClasses, 8)
+
+        for i = 1, #enabledClasses do
+            net.WriteString(enabledClasses[i])
+        end
+
+        net.Send(ply)
+    end)
+else
+    net.Receive("TTT2RequestEnabledClasses", function()
+        local requestID = net.ReadUInt(8)
+        local classCount = net.ReadUInt(8)
+        local enabledClasses = {}
+
+        for i = 1, classCount do
+            enabledClasses[net.ReadString()] = true
+        end
+
+        local callback = networkReceiveFuncs[requestID]
+
+        if not callback then
+            return
+        end
+
+        networkReceiveFuncs[requestID] = nil
+
+        callback(enabledClasses)
+    end)
+
+    ---
+    -- Requests a table of all classes that are currently enabled on the server. The class
+    -- settings are server-only convars, which is why they have to be requested.
+    -- @param function callback Called with a table of enabled class names
+    -- @realm client
+    function CLASS.RequestEnabledClasses(callback)
+        networkRequestID = networkRequestID % 255 + 1
+        networkReceiveFuncs[networkRequestID] = callback
+
+        net.Start("TTT2RequestEnabledClasses")
+        net.WriteUInt(networkRequestID, 8)
+        net.SendToServer()
+    end
+end
